@@ -40,6 +40,7 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
       interrupcio: assemblyInterventions.filter(i => i.type === 'interrupcio').length,
       llarga: assemblyInterventions.filter(i => i.type === 'llarga').length,
       ofensiva: assemblyInterventions.filter(i => i.type === 'ofensiva').length,
+      explica: assemblyInterventions.filter(i => i.type === 'explica').length,
     },
   };
 };
