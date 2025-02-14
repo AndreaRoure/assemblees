@@ -68,22 +68,22 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="space-y-2">
-        <h3 className="text-sm font-medium mb-2">👨 Home</h3>
+        <h3 className="text-sm font-medium mb-2">Home</h3>
         {renderInterventionButtons('man', <UserRound className="h-4 w-4 mr-1" />)}
       </div>
       
       <div className="space-y-2">
-        <h3 className="text-sm font-medium mb-2">👩 Dona</h3>
+        <h3 className="text-sm font-medium mb-2">Dona</h3>
         {renderInterventionButtons('woman', <UserCircle2 className="h-4 w-4 mr-1" />)}
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-sm font-medium mb-2">🌈 Trans</h3>
+        <h3 className="text-sm font-medium mb-2">Trans</h3>
         {renderInterventionButtons('trans', <Users className="h-4 w-4 mr-1" />)}
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-sm font-medium mb-2">💫 No binari</h3>
+        <h3 className="text-sm font-medium mb-2">No binari</h3>
         {renderInterventionButtons('non-binary', <User className="h-4 w-4 mr-1" />)}
       </div>
     </div>
