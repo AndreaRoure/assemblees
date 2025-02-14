@@ -15,10 +15,11 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   ];
 
   const typeData = [
-    { name: 'Breu', value: stats.byType.short },
-    { name: 'Llarg', value: stats.byType.long },
-    { name: 'Interrupció', value: stats.byType.interruption },
-    { name: 'Pregunta', value: stats.byType.question },
+    { name: 'Intervenció', value: stats.byType.intervencio },
+    { name: 'Dinamitza', value: stats.byType.dinamitza },
+    { name: 'Interrupció', value: stats.byType.interrupcio },
+    { name: 'Llarga', value: stats.byType.llarga },
+    { name: 'Ofensiva', value: stats.byType.ofensiva },
   ];
 
   return (

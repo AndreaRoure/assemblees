@@ -19,7 +19,7 @@ const Index = () => {
     <div className="container max-w-2xl mx-auto py-6 px-4">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold mb-6">Control d&apos;Intervencions</h1>
+          <h1 className="text-2xl font-bold mb-6">Taula d&apos;Observació de Dinàmiques en Assemblees</h1>
           <NewAssemblyDialog onAssemblyCreated={refresh} />
         </div>
 

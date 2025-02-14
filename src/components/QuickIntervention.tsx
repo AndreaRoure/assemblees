@@ -10,7 +10,7 @@ interface QuickInterventionProps {
 }
 
 const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventionProps) => {
-  const handleIntervention = (gender: 'man' | 'woman', type: 'short' | 'long' | 'interruption' | 'question') => {
+  const handleIntervention = (gender: 'man' | 'woman', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva') => {
     addIntervention({ assemblyId, gender, type });
     onInterventionAdded();
   };
@@ -23,25 +23,25 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleIntervention('man', 'short')}
+            onClick={() => handleIntervention('man', 'intervencio')}
             className="w-full"
           >
             <UserRound className="h-4 w-4 mr-1" />
-            Breu
+            Intervenció
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleIntervention('man', 'long')}
+            onClick={() => handleIntervention('man', 'dinamitza')}
             className="w-full"
           >
             <UserRound className="h-4 w-4 mr-1" />
-            Llarg
+            Dinamitza
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleIntervention('man', 'interruption')}
+            onClick={() => handleIntervention('man', 'interrupcio')}
             className="w-full"
           >
             <UserRound className="h-4 w-4 mr-1" />
@@ -50,11 +50,20 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleIntervention('man', 'question')}
+            onClick={() => handleIntervention('man', 'llarga')}
             className="w-full"
           >
             <UserRound className="h-4 w-4 mr-1" />
-            Pregunta
+            Llarga
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleIntervention('man', 'ofensiva')}
+            className="w-full col-span-2"
+          >
+            <UserRound className="h-4 w-4 mr-1" />
+            Ofensiva
           </Button>
         </div>
       </div>
@@ -65,25 +74,25 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleIntervention('woman', 'short')}
+            onClick={() => handleIntervention('woman', 'intervencio')}
             className="w-full"
           >
             <UserCircle2 className="h-4 w-4 mr-1" />
-            Breu
+            Intervenció
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleIntervention('woman', 'long')}
+            onClick={() => handleIntervention('woman', 'dinamitza')}
             className="w-full"
           >
             <UserCircle2 className="h-4 w-4 mr-1" />
-            Llarg
+            Dinamitza
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleIntervention('woman', 'interruption')}
+            onClick={() => handleIntervention('woman', 'interrupcio')}
             className="w-full"
           >
             <UserCircle2 className="h-4 w-4 mr-1" />
@@ -92,11 +101,20 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleIntervention('woman', 'question')}
+            onClick={() => handleIntervention('woman', 'llarga')}
             className="w-full"
           >
             <UserCircle2 className="h-4 w-4 mr-1" />
-            Pregunta
+            Llarga
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleIntervention('woman', 'ofensiva')}
+            className="w-full col-span-2"
+          >
+            <UserCircle2 className="h-4 w-4 mr-1" />
+            Ofensiva
           </Button>
         </div>
       </div>

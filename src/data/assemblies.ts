@@ -33,10 +33,11 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
       woman: assemblyInterventions.filter(i => i.gender === 'woman').length,
     },
     byType: {
-      short: assemblyInterventions.filter(i => i.type === 'short').length,
-      long: assemblyInterventions.filter(i => i.type === 'long').length,
-      interruption: assemblyInterventions.filter(i => i.type === 'interruption').length,
-      question: assemblyInterventions.filter(i => i.type === 'question').length,
+      intervencio: assemblyInterventions.filter(i => i.type === 'intervencio').length,
+      dinamitza: assemblyInterventions.filter(i => i.type === 'dinamitza').length,
+      interrupcio: assemblyInterventions.filter(i => i.type === 'interrupcio').length,
+      llarga: assemblyInterventions.filter(i => i.type === 'llarga').length,
+      ofensiva: assemblyInterventions.filter(i => i.type === 'ofensiva').length,
     },
   };
 };
