@@ -55,13 +55,25 @@ export const removeIntervention = (assemblyId: string, type: string, gender: str
 export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
   const assemblyInterventions = interventions.filter(i => i.assemblyId === assemblyId);
   
+  const createGenderStats = (gender: string) => {
+    const genderInterventions = assemblyInterventions.filter(i => i.gender === gender);
+    return {
+      intervencio: genderInterventions.filter(i => i.type === 'intervencio').length,
+      dinamitza: genderInterventions.filter(i => i.type === 'dinamitza').length,
+      interrupcio: genderInterventions.filter(i => i.type === 'interrupcio').length,
+      llarga: genderInterventions.filter(i => i.type === 'llarga').length,
+      ofensiva: genderInterventions.filter(i => i.type === 'ofensiva').length,
+      explica: genderInterventions.filter(i => i.type === 'explica').length,
+    };
+  };
+
   return {
     totalInterventions: assemblyInterventions.length,
     byGender: {
-      man: assemblyInterventions.filter(i => i.gender === 'man').length,
-      woman: assemblyInterventions.filter(i => i.gender === 'woman').length,
-      trans: assemblyInterventions.filter(i => i.gender === 'trans').length,
-      'non-binary': assemblyInterventions.filter(i => i.gender === 'non-binary').length,
+      man: createGenderStats('man'),
+      woman: createGenderStats('woman'),
+      trans: createGenderStats('trans'),
+      'non-binary': createGenderStats('non-binary'),
     },
     byType: {
       intervencio: assemblyInterventions.filter(i => i.type === 'intervencio').length,
