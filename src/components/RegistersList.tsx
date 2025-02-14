@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -119,13 +119,13 @@ const RegistersList = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col space-y-2">
+    <div className="space-y-6 w-full max-w-full">
+      <div className="flex flex-col space-y-3">
         <Select
           value={selectedYear}
           onValueChange={setSelectedYear}
         >
-          <SelectTrigger className="h-9 text-sm">
+          <SelectTrigger className="h-11 md:h-10 text-sm w-full">
             <SelectValue placeholder="Selecciona l'any" />
           </SelectTrigger>
           <SelectContent>
@@ -142,7 +142,7 @@ const RegistersList = () => {
           value={selectedGender}
           onValueChange={setSelectedGender}
         >
-          <SelectTrigger className="h-9 text-sm">
+          <SelectTrigger className="h-11 md:h-10 text-sm w-full">
             <SelectValue placeholder="Selecciona el gènere" />
           </SelectTrigger>
           <SelectContent>
@@ -156,79 +156,81 @@ const RegistersList = () => {
         <Button
           variant="outline"
           onClick={downloadCSV}
-          className="h-9 text-sm"
-          size="sm"
+          className="h-11 md:h-10 text-sm w-full md:w-auto"
         >
-          <Download className="h-4 w-4 mr-2" />
-          <span className="inline md:hidden">CSV</span>
-          <span className="hidden md:inline">Descarregar CSV</span>
+          <Download className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span className="whitespace-nowrap">Descarregar CSV</span>
         </Button>
       </div>
 
-      <ScrollArea className="w-full" type="always">
-        <div className="min-w-[300px] md:min-w-[600px]">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
-            {Object.entries(totals).map(([type, count]) => (
-              <Card key={type} className="p-3 md:p-4">
-                <div className="text-base md:text-lg font-semibold">{count}</div>
-                <div className="text-xs md:text-sm text-muted-foreground truncate">
-                  {type === 'intervencio' && 'Intervencions'}
-                  {type === 'dinamitza' && 'Dinamitza'}
-                  {type === 'interrupcio' && 'Interrupcions'}
-                  {type === 'llarga' && 'Intervencions llargues'}
-                  {type === 'ofensiva' && 'Intervencions ofensives'}
-                  {type === 'explica' && 'Explica'}
-                </div>
-              </Card>
-            ))}
-          </div>
+      <div className="w-full overflow-hidden">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {Object.entries(totals).map(([type, count]) => (
+            <Card key={type} className="p-4">
+              <div className="text-base md:text-lg font-semibold">{count}</div>
+              <div className="text-xs md:text-sm text-muted-foreground break-words">
+                {type === 'intervencio' && 'Intervencions'}
+                {type === 'dinamitza' && 'Dinamitza'}
+                {type === 'interrupcio' && 'Interrupcions'}
+                {type === 'llarga' && 'Inter. llargues'}
+                {type === 'ofensiva' && 'Inter. ofensives'}
+                {type === 'explica' && 'Explica'}
+              </div>
+            </Card>
+          ))}
         </div>
-      </ScrollArea>
+      </div>
 
-      <Card className="p-4">
-        <div className="font-semibold mb-2 text-sm md:text-base">Intervencions per Gènere</div>
-        <div className="w-full h-[250px] md:h-[350px]">
+      <Card className="p-4 w-full overflow-hidden">
+        <div className="font-semibold mb-4 text-sm md:text-base">
+          Intervencions per Gènere
+        </div>
+        <div className="w-full h-[300px] md:h-[350px] -mx-4 md:mx-0">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={genderTotals}
               margin={{ 
                 top: 20, 
-                right: isMobile ? 10 : 30, 
-                left: isMobile ? 20 : 40, 
-                bottom: isMobile ? 60 : 40 
+                right: isMobile ? 16 : 30, 
+                left: isMobile ? 0 : 40, 
+                bottom: isMobile ? 80 : 40 
               }}
             >
               <XAxis 
                 dataKey="gender"
                 angle={isMobile ? -45 : 0}
                 textAnchor={isMobile ? "end" : "middle"}
-                height={60}
+                height={80}
                 interval={0}
                 tick={{ fontSize: isMobile ? 10 : 12 }}
+                tickMargin={isMobile ? 20 : 10}
               />
               <YAxis 
-                width={isMobile ? 30 : 40}
+                width={isMobile ? 35 : 40}
                 tick={{ fontSize: isMobile ? 10 : 12 }}
               />
               <Tooltip 
                 contentStyle={{ 
-                  fontSize: isMobile ? '10px' : '12px',
-                  padding: isMobile ? '8px' : '10px'
+                  fontSize: isMobile ? '12px' : '14px',
+                  padding: '8px 12px'
+                }}
+                wrapperStyle={{
+                  zIndex: 1000
                 }}
               />
               <Legend 
                 verticalAlign="bottom"
-                height={36}
+                height={isMobile ? 60 : 36}
                 wrapperStyle={{ 
-                  fontSize: isMobile ? '10px' : '12px',
+                  fontSize: isMobile ? '11px' : '12px',
                   paddingTop: '16px'
                 }}
               />
               <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
               <Bar dataKey="dinamitza" stackId="a" fill="#82ca9d" name="Dinamitza" />
               <Bar dataKey="interrupcio" stackId="a" fill="#ffc658" name="Interrupció" />
-              <Bar dataKey="llarga" stackId="a" fill="#ff8042" name="Intervenció llarga" />
-              <Bar dataKey="ofensiva" stackId="a" fill="#ff6b6b" name="Ofensiva" />
+              <Bar dataKey="llarga" stackId="a" fill="#ff8042" name="Inter. llarga" />
+              <Bar dataKey="ofensiva" stackId="a" fill="#ff6b6b" name="Inter. ofensiva" />
               <Bar dataKey="explica" stackId="a" fill="#4ecdc4" name="Explica" />
             </BarChart>
           </ResponsiveContainer>
