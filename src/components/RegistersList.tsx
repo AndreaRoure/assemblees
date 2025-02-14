@@ -12,14 +12,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const RegistersList = () => {
@@ -219,49 +211,6 @@ const RegistersList = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </Card>
-
-      <Card className="p-4">
-        <div className="font-semibold mb-4">Registre Detallat</div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Data</TableHead>
-              <TableHead>Assemblea</TableHead>
-              <TableHead>Registrador/a</TableHead>
-              <TableHead>Tipus</TableHead>
-              <TableHead>Gènere</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredInterventions.map((intervention) => {
-              const assembly = assemblies.find(a => a.id === intervention.assembly_id);
-              return (
-                <TableRow key={intervention.id}>
-                  <TableCell>
-                    {new Date(intervention.timestamp).toLocaleDateString('ca-ES')}
-                  </TableCell>
-                  <TableCell>{assembly?.name || '-'}</TableCell>
-                  <TableCell>{assembly?.register?.name || '-'}</TableCell>
-                  <TableCell>
-                    {intervention.type === 'intervencio' && 'Intervenció'}
-                    {intervention.type === 'dinamitza' && 'Dinamitza'}
-                    {intervention.type === 'interrupcio' && 'Interrupció'}
-                    {intervention.type === 'llarga' && 'Intervenció llarga'}
-                    {intervention.type === 'ofensiva' && 'Intervenció ofensiva'}
-                    {intervention.type === 'explica' && 'Explica'}
-                  </TableCell>
-                  <TableCell>
-                    {intervention.gender === 'man' && 'Home'}
-                    {intervention.gender === 'woman' && 'Dona'}
-                    {intervention.gender === 'trans' && 'Persona Trans'}
-                    {intervention.gender === 'non-binary' && 'Persona No Binària'}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
       </Card>
 
       <div className="text-sm text-muted-foreground text-center">
