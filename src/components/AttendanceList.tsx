@@ -110,7 +110,7 @@ const AttendanceList = () => {
 
   const downloadCSV = (type: 'assemblies' | 'persons') => {
     if (type === 'assemblies') {
-      const headers = ['Nom', 'Data', 'Tipus', 'Assistents Presencials', 'Assistents Online'];
+      const headers = ['Nom', 'Data', 'Tipus', 'Assistents Presencials', 'Assistents Online', 'Total Assistents'];
       const rows = filteredData.map(record => [
         record.name,
         record.date,
@@ -120,7 +120,8 @@ const AttendanceList = () => {
             ? 'Híbrid'
             : 'Presencial',
         record.inPersonAttendees,
-        record.onlineAttendees
+        record.onlineAttendees,
+        record.inPersonAttendees + record.onlineAttendees
       ]);
       
       const csvContent = [
@@ -227,6 +228,7 @@ const AttendanceList = () => {
                     <TableHead>Tipus</TableHead>
                     <TableHead className="text-right">Assistents Presencials</TableHead>
                     <TableHead className="text-right">Assistents Online</TableHead>
+                    <TableHead className="text-right">Total Assistents</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -243,6 +245,9 @@ const AttendanceList = () => {
                       </TableCell>
                       <TableCell className="text-right">{record.inPersonAttendees}</TableCell>
                       <TableCell className="text-right">{record.onlineAttendees}</TableCell>
+                      <TableCell className="text-right font-medium">
+                        {record.inPersonAttendees + record.onlineAttendees}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
