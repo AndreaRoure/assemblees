@@ -2,10 +2,12 @@
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
+import AttendanceDialog from '@/components/AttendanceDialog';
 import AssemblyCard from '@/components/AssemblyCard';
 import QuickIntervention from '@/components/QuickIntervention';
 import AssemblyStats from '@/components/AssemblyStats';
 import RegistersList from '@/components/RegistersList';
+import AttendanceList from '@/components/AttendanceList';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -76,7 +78,10 @@ const Index = () => {
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
             Taula d&apos;Observació de Dinàmiques en Assemblees
           </h1>
-          <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
+          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
+            <AttendanceDialog />
+          </div>
         </div>
 
         {selectedAssembly ? (
@@ -97,9 +102,10 @@ const Index = () => {
           </div>
         ) : (
           <Tabs defaultValue="assemblies" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
+            <TabsList className="grid w-full grid-cols-3 mb-4 md:mb-6">
               <TabsTrigger value="assemblies">Assemblees</TabsTrigger>
               <TabsTrigger value="registers">Registres</TabsTrigger>
+              <TabsTrigger value="attendance">Assistències</TabsTrigger>
             </TabsList>
             
             <TabsContent value="assemblies">
@@ -125,6 +131,12 @@ const Index = () => {
             <TabsContent value="registers">
               <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
                 <RegistersList />
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="attendance">
+              <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
+                <AttendanceList />
               </ScrollArea>
             </TabsContent>
           </Tabs>
