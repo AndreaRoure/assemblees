@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const RegistersList = () => {
   const isMobile = useIsMobile();
@@ -162,21 +163,25 @@ const RegistersList = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {Object.entries(totals).map(([type, count]) => (
-          <Card key={type} className="p-4">
-            <div className="text-lg font-semibold">{count}</div>
-            <div className="text-sm text-muted-foreground">
-              {type === 'intervencio' && 'Intervencions'}
-              {type === 'dinamitza' && 'Dinamitza'}
-              {type === 'interrupcio' && 'Interrupcions'}
-              {type === 'llarga' && 'Intervencions llargues'}
-              {type === 'ofensiva' && 'Intervencions ofensives'}
-              {type === 'explica' && 'Explica'}
-            </div>
-          </Card>
-        ))}
-      </div>
+      <ScrollArea className="w-full" type="always">
+        <div className="min-w-[800px]">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Object.entries(totals).map(([type, count]) => (
+              <Card key={type} className="p-4">
+                <div className="text-lg font-semibold">{count}</div>
+                <div className="text-sm text-muted-foreground">
+                  {type === 'intervencio' && 'Intervencions'}
+                  {type === 'dinamitza' && 'Dinamitza'}
+                  {type === 'interrupcio' && 'Interrupcions'}
+                  {type === 'llarga' && 'Intervencions llargues'}
+                  {type === 'ofensiva' && 'Intervencions ofensives'}
+                  {type === 'explica' && 'Explica'}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </ScrollArea>
 
       <Card className="p-4">
         <div className="font-semibold mb-4">Intervencions per Gènere</div>

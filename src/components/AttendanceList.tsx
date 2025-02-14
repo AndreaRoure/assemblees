@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Mock data for now - we'll replace this with real data later
 const mockAttendanceData = [
@@ -75,6 +77,7 @@ const mockPersonAttendanceData = [
 ];
 
 const AttendanceList = () => {
+  const isMobile = useIsMobile();
   const [selectedType, setSelectedType] = React.useState<string>('all');
   const [selectedMonth, setSelectedMonth] = React.useState<string>('all');
 
@@ -219,34 +222,38 @@ const AttendanceList = () => {
             </div>
 
             <Card>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Tipus</TableHead>
-                    <TableHead className="text-right">Assistents Presencials</TableHead>
-                    <TableHead className="text-right">Assistents Online</TableHead>
-                    <TableHead className="text-right">Total Assistents</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredData.map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{record.name}</TableCell>
-                      <TableCell>{new Date(record.date).toLocaleDateString('ca-ES')}</TableCell>
-                      <TableCell>
-                        {record.type === 'online' ? 'En línia' : 'Presencial'}
-                      </TableCell>
-                      <TableCell className="text-right">{record.inPersonAttendees}</TableCell>
-                      <TableCell className="text-right">{record.onlineAttendees}</TableCell>
-                      <TableCell className="text-right font-medium">
-                        {record.inPersonAttendees + record.onlineAttendees}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ScrollArea className="w-full" type="always">
+                <div className="min-w-[800px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[200px]">Nom</TableHead>
+                        <TableHead className="w-[120px]">Data</TableHead>
+                        <TableHead className="w-[120px]">Tipus</TableHead>
+                        <TableHead className="text-right w-[150px]">Assistents Presencials</TableHead>
+                        <TableHead className="text-right w-[150px]">Assistents Online</TableHead>
+                        <TableHead className="text-right w-[150px]">Total Assistents</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredData.map((record, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{record.name}</TableCell>
+                          <TableCell>{new Date(record.date).toLocaleDateString('ca-ES')}</TableCell>
+                          <TableCell>
+                            {record.type === 'online' ? 'En línia' : 'Presencial'}
+                          </TableCell>
+                          <TableCell className="text-right">{record.inPersonAttendees}</TableCell>
+                          <TableCell className="text-right">{record.onlineAttendees}</TableCell>
+                          <TableCell className="text-right font-medium">
+                            {record.inPersonAttendees + record.onlineAttendees}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </ScrollArea>
             </Card>
           </div>
         </TabsContent>
@@ -264,32 +271,36 @@ const AttendanceList = () => {
             </div>
 
             <Card>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead className="text-right">Total Assemblees</TableHead>
-                    <TableHead className="text-right">Assistències</TableHead>
-                    <TableHead className="text-right">Absències</TableHead>
-                    <TableHead className="text-right">% Total</TableHead>
-                    <TableHead className="text-right">% Online</TableHead>
-                    <TableHead className="text-right">% Presencial</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPersonData.map((record, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{record.name}</TableCell>
-                      <TableCell className="text-right">{record.totalAssemblies}</TableCell>
-                      <TableCell className="text-right">{record.attended}</TableCell>
-                      <TableCell className="text-right">{record.absent}</TableCell>
-                      <TableCell className="text-right">{record.percentage}</TableCell>
-                      <TableCell className="text-right">{record.attendanceByType.online}</TableCell>
-                      <TableCell className="text-right">{record.attendanceByType["in-person"]}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ScrollArea className="w-full" type="always">
+                <div className="min-w-[900px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[200px]">Nom</TableHead>
+                        <TableHead className="text-right w-[120px]">Total Assemblees</TableHead>
+                        <TableHead className="text-right w-[120px]">Assistències</TableHead>
+                        <TableHead className="text-right w-[120px]">Absències</TableHead>
+                        <TableHead className="text-right w-[100px]">% Total</TableHead>
+                        <TableHead className="text-right w-[100px]">% Online</TableHead>
+                        <TableHead className="text-right w-[100px]">% Presencial</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredPersonData.map((record, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{record.name}</TableCell>
+                          <TableCell className="text-right">{record.totalAssemblies}</TableCell>
+                          <TableCell className="text-right">{record.attended}</TableCell>
+                          <TableCell className="text-right">{record.absent}</TableCell>
+                          <TableCell className="text-right">{record.percentage}</TableCell>
+                          <TableCell className="text-right">{record.attendanceByType.online}</TableCell>
+                          <TableCell className="text-right">{record.attendanceByType["in-person"]}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </ScrollArea>
             </Card>
           </div>
         </TabsContent>
