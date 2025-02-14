@@ -96,23 +96,23 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-3">
-        <h3 className="text-sm font-medium">Home</h3>
-        {renderInterventionCounters('man')}
-      </div>
-      
-      <div className="space-y-3">
         <h3 className="text-sm font-medium">Dona</h3>
         {renderInterventionCounters('woman')}
       </div>
-
+      
       <div className="space-y-3">
-        <h3 className="text-sm font-medium">Trans</h3>
-        {renderInterventionCounters('trans')}
+        <h3 className="text-sm font-medium">Home</h3>
+        {renderInterventionCounters('man')}
       </div>
 
       <div className="space-y-3">
         <h3 className="text-sm font-medium">No binari</h3>
         {renderInterventionCounters('non-binary')}
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">Trans</h3>
+        {renderInterventionCounters('trans')}
       </div>
     </div>
   );
