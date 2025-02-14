@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Plus, Minus } from 'lucide-react';
 import { addIntervention, removeIntervention } from '@/data/assemblies';
 
 interface QuickInterventionProps {
@@ -8,26 +9,81 @@ interface QuickInterventionProps {
   onInterventionAdded: () => void;
 }
 
+interface CounterProps {
+  value: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
+}
+
+const Counter = ({ value, onIncrement, onDecrement }: CounterProps) => (
+  <div className="flex items-center gap-2">
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={onDecrement}
+      className="h-8 w-8 p-0"
+      disabled={value === 0}
+    >
+      <Minus className="h-4 w-4" />
+    </Button>
+    <span className="min-w-[2rem] text-center">{value}</span>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={onIncrement}
+      className="h-8 w-8 p-0"
+    >
+      <Plus className="h-4 w-4" />
+    </Button>
+  </div>
+);
+
 const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventionProps) => {
-  const handleAdd = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
+  const [counts, setCounts] = useState<Record<string, Record<string, number>>>({
+    man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
+    woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
+    trans: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
+    'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
+  });
+
+  const handleIncrement = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     addIntervention({ assemblyId, gender, type });
+    setCounts(prev => ({
+      ...prev,
+      [gender]: {
+        ...prev[gender],
+        [type]: prev[gender][type] + 1
+      }
+    }));
     onInterventionAdded();
   };
 
-  const renderInterventionButtons = (gender: 'man' | 'woman' | 'trans' | 'non-binary') => (
-    <div className="grid gap-2">
+  const handleDecrement = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
+    if (counts[gender][type] > 0) {
+      removeIntervention(assemblyId, type, gender);
+      setCounts(prev => ({
+        ...prev,
+        [gender]: {
+          ...prev[gender],
+          [type]: prev[gender][type] - 1
+        }
+      }));
+      onInterventionAdded();
+    }
+  };
+
+  const renderInterventionCounters = (gender: 'man' | 'woman' | 'trans' | 'non-binary') => (
+    <div className="grid gap-3">
       {['Intervenció', 'Dinamitza', 'Interrupció', 'Llarga', 'Explica', 'Ofensiva'].map((label, index) => {
         const type = ['intervencio', 'dinamitza', 'interrupcio', 'llarga', 'explica', 'ofensiva'][index] as 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica';
         return (
-          <div key={type} className="flex gap-1 md:gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleAdd(gender, type)}
-              className="flex-1 text-xs md:text-sm px-2 md:px-4"
-            >
-              {label}
-            </Button>
+          <div key={type} className="flex items-center justify-between">
+            <span className="text-sm">{label}</span>
+            <Counter
+              value={counts[gender][type]}
+              onIncrement={() => handleIncrement(gender, type)}
+              onDecrement={() => handleDecrement(gender, type)}
+            />
           </div>
         );
       })}
@@ -35,25 +91,25 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium mb-2">Home</h3>
-        {renderInterventionButtons('man')}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">Home</h3>
+        {renderInterventionCounters('man')}
       </div>
       
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium mb-2">Dona</h3>
-        {renderInterventionButtons('woman')}
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">Dona</h3>
+        {renderInterventionCounters('woman')}
       </div>
 
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium mb-2">Trans</h3>
-        {renderInterventionButtons('trans')}
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">Trans</h3>
+        {renderInterventionCounters('trans')}
       </div>
 
-      <div className="space-y-2">
-        <h3 className="text-sm font-medium mb-2">No binari</h3>
-        {renderInterventionButtons('non-binary')}
+      <div className="space-y-3">
+        <h3 className="text-sm font-medium">No binari</h3>
+        {renderInterventionCounters('non-binary')}
       </div>
     </div>
   );
