@@ -71,73 +71,79 @@ const Index = () => {
   };
 
   return (
-    <div className="container p-4 md:py-6 mx-auto">
-      <div className="space-y-4 md:space-y-6">
-        <div className="flex flex-col items-center">
-          <Logo />
-          <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
-            Observació d&apos;Assemblees
-          </h1>
-          <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto">
-            <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
-            <AttendanceDialog />
+    <div className="min-h-screen w-full bg-background">
+      <div className="container px-4 py-4 mx-auto md:py-6 md:px-6">
+        <div className="space-y-6">
+          <div className="flex flex-col items-center space-y-4">
+            <Logo />
+            <h1 className="text-xl font-bold text-center md:text-2xl">
+              Observació d&apos;Assemblees
+            </h1>
+            <div className="grid w-full grid-cols-1 gap-3 md:flex md:flex-row md:gap-4 md:w-auto">
+              <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
+              <AttendanceDialog />
+            </div>
           </div>
+
+          {selectedAssembly ? (
+            <div className="space-y-6">
+              <button
+                onClick={() => setSelectedAssembly(null)}
+                className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+              >
+                ← Tornar a la llista
+              </button>
+              
+              <QuickIntervention
+                assemblyId={selectedAssembly}
+                onInterventionAdded={handleInterventionChange}
+              />
+              
+              {stats && <AssemblyStats stats={stats} />}
+            </div>
+          ) : (
+            <Tabs defaultValue="assemblies" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="assemblies" className="text-sm">
+                  Assemblees
+                </TabsTrigger>
+                <TabsTrigger value="stats" className="text-sm">
+                  Registres i Assistències
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="assemblies">
+                <ScrollArea className="h-[calc(100vh-240px)] md:h-[calc(100vh-250px)]">
+                  <div className="space-y-3 pr-2 md:space-y-4">
+                    {assemblies.map((assembly) => (
+                      <AssemblyCard
+                        key={assembly.id}
+                        assembly={assembly}
+                        onClick={() => setSelectedAssembly(assembly.id)}
+                        onEdited={refetchAssemblies}
+                      />
+                    ))}
+                    {assemblies.length === 0 && (
+                      <div className="py-8 text-center text-muted-foreground">
+                        No hi ha assemblees. Crea&apos;n una de nova!
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+
+              <TabsContent value="stats">
+                <ScrollArea className="h-[calc(100vh-240px)] md:h-[calc(100vh-250px)]">
+                  <div className="pb-6 space-y-6">
+                    <RegistersList />
+                    <div className="h-px bg-border" />
+                    <AttendanceList />
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
+          )}
         </div>
-
-        {selectedAssembly ? (
-          <div className="space-y-4 md:space-y-6">
-            <button
-              onClick={() => setSelectedAssembly(null)}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              ← Tornar a la llista
-            </button>
-            
-            <QuickIntervention
-              assemblyId={selectedAssembly}
-              onInterventionAdded={handleInterventionChange}
-            />
-            
-            {stats && <AssemblyStats stats={stats} />}
-          </div>
-        ) : (
-          <Tabs defaultValue="assemblies" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
-              <TabsTrigger value="assemblies" className="text-sm md:text-base">Assemblees</TabsTrigger>
-              <TabsTrigger value="stats" className="text-sm md:text-base">Registres i Assistències</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="assemblies">
-              <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
-                <div className="space-y-3 md:space-y-4 pr-2">
-                  {assemblies.map((assembly) => (
-                    <AssemblyCard
-                      key={assembly.id}
-                      assembly={assembly}
-                      onClick={() => setSelectedAssembly(assembly.id)}
-                      onEdited={refetchAssemblies}
-                    />
-                  ))}
-                  {assemblies.length === 0 && (
-                    <div className="text-center text-muted-foreground py-6 md:py-8">
-                      No hi ha assemblees. Crea&apos;n una de nova!
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </TabsContent>
-
-            <TabsContent value="stats" className="w-full">
-              <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
-                <div className="space-y-6">
-                  <RegistersList />
-                  <div className="h-px bg-border" />
-                  <AttendanceList />
-                </div>
-              </ScrollArea>
-            </TabsContent>
-          </Tabs>
-        )}
       </div>
     </div>
   );
