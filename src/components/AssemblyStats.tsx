@@ -2,8 +2,10 @@
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
 import { AssemblyStats as AssemblyStatsType } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { fetchAssemblyInterventions } from '@/lib/supabase';
 
 interface AssemblyStatsProps {
   stats: AssemblyStatsType;

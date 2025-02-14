@@ -27,6 +27,17 @@ export const fetchInterventions = async () => {
   return data as Intervention[];
 };
 
+export const fetchAssemblyInterventions = async (assemblyId: string) => {
+  const { data, error } = await supabase
+    .from('interventions')
+    .select('*')
+    .eq('assembly_id', assemblyId)
+    .order('timestamp', { ascending: true });
+  
+  if (error) throw error;
+  return data as Intervention[];
+};
+
 export const addAssembly = async (assembly: Omit<Assembly, 'id'>) => {
   const { data, error } = await supabase
     .from('assemblies')

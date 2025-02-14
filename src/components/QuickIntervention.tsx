@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus } from 'lucide-react';
-import { addIntervention, removeIntervention } from '@/lib/supabase';
-import { interventions } from '@/data/assemblies';
+import { addIntervention, removeIntervention, fetchAssemblyInterventions } from '@/lib/supabase';
+import { useQuery } from '@tanstack/react-query';
 
 interface QuickInterventionProps {
   assemblyId: string;
@@ -44,6 +44,11 @@ const Counter = ({ value, onIncrement, onDecrement, label }: CounterProps) => (
 );
 
 const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventionProps) => {
+  const { data: interventions = [] } = useQuery({
+    queryKey: ['interventions', assemblyId],
+    queryFn: () => fetchAssemblyInterventions(assemblyId),
+  });
+
   const [counts, setCounts] = useState<Record<string, Record<string, number>>>({
     man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
     woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
@@ -51,9 +56,8 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
   });
 
-  // Load existing interventions when component mounts or assemblyId changes
+  // Update counts when interventions change
   useEffect(() => {
-    const assemblyInterventions = interventions.filter(i => i.assembly_id === assemblyId);
     const newCounts = {
       man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
       woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
@@ -61,8 +65,7 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
       'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
     };
 
-    // Count existing interventions
-    assemblyInterventions.forEach(intervention => {
+    interventions.forEach(intervention => {
       const { gender, type } = intervention;
       if (newCounts[gender] && type in newCounts[gender]) {
         newCounts[gender][type]++;
@@ -70,7 +73,7 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     });
 
     setCounts(newCounts);
-  }, [assemblyId]);
+  }, [interventions]);
 
   const handleIncrement = async (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     await addIntervention({
@@ -78,26 +81,12 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
       gender,
       type
     });
-    setCounts(prev => ({
-      ...prev,
-      [gender]: {
-        ...prev[gender],
-        [type]: prev[gender][type] + 1
-      }
-    }));
     onInterventionAdded();
   };
 
   const handleDecrement = async (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     if (counts[gender][type] > 0) {
       await removeIntervention(assemblyId, type, gender);
-      setCounts(prev => ({
-        ...prev,
-        [gender]: {
-          ...prev[gender],
-          [type]: prev[gender][type] - 1
-        }
-      }));
       onInterventionAdded();
     }
   };
