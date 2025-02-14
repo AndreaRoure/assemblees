@@ -2,8 +2,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { Assembly, Intervention } from '@/types';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// When using Lovable's Supabase integration, these values are automatically injected
+const supabaseUrl = 'https://gptengineering.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqYnJ6eXBrcXVzaXZ1c2Zka2NuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDcxNjk5NjUsImV4cCI6MjAyMjc0NTk2NX0.vIEH_JtD5kAW6acid_0IGgRwGxFzl65sY_sNdZrYFTQ';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
