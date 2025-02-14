@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 
 interface RegisterFormData {
   name: string;
-  gender: 'man' | 'woman' | 'trans' | 'non-binary';
+  gender: 'man' | 'woman' | 'non-binary';
   assemblyName: string;
   date: string;
   description?: string;
@@ -82,11 +82,11 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
           <div className="space-y-2">
             <Label>Gènere</Label>
             <RadioGroup
-              onValueChange={(value: 'man' | 'woman' | 'trans' | 'non-binary') => 
+              onValueChange={(value: 'man' | 'woman' | 'non-binary') => 
                 form.setValue('gender', value)
               }
               defaultValue="man"
-              className="grid grid-cols-2 gap-4"
+              className="grid grid-cols-3 gap-4"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="man" id="man" />
@@ -95,10 +95,6 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="woman" id="woman" />
                 <Label htmlFor="woman">Dona</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="trans" id="trans" />
-                <Label htmlFor="trans">Trans</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="non-binary" id="non-binary" />

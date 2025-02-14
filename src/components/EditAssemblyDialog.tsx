@@ -13,7 +13,7 @@ import { supabase } from '@/lib/supabase';
 
 interface EditFormData {
   name: string;
-  gender: 'man' | 'woman' | 'trans' | 'non-binary';
+  gender: 'man' | 'woman' | 'non-binary';
   assemblyName: string;
   date: string;
   description?: string;
@@ -27,7 +27,7 @@ interface EditAssemblyDialogProps {
 }
 
 const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: EditAssemblyDialogProps) => {
-  const [selectedGender, setSelectedGender] = React.useState<'man' | 'woman' | 'trans' | 'non-binary'>(assembly.register.gender);
+  const [selectedGender, setSelectedGender] = React.useState<'man' | 'woman' | 'non-binary'>(assembly.register.gender);
 
   const form = useForm<EditFormData>({
     defaultValues: {
@@ -73,7 +73,6 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
     }
   };
 
-  // Reset selected gender when dialog opens
   React.useEffect(() => {
     if (open) {
       setSelectedGender(assembly.register.gender);
@@ -81,8 +80,7 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
   }, [open, assembly.register.gender]);
 
   const handleGenderChange = (value: string) => {
-    // Type assertion here is safe because we know the RadioGroup only allows our specific values
-    setSelectedGender(value as 'man' | 'woman' | 'trans' | 'non-binary');
+    setSelectedGender(value as 'man' | 'woman' | 'non-binary');
   };
 
   return (
@@ -107,7 +105,7 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
             <RadioGroup
               value={selectedGender}
               onValueChange={handleGenderChange}
-              className="grid grid-cols-2 gap-4"
+              className="grid grid-cols-3 gap-4"
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="man" id="edit-man" />
@@ -116,10 +114,6 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="woman" id="edit-woman" />
                 <Label htmlFor="edit-woman">Dona</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="trans" id="edit-trans" />
-                <Label htmlFor="edit-trans">Trans</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="non-binary" id="edit-non-binary" />
