@@ -35,15 +35,6 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
       'Explica': stats.byGender.woman.explica,
     },
     {
-      name: 'Trans',
-      'Intervenció curta': stats.byGender.trans.intervencio,
-      'Dinamitza': stats.byGender.trans.dinamitza,
-      'Interrupció': stats.byGender.trans.interrupcio,
-      'Intervenció llarga': stats.byGender.trans.llarga,
-      'Ofensiva': stats.byGender.trans.ofensiva,
-      'Explica': stats.byGender.trans.explica,
-    },
-    {
       name: 'No Binari',
       'Intervenció curta': stats.byGender['non-binary'].intervencio,
       'Dinamitza': stats.byGender['non-binary'].dinamitza,
