@@ -1,3 +1,5 @@
+
+/* Estilos generales */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,6 +7,7 @@
   text-align: center;
 }
 
+/* Logo */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -18,6 +21,7 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+/* Animación del logo */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -33,10 +37,53 @@
   }
 }
 
+/* Tarjetas */
 .card {
   padding: 2em;
 }
 
+/* Estilo para textos auxiliares */
 .read-the-docs {
   color: #888;
+}
+
+/* RESPONSIVE FILTERS & BUTTONS */
+.filters-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 10px;
+  align-items: center;
+}
+
+/* En pantallas pequeñas, los filtros se apilan */
+@media (max-width: 768px) {
+  .filters-container {
+    grid-template-columns: 1fr; /* Una sola columna */
+  }
+  .filters-container .select-trigger {
+    width: 100%;
+  }
+  .download-button {
+    width: 100%;
+  }
+}
+
+/* SCROLL PARA TABLAS */
+.table-container {
+  overflow-x: auto; /* Permite hacer scroll horizontal */
+  max-width: 100%;
+  padding-bottom: 10px;
+}
+
+/* AJUSTE DEL GRÁFICO RESPONSIVO */
+.chart-container {
+  width: 100%;
+  height: auto;
+  min-height: 300px;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    height: 250px; /* Reduce altura en móvil */
+  }
 }
