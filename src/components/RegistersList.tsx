@@ -95,28 +95,41 @@ const RegistersList = () => {
   }, [interventions]);
 
   if (isLoadingInterventions || isLoadingAssemblies) {
-    return <div className="text-center text-muted-foreground">Carregant...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-primary animate-pulse text-lg">Carregant...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap gap-4">
-        <YearSelect 
-          value={selectedYear}
-          years={years}
-          onValueChange={setSelectedYear}
-        />
+    <div className="space-y-8 animate-fade-in">
+      <div className="p-6 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 shadow-sm">
+        <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+          <YearSelect 
+            value={selectedYear}
+            years={years}
+            onValueChange={setSelectedYear}
+          />
 
-        <GenderSelect
-          value={selectedGender}
-          onValueChange={setSelectedGender}
-        />
+          <GenderSelect
+            value={selectedGender}
+            onValueChange={setSelectedGender}
+          />
+        </div>
       </div>
 
-      <InterventionStats stats={totals} />
-      <GenderChart data={genderTotals} />
+      <div className="grid gap-8">
+        <div className="transform hover:scale-[1.01] transition-transform duration-200">
+          <InterventionStats stats={totals} />
+        </div>
 
-      <div className="text-sm text-muted-foreground text-center">
+        <div className="transform hover:scale-[1.01] transition-transform duration-200">
+          <GenderChart data={genderTotals} />
+        </div>
+      </div>
+
+      <div className="text-sm text-primary font-medium text-center bg-primary/5 py-3 px-4 rounded-full inline-block mx-auto">
         Total d&apos;intervencions: {filteredInterventions.length}
       </div>
     </div>
