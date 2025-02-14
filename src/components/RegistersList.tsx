@@ -91,7 +91,7 @@ const RegistersList = () => {
     return Object.entries(totals).map(([gender, counts]) => ({
       gender: gender === 'man' ? 'Homes' :
              gender === 'woman' ? 'Dones' :
-             'Persones No Binàries',
+             'No binàries',
       ...counts
     }));
   }, [interventions]);
