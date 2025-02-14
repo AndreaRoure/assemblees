@@ -84,3 +84,4 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
   );
 };
 
+export default AssemblyCard;
