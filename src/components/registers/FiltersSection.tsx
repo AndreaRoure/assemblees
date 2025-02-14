@@ -37,7 +37,7 @@ const FiltersSection = ({
           <SelectTrigger className="h-11 md:h-10 text-sm max-w-full truncate">
             <SelectValue placeholder="Selecciona l'any" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="min-w-[8rem] w-full">
             <SelectItem value="all">Tots els anys</SelectItem>
             {years.map(year => (
               <SelectItem key={year} value={year.toString()}>
@@ -54,7 +54,7 @@ const FiltersSection = ({
           <SelectTrigger className="h-11 md:h-10 text-sm max-w-full truncate">
             <SelectValue placeholder="Selecciona el gènere" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="min-w-[8rem] w-full">
             <SelectItem value="all">Tots els gèneres</SelectItem>
             <SelectItem value="man">Homes</SelectItem>
             <SelectItem value="woman">Dones</SelectItem>
