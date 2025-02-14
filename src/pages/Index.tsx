@@ -76,7 +76,7 @@ const Index = () => {
         <div className="flex flex-col items-center">
           <Logo />
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
-            Observació d&apos;Assembleas
+            Observació d&apos;Assemblees
           </h1>
           <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto">
             <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
