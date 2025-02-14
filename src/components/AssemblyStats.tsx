@@ -2,8 +2,10 @@
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
 import { AssemblyStats as AssemblyStatsType } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { fetchAssemblyInterventions } from '@/lib/supabase';
 
 interface AssemblyStatsProps {
   stats: AssemblyStatsType;
@@ -12,6 +14,7 @@ interface AssemblyStatsProps {
 const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   const isMobile = useIsMobile();
 
+  // Memoize the data transformation to prevent unnecessary recalculations
   const data = useMemo(() => [
     {
       name: 'Home',
@@ -32,6 +35,15 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
       'Explica': stats.byGender.woman.explica,
     },
     {
+      name: 'Trans',
+      'Intervenció curta': stats.byGender.trans.intervencio,
+      'Dinamitza': stats.byGender.trans.dinamitza,
+      'Interrupció': stats.byGender.trans.interrupcio,
+      'Intervenció llarga': stats.byGender.trans.llarga,
+      'Ofensiva': stats.byGender.trans.ofensiva,
+      'Explica': stats.byGender.trans.explica,
+    },
+    {
       name: 'No Binari',
       'Intervenció curta': stats.byGender['non-binary'].intervencio,
       'Dinamitza': stats.byGender['non-binary'].dinamitza,
@@ -44,42 +56,29 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
 
   return (
     <Card className="p-4">
-      <h3 className="text-base md:text-lg font-semibold mb-2">Estadístiques per Gènere i Tipus</h3>
-      <div className="w-full h-[250px] md:h-[350px] lg:h-[400px]">
+      <h3 className="text-base md:text-lg font-semibold mb-4">Estadístiques per Gènere i Tipus</h3>
+      <div className="h-[300px] md:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={data} 
-            margin={{ 
-              top: 20, 
-              right: isMobile ? 10 : 30, 
-              left: isMobile ? 30 : 40, 
-              bottom: isMobile ? 60 : 40 
-            }}
+            margin={{ top: 20, right: 30, left: 20, bottom: isMobile ? 100 : 80 }}
           >
             <XAxis 
               dataKey="name" 
               angle={isMobile ? -45 : 0} 
               textAnchor={isMobile ? "end" : "middle"} 
-              height={isMobile ? 60 : 30} 
+              height={60} 
               interval={0}
               tick={{ fontSize: isMobile ? 10 : 12 }}
             />
-            <YAxis 
-              width={isMobile ? 30 : 40}
-              tick={{ fontSize: isMobile ? 10 : 12 }}
-            />
-            <Tooltip 
-              contentStyle={{ 
-                fontSize: isMobile ? '10px' : '12px',
-                padding: isMobile ? '8px' : '10px'
-              }}
-            />
+            <YAxis />
+            <Tooltip />
             <Legend 
               verticalAlign="bottom" 
-              height={isMobile ? 48 : 36}
+              height={36}
               wrapperStyle={{ 
-                fontSize: isMobile ? '10px' : '12px',
-                paddingTop: isMobile ? '8px' : '16px'
+                paddingTop: '20px',
+                fontSize: isMobile ? '10px' : '12px'
               }}
             />
             <Bar dataKey="Dinamitza" stackId="a" fill="#82ca9d" />
