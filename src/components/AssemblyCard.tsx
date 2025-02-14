@@ -34,11 +34,8 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
   return (
     <>
       <Card
-        className="p-3 md:p-4 hover:bg-gray-50 transition-all cursor-pointer animate-fade-in"
+        className="p-3 md:p-4 hover:bg-purple-50 hover:shadow-md hover:scale-[1.01] transition-all duration-200 cursor-pointer animate-fade-in group"
         onClick={onClick}
-        style={{
-          background: 'linear-gradient(to right, #ffffff 0%, #f8f9fa 100%)'
-        }}
       >
         <div className="space-y-2">
           <div className="text-xs md:text-sm text-muted-foreground">
@@ -58,10 +55,20 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
               <span>Registrat per: {assembly.register.name}</span>
             </div>
             <div className="flex gap-2 justify-end">
-              <Button variant="ghost" size="sm" onClick={handleEdit} className="h-6 w-6 md:h-8 md:w-8 p-0 hover:bg-purple-50">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleEdit} 
+                className="h-6 w-6 md:h-8 md:w-8 p-0 hover:bg-purple-100 hover:text-purple-700 opacity-70 group-hover:opacity-100 transition-opacity"
+              >
                 <Pencil className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
-              <Button variant="ghost" size="sm" onClick={handleDelete} className="h-6 w-6 md:h-8 md:w-8 p-0 hover:bg-red-50">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleDelete} 
+                className="h-6 w-6 md:h-8 md:w-8 p-0 hover:bg-red-100 hover:text-red-700 opacity-70 group-hover:opacity-100 transition-opacity"
+              >
                 <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
             </div>
