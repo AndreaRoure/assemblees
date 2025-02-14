@@ -27,24 +27,26 @@ const descriptions = {
 
 const CustomLegend = ({ payload }: any) => {
   return (
-    <div className="flex flex-wrap justify-center gap-4 pt-4">
-      {payload.map((entry: any, index: number) => (
-        <div key={`item-${index}`} className="flex items-center gap-2">
-          <div className="w-3 h-3" style={{ backgroundColor: entry.color }} />
-          <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
+      <div className="flex flex-wrap justify-center gap-4 pt-4">
+        {payload.map((entry: any, index: number) => (
+          <div key={`item-${index}`} className="flex items-center gap-2">
+            <div className="w-3 h-3" style={{ backgroundColor: entry.color }} />
             <UITooltip>
-              <TooltipTrigger className="flex items-center gap-1">
-                <span className="text-sm">{entry.value}</span>
-                <Info className="h-4 w-4 text-gray-500" />
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-1 cursor-help">
+                  <span className="text-sm">{entry.value}</span>
+                  <Info className="h-4 w-4 text-gray-500" />
+                </div>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent side="top" className="bg-white p-2 z-50 shadow-lg border">
                 <p className="text-sm">{descriptions[entry.value]}</p>
               </TooltipContent>
             </UITooltip>
-          </TooltipProvider>
-        </div>
-      ))}
-    </div>
+          </div>
+        ))}
+      </div>
+    </TooltipProvider>
   );
 };
 
