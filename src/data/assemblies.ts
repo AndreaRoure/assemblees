@@ -1,3 +1,4 @@
+
 import { Assembly, Intervention, AssemblyStats } from '@/types';
 import { supabase } from '@/lib/supabase';
 
@@ -32,48 +33,7 @@ export const initializeData = async () => {
   if (interventionData.data) interventions = interventionData.data;
 };
 
-// Keep existing functions but update them to use Supabase
-export const addAssembly = async (assembly: Omit<Assembly, 'id'>) => {
-  const { data, error } = await supabase
-    .from('assemblies')
-    .insert([assembly])
-    .select()
-    .single();
-  
-  if (error) throw error;
-  if (data) assemblies.unshift(data);
-  return data;
-};
-
-export const deleteAssembly = async (id: string) => {
-  await supabase.from('interventions').delete().eq('assemblyId', id);
-  await supabase.from('assemblies').delete().eq('id', id);
-  
-  const index = assemblies.findIndex(a => a.id === id);
-  if (index !== -1) {
-    assemblies.splice(index, 1);
-    interventions = interventions.filter(i => i.assemblyId !== id);
-  }
-};
-
-export const updateAssembly = async (id: string, updates: Partial<Omit<Assembly, 'id'>>) => {
-  const { data, error } = await supabase
-    .from('assemblies')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single();
-  
-  if (error) throw error;
-  if (data) {
-    const index = assemblies.findIndex(a => a.id === id);
-    if (index !== -1) {
-      assemblies[index] = data;
-    }
-  }
-};
-
-export const addIntervention = async (intervention: Omit<Intervention, 'id' | 'timestamp'>) => {
+export const addIntervention = async (intervention: { assembly_id: string, type: string, gender: string }) => {
   const { data, error } = await supabase
     .from('interventions')
     .insert([{ ...intervention, timestamp: Date.now() }])
@@ -81,14 +41,13 @@ export const addIntervention = async (intervention: Omit<Intervention, 'id' | 't
     .single();
   
   if (error) throw error;
-  if (data) interventions.push(data);
   return data;
 };
 
 export const removeIntervention = async (assemblyId: string, type: string, gender: string) => {
   const intervention = [...interventions]
     .reverse()
-    .find(i => i.assemblyId === assemblyId && i.type === type && i.gender === gender);
+    .find(i => i.assembly_id === assemblyId && i.type === type && i.gender === gender);
   
   if (intervention) {
     await supabase.from('interventions').delete().eq('id', intervention.id);
@@ -98,7 +57,7 @@ export const removeIntervention = async (assemblyId: string, type: string, gende
 };
 
 export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
-  const assemblyInterventions = interventions.filter(i => i.assemblyId === assemblyId);
+  const assemblyInterventions = interventions.filter(i => i.assembly_id === assemblyId);
   
   const createGenderStats = (gender: string) => {
     const genderInterventions = assemblyInterventions.filter(i => i.gender === gender);

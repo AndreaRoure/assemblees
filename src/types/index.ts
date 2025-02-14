@@ -12,7 +12,7 @@ export interface Assembly {
 
 export interface Intervention {
   id: string;
-  assemblyId: string;
+  assembly_id: string; // Changed from assemblyId to assembly_id
   gender: 'man' | 'woman' | 'trans' | 'non-binary';
   type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica';
   timestamp: number;

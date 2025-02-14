@@ -51,7 +51,11 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
   });
 
   const handleIncrement = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
-    addIntervention({ assemblyId, gender, type });
+    addIntervention({
+      assembly_id: assemblyId,
+      gender,
+      type
+    });
     setCounts(prev => ({
       ...prev,
       [gender]: {
