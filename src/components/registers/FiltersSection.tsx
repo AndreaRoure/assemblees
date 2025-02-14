@@ -28,9 +28,9 @@ const FiltersSection = ({
   onDownload
 }: FiltersSectionProps) => {
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2">
-        <div className="w-full">
+    <div className="flex flex-col space-y-4 p-2 w-full max-w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex flex-col min-[480px]:flex-row gap-3">
+        <div className="flex-1 min-w-[200px]">
           <Select
             value={selectedYear}
             onValueChange={onYearChange}
@@ -39,9 +39,10 @@ const FiltersSection = ({
               <SelectValue placeholder="Selecciona l'any" />
             </SelectTrigger>
             <SelectContent 
-              className="w-[var(--radix-select-trigger-width)] min-w-[200px] z-50"
+              className="w-[var(--radix-select-trigger-width)] min-w-[200px] z-[100]"
               position="popper"
               sideOffset={4}
+              align="start"
             >
               <SelectItem value="all">Tots els anys</SelectItem>
               {years.map(year => (
@@ -53,7 +54,7 @@ const FiltersSection = ({
           </Select>
         </div>
 
-        <div className="w-full">
+        <div className="flex-1 min-w-[200px]">
           <Select
             value={selectedGender}
             onValueChange={onGenderChange}
@@ -62,9 +63,10 @@ const FiltersSection = ({
               <SelectValue placeholder="Selecciona el gènere" />
             </SelectTrigger>
             <SelectContent 
-              className="w-[var(--radix-select-trigger-width)] min-w-[200px] z-50"
+              className="w-[var(--radix-select-trigger-width)] min-w-[200px] z-[100]"
               position="popper"
               sideOffset={4}
+              align="start"
             >
               <SelectItem value="all">Tots els gèneres</SelectItem>
               <SelectItem value="man">Homes</SelectItem>
