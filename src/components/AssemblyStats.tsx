@@ -1,12 +1,16 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { AssemblyStats as AssemblyStatsType } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Tooltip as UITooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface AssemblyStatsProps {
   stats: AssemblyStatsType;
@@ -21,23 +25,28 @@ const descriptions = {
   Ofensiva: "Comentario agresivo.",
 };
 
-const InfoPopup = ({ term }: { term: string }) => {
-  const [open, setOpen] = useState(false);
-
+const CustomLegend = ({ payload }: any) => {
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-500 hover:text-gray-700">
-          <Info className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="p-4">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">{term}</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-gray-600">{descriptions[term]}</p>
-      </DialogContent>
-    </Dialog>
+    <TooltipProvider delayDuration={0}>
+      <div className="flex flex-wrap justify-center gap-4 pt-4">
+        {payload.map((entry: any, index: number) => (
+          <div key={`item-${index}`} className="flex items-center gap-2">
+            <div className="w-3 h-3" style={{ backgroundColor: entry.color }} />
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-1 cursor-help">
+                  <span className="text-sm">{entry.value}</span>
+                  <Info className="h-4 w-4 text-gray-500" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="bg-white p-2 z-50 shadow-lg border">
+                <p className="text-sm">{descriptions[entry.value]}</p>
+              </TooltipContent>
+            </UITooltip>
+          </div>
+        ))}
+      </div>
+    </TooltipProvider>
   );
 };
 
@@ -73,20 +82,6 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
       'Explica': stats.byGender['non-binary'].explica,
     },
   ], [stats]);
-
-  const CustomLegend = ({ payload }: any) => {
-    return (
-      <div className="flex flex-wrap justify-center gap-4 pt-4">
-        {payload.map((entry: any, index: number) => (
-          <div key={`item-${index}`} className="flex items-center gap-2">
-            <div className="w-3 h-3" style={{ backgroundColor: entry.color }} />
-            <span className="text-sm">{entry.value}</span>
-            <InfoPopup term={entry.value} />
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <Card className="p-6 bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-all duration-200 animate-fade-in">
