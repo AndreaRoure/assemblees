@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
 import AssemblyCard from '@/components/AssemblyCard';
 import QuickIntervention from '@/components/QuickIntervention';
@@ -10,17 +10,55 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
 import Logo from '@/components/Logo';
-import { fetchAssemblies } from '@/lib/supabase';
+import { fetchAssemblies, fetchAssemblyInterventions } from '@/lib/supabase';
 import { getAssemblyStats } from '@/data/assemblies';
+import { supabase } from '@/lib/supabase';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
 
-  const { data: assemblies = [], refetch } = useQuery({
+  // Subscribe to real-time changes
+  React.useEffect(() => {
+    const assemblyChannel = supabase
+      .channel('assemblies-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'assemblies' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['assemblies'] });
+      })
+      .subscribe();
+
+    const interventionsChannel = supabase
+      .channel('interventions-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'interventions' }, () => {
+        if (selectedAssembly) {
+          queryClient.invalidateQueries({ queryKey: ['interventions', selectedAssembly] });
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(assemblyChannel);
+      supabase.removeChannel(interventionsChannel);
+    };
+  }, [queryClient, selectedAssembly]);
+
+  const { data: assemblies = [], refetch: refetchAssemblies } = useQuery({
     queryKey: ['assemblies'],
     queryFn: fetchAssemblies
   });
+
+  const { data: interventions = [] } = useQuery({
+    queryKey: ['interventions', selectedAssembly],
+    queryFn: () => selectedAssembly ? fetchAssemblyInterventions(selectedAssembly) : Promise.resolve([]),
+    enabled: !!selectedAssembly
+  });
+
+  const handleInterventionChange = () => {
+    if (selectedAssembly) {
+      queryClient.invalidateQueries({ queryKey: ['interventions', selectedAssembly] });
+    }
+  };
 
   const stats = selectedAssembly ? getAssemblyStats(selectedAssembly) : null;
 
@@ -32,7 +70,7 @@ const Index = () => {
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
             Taula d&apos;Observació de Dinàmiques en Assemblees
           </h1>
-          <NewAssemblyDialog onAssemblyCreated={refetch} />
+          <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
         </div>
 
         {selectedAssembly ? (
@@ -46,7 +84,7 @@ const Index = () => {
             
             <QuickIntervention
               assemblyId={selectedAssembly}
-              onInterventionAdded={refetch}
+              onInterventionAdded={handleInterventionChange}
             />
             
             {stats && <AssemblyStats stats={stats} />}
@@ -66,7 +104,7 @@ const Index = () => {
                       key={assembly.id}
                       assembly={assembly}
                       onClick={() => setSelectedAssembly(assembly.id)}
-                      onEdited={refetch}
+                      onEdited={refetchAssemblies}
                     />
                   ))}
                   {assemblies.length === 0 && (

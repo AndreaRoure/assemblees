@@ -2,38 +2,6 @@
 import { Assembly, Intervention, AssemblyStats } from '@/types';
 import { supabase } from '@/lib/supabase';
 
-export let assemblies: Assembly[] = [];
-export let interventions: Intervention[] = [];
-
-// Subscribe to real-time changes with better error handling and data refresh
-supabase
-  .channel('assemblies')
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'assemblies' }, async () => {
-    await refreshData();
-  })
-  .subscribe();
-
-supabase
-  .channel('interventions')
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'interventions' }, async () => {
-    await refreshData();
-  })
-  .subscribe();
-
-// Centralized data refresh function
-const refreshData = async () => {
-  const [assemblyData, interventionData] = await Promise.all([
-    supabase.from('assemblies').select('*').order('date', { ascending: false }),
-    supabase.from('interventions').select('*').order('timestamp', { ascending: true })
-  ]);
-
-  if (assemblyData.data) assemblies = assemblyData.data;
-  if (interventionData.data) interventions = interventionData.data;
-};
-
-// Initialize data when the module loads
-export const initializeData = refreshData;
-
 // Initialize empty stats object
 const createEmptyGenderStats = () => ({
   intervencio: 0,
@@ -45,9 +13,6 @@ const createEmptyGenderStats = () => ({
 });
 
 export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
-  // Reset and recompute stats from scratch each time
-  const assemblyInterventions = interventions.filter(i => i.assembly_id === assemblyId);
-  
   const genderStats = {
     man: createEmptyGenderStats(),
     woman: createEmptyGenderStats(),
@@ -65,6 +30,7 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
   };
 
   // Fresh aggregation of interventions
+  const assemblyInterventions = interventions.filter(i => i.assembly_id === assemblyId);
   assemblyInterventions.forEach(intervention => {
     const { gender, type } = intervention;
     if (genderStats[gender] && type in genderStats[gender]) {
@@ -79,6 +45,3 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
     byType: typeStats,
   };
 };
-
-// Initialize data
-initializeData();
