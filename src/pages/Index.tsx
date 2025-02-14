@@ -33,6 +33,7 @@ const Index = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'interventions' }, () => {
         if (selectedAssembly) {
           queryClient.invalidateQueries({ queryKey: ['interventions', selectedAssembly] });
+          queryClient.invalidateQueries({ queryKey: ['assemblyStats', selectedAssembly] });
         }
       })
       .subscribe();
@@ -54,13 +55,18 @@ const Index = () => {
     enabled: !!selectedAssembly
   });
 
+  const { data: stats } = useQuery({
+    queryKey: ['assemblyStats', selectedAssembly],
+    queryFn: () => selectedAssembly ? getAssemblyStats(selectedAssembly) : Promise.resolve(null),
+    enabled: !!selectedAssembly
+  });
+
   const handleInterventionChange = () => {
     if (selectedAssembly) {
       queryClient.invalidateQueries({ queryKey: ['interventions', selectedAssembly] });
+      queryClient.invalidateQueries({ queryKey: ['assemblyStats', selectedAssembly] });
     }
   };
-
-  const stats = selectedAssembly ? getAssemblyStats(selectedAssembly) : null;
 
   return (
     <div className="container p-4 md:py-6 mx-auto">
