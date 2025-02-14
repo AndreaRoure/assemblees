@@ -34,30 +34,30 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
   return (
     <>
       <Card
-        className="p-3 md:p-4 hover:bg-gray-50 transition-all cursor-pointer"
+        className="p-3 hover:bg-gray-50 transition-all cursor-pointer md:p-4"
         onClick={onClick}
       >
         <div className="space-y-2">
-          <div className="text-xs md:text-sm text-muted-foreground">
+          <div className="text-xs text-muted-foreground md:text-sm">
             {format(new Date(assembly.date), 'PPP', { locale: ca })}
           </div>
-          <h3 className="text-base md:text-lg font-semibold">{assembly.name}</h3>
+          <h3 className="text-base font-semibold md:text-lg">{assembly.name}</h3>
           {assembly.description && (
-            <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
+            <p className="text-xs text-muted-foreground line-clamp-2 md:text-sm">
               {assembly.description}
             </p>
           )}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0 pt-2 border-t">
-            <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+          <div className="flex flex-col gap-2 pt-2 border-t md:flex-row md:items-center md:justify-between md:gap-0">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground md:text-sm">
               <UserCircle2 className="h-4 w-4" />
               <span>Registrat per: {assembly.register.name}</span>
             </div>
-            <div className="flex gap-1 md:gap-2 justify-end">
+            <div className="flex gap-1 justify-end md:gap-2">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={handleEdit}
-                className="h-7 w-7 md:h-8 md:w-8 p-0"
+                className="h-7 w-7 p-0 md:h-8 md:w-8"
               >
                 <Pencil className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
@@ -65,7 +65,7 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
                 variant="ghost" 
                 size="sm" 
                 onClick={handleDelete}
-                className="h-7 w-7 md:h-8 md:w-8 p-0"
+                className="h-7 w-7 p-0 md:h-8 md:w-8"
               >
                 <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
