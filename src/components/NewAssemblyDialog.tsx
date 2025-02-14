@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Calendar, MapPin, Hash } from 'lucide-react';
+import { Plus, Calendar } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { addAssembly } from '@/data/assemblies';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -24,7 +25,7 @@ interface NewAssemblyDialogProps {
   onAssemblyCreated: () => void;
 }
 
-type AssemblyField = 'date' | 'location' | 'number';
+type AssemblyField = 'date';
 
 const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   const [open, setOpen] = React.useState(false);
@@ -71,12 +72,12 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full" size="lg">
+        <Button className="w-full md:w-auto" size="lg">
           <Plus className="mr-2 h-4 w-4" />
           Nova Assemblea
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px] md:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
             {step === 'register' ? 'Informació del Registrador/a' : 'Crear Nova Assemblea'}
@@ -90,6 +91,7 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
               <Input
                 {...registerForm.register('name', { required: true })}
                 placeholder="El teu nom"
+                className="w-full"
               />
             </div>
 
@@ -135,22 +137,6 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
                   <Calendar className="mr-2 h-5 w-5" />
                   Data
                 </Button>
-                <Button
-                  variant="outline"
-                  className="w-full h-16 text-lg"
-                  onClick={() => setSelectedField('location')}
-                >
-                  <MapPin className="mr-2 h-5 w-5" />
-                  Ubicació
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full h-16 text-lg"
-                  onClick={() => setSelectedField('number')}
-                >
-                  <Hash className="mr-2 h-5 w-5" />
-                  Nombre Assemblea
-                </Button>
               </div>
             ) : (
               <form onSubmit={assemblyForm.handleSubmit(onAssemblySubmit)} className="space-y-4">
@@ -159,6 +145,7 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
                   <Input
                     {...assemblyForm.register('name', { required: true })}
                     placeholder="Nom de l'assemblea"
+                    className="w-full"
                   />
                 </div>
                 <div className="space-y-2">
@@ -166,6 +153,7 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
                   <Input
                     {...assemblyForm.register('date', { required: true })}
                     type="date"
+                    className="w-full"
                   />
                 </div>
                 <div className="space-y-2">
@@ -173,9 +161,10 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
                   <Textarea
                     {...assemblyForm.register('description')}
                     placeholder="Descripció breu..."
+                    className="w-full"
                   />
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     type="button"
                     variant="outline"
