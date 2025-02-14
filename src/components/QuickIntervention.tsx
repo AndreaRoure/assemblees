@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus } from 'lucide-react';
 import { addIntervention, removeIntervention } from '@/lib/supabase';
+import { interventions } from '@/data/assemblies';
 
 interface QuickInterventionProps {
   assemblyId: string;
@@ -49,6 +50,27 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     trans: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
     'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
   });
+
+  // Load existing interventions when component mounts or assemblyId changes
+  useEffect(() => {
+    const assemblyInterventions = interventions.filter(i => i.assembly_id === assemblyId);
+    const newCounts = {
+      man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
+      woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
+      trans: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
+      'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
+    };
+
+    // Count existing interventions
+    assemblyInterventions.forEach(intervention => {
+      const { gender, type } = intervention;
+      if (newCounts[gender] && type in newCounts[gender]) {
+        newCounts[gender][type]++;
+      }
+    });
+
+    setCounts(newCounts);
+  }, [assemblyId]);
 
   const handleIncrement = async (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     await addIntervention({
