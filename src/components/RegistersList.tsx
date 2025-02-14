@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
@@ -120,8 +119,8 @@ const RegistersList = () => {
 
   return (
     <div className="space-y-6 w-full max-w-full">
-      <div className="grid grid-cols-1 gap-3">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Select
             value={selectedYear}
             onValueChange={setSelectedYear}
@@ -155,14 +154,16 @@ const RegistersList = () => {
           </Select>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={downloadCSV}
-          className="h-11 md:h-10 text-sm w-full md:w-auto md:self-end"
-        >
-          <Download className="h-4 w-4 mr-2 flex-shrink-0" />
-          <span className="whitespace-nowrap">Descarregar CSV</span>
-        </Button>
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            onClick={downloadCSV}
+            className="h-11 md:h-10 text-sm w-full sm:w-auto"
+          >
+            <Download className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="whitespace-nowrap">Descarregar CSV</span>
+          </Button>
+        </div>
       </div>
 
       <div className="w-full overflow-hidden">
