@@ -4,10 +4,49 @@ import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { AssemblyStats as AssemblyStatsType } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Info } from "lucide-react";
+import {
+  Tooltip as UITooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface AssemblyStatsProps {
   stats: AssemblyStatsType;
 }
+
+const descriptions = {
+  Dinamitza: "Fomenta la conversación.",
+  Explica: "Añade información extra.",
+  Interrupció: "Corta la palabra a otra persona.",
+  "Intervenció curta": "Intervención breve.",
+  "Intervenció llarga": "Intervención extendida.",
+  Ofensiva: "Comentario agresivo.",
+};
+
+const CustomLegend = ({ payload }: any) => {
+  return (
+    <div className="flex flex-wrap justify-center gap-4 pt-4">
+      {payload.map((entry: any, index: number) => (
+        <div key={`item-${index}`} className="flex items-center gap-2">
+          <div className="w-3 h-3" style={{ backgroundColor: entry.color }} />
+          <TooltipProvider>
+            <UITooltip>
+              <TooltipTrigger className="flex items-center gap-1">
+                <span className="text-sm">{entry.value}</span>
+                <Info className="h-4 w-4 text-gray-500" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-sm">{descriptions[entry.value]}</p>
+              </TooltipContent>
+            </UITooltip>
+          </TooltipProvider>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   const isMobile = useIsMobile();
@@ -74,20 +113,13 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
                 boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
               }}
             />
-            <Legend 
-              verticalAlign="bottom" 
-              height={36}
-              wrapperStyle={{ 
-                paddingTop: '20px',
-                fontSize: isMobile ? '10px' : '12px'
-              }}
-            />
-            <Bar dataKey="Dinamitza" stackId="a" fill="#FF69B4" /> {/* Pink */}
-            <Bar dataKey="Explica" stackId="a" fill="#9B59D0" /> {/* Purple */}
-            <Bar dataKey="Interrupció" stackId="a" fill="#FF8B3D" /> {/* Orange */}
-            <Bar dataKey="Intervenció curta" stackId="a" fill="#4EA8DE" /> {/* Blue */}
-            <Bar dataKey="Intervenció llarga" stackId="a" fill="#50C878" /> {/* Green */}
-            <Bar dataKey="Ofensiva" stackId="a" fill="#FFD700" /> {/* Yellow */}
+            <Legend content={CustomLegend} />
+            <Bar dataKey="Dinamitza" stackId="a" fill="#FF69B4" />
+            <Bar dataKey="Explica" stackId="a" fill="#9B59D0" />
+            <Bar dataKey="Interrupció" stackId="a" fill="#FF8B3D" />
+            <Bar dataKey="Intervenció curta" stackId="a" fill="#4EA8DE" />
+            <Bar dataKey="Intervenció llarga" stackId="a" fill="#50C878" />
+            <Bar dataKey="Ofensiva" stackId="a" fill="#FFD700" />
           </BarChart>
         </ResponsiveContainer>
       </div>
