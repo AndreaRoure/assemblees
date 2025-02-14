@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -18,26 +17,23 @@ const mockAttendanceData = [
   { 
     name: "Assemblea General",
     date: "2024-03-15",
-    totalAttendees: 25,
-    totalAbsent: 5,
     type: "in-person",
-    percentage: "83.3%"
+    inPersonAttendees: 25,
+    onlineAttendees: 0
   },
   { 
     name: "Reunió Extraordinària",
     date: "2024-03-10",
-    totalAttendees: 18,
-    totalAbsent: 12,
     type: "online",
-    percentage: "60%"
+    inPersonAttendees: 0,
+    onlineAttendees: 18
   },
   { 
     name: "Assemblea Mensual",
     date: "2024-02-28",
-    totalAttendees: 30,
-    totalAbsent: 0,
-    type: "in-person",
-    percentage: "100%"
+    type: "hybrid",
+    inPersonAttendees: 20,
+    onlineAttendees: 10
   }
 ];
 
@@ -114,14 +110,17 @@ const AttendanceList = () => {
 
   const downloadCSV = (type: 'assemblies' | 'persons') => {
     if (type === 'assemblies') {
-      const headers = ['Nom', 'Data', 'Tipus', 'Assistents', 'Absents', 'Percentatge'];
+      const headers = ['Nom', 'Data', 'Tipus', 'Assistents Presencials', 'Assistents Online'];
       const rows = filteredData.map(record => [
         record.name,
         record.date,
-        record.type === 'online' ? 'En línia' : 'Presencial',
-        record.totalAttendees,
-        record.totalAbsent,
-        record.percentage
+        record.type === 'online' 
+          ? 'En línia' 
+          : record.type === 'hybrid'
+            ? 'Híbrid'
+            : 'Presencial',
+        record.inPersonAttendees,
+        record.onlineAttendees
       ]);
       
       const csvContent = [
@@ -195,6 +194,7 @@ const AttendanceList = () => {
               <SelectItem value="all">Tots els tipus</SelectItem>
               <SelectItem value="in-person">Presencial</SelectItem>
               <SelectItem value="online">En línia</SelectItem>
+              <SelectItem value="hybrid">Híbrid</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -225,9 +225,8 @@ const AttendanceList = () => {
                     <TableHead>Nom</TableHead>
                     <TableHead>Data</TableHead>
                     <TableHead>Tipus</TableHead>
-                    <TableHead className="text-right">Assistents</TableHead>
-                    <TableHead className="text-right">Absents</TableHead>
-                    <TableHead className="text-right">Percentatge</TableHead>
+                    <TableHead className="text-right">Assistents Presencials</TableHead>
+                    <TableHead className="text-right">Assistents Online</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -235,10 +234,15 @@ const AttendanceList = () => {
                     <TableRow key={index}>
                       <TableCell className="font-medium">{record.name}</TableCell>
                       <TableCell>{new Date(record.date).toLocaleDateString('ca-ES')}</TableCell>
-                      <TableCell>{record.type === 'online' ? 'En línia' : 'Presencial'}</TableCell>
-                      <TableCell className="text-right">{record.totalAttendees}</TableCell>
-                      <TableCell className="text-right">{record.totalAbsent}</TableCell>
-                      <TableCell className="text-right">{record.percentage}</TableCell>
+                      <TableCell>
+                        {record.type === 'online' 
+                          ? 'En línia' 
+                          : record.type === 'hybrid'
+                            ? 'Híbrid'
+                            : 'Presencial'}
+                      </TableCell>
+                      <TableCell className="text-right">{record.inPersonAttendees}</TableCell>
+                      <TableCell className="text-right">{record.onlineAttendees}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
