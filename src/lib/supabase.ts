@@ -39,13 +39,15 @@ export const addAssembly = async (assembly: Omit<Assembly, 'id'>) => {
 };
 
 export const deleteAssembly = async (id: string) => {
+  // First delete related interventions
   const { error: interventionsError } = await supabase
     .from('interventions')
     .delete()
-    .eq('assemblyId', id);
+    .eq('assembly_id', id);
 
   if (interventionsError) throw interventionsError;
 
+  // Then delete the assembly
   const { error } = await supabase
     .from('assemblies')
     .delete()
@@ -66,20 +68,20 @@ export const addIntervention = async (intervention: Omit<Intervention, 'id' | 't
 };
 
 export const removeIntervention = async (assemblyId: string, type: string, gender: string) => {
-  const { data: interventions } = await supabase
+  const { data } = await supabase
     .from('interventions')
     .select('*')
-    .eq('assemblyId', assemblyId)
+    .eq('assembly_id', assemblyId)
     .eq('type', type)
     .eq('gender', gender)
     .order('timestamp', { ascending: false })
     .limit(1);
 
-  if (interventions && interventions.length > 0) {
+  if (data && data.length > 0) {
     const { error } = await supabase
       .from('interventions')
       .delete()
-      .eq('id', interventions[0].id);
+      .eq('id', data[0].id);
 
     if (error) throw error;
   }
