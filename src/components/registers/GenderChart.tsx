@@ -34,25 +34,25 @@ const descriptions = {
 const CustomLegend = ({ payload }: any) => {
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="flex flex-wrap justify-center gap-4 pt-4">
+      <div className="flex flex-wrap justify-center gap-2 pt-2 px-2">
         {payload.map((entry: any, index: number) => (
-          <div key={`item-${index}`} className="flex items-center gap-2">
+          <div key={`item-${index}`} className="flex items-center gap-1">
             <div 
-              className="w-3 h-3 rounded" 
+              className="w-2.5 h-2.5 md:w-3 md:h-3 rounded" 
               style={{ backgroundColor: entry.color }} 
             />
             <UITooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-1 cursor-help">
-                  <span className="text-sm font-medium">{entry.value}</span>
-                  <Info className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs md:text-sm font-medium">{entry.value}</span>
+                  <Info className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                 </div>
               </TooltipTrigger>
               <TooltipContent 
                 side="top" 
                 className="bg-white p-2 z-50 shadow-lg border"
               >
-                <p className="text-sm">{descriptions[entry.value]}</p>
+                <p className="text-xs md:text-sm">{descriptions[entry.value]}</p>
               </TooltipContent>
             </UITooltip>
           </div>
@@ -66,21 +66,24 @@ const GenderChart = ({ data }: GenderChartProps) => {
   const isMobile = useIsMobile();
   
   return (
-    <Card className="p-6 bg-gradient-to-br from-white to-gray-50">
-      <div className="text-base md:text-lg font-semibold mb-6 text-foreground">
+    <Card className="p-3 md:p-6 bg-gradient-to-br from-white to-gray-50">
+      <div className="text-sm md:text-lg font-semibold mb-4 md:mb-6 text-foreground">
         Intervencions per Gènere
       </div>
-      <div className="h-[300px] md:h-[400px]">
+      <div className="h-[400px] md:h-[400px] -mx-2 md:mx-0">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={data}
-            margin={{ top: 20, right: 30, left: 20, bottom: isMobile ? 100 : 80 }}
+            margin={isMobile ? 
+              { top: 20, right: 10, left: 0, bottom: 120 } : 
+              { top: 20, right: 30, left: 20, bottom: 80 }
+            }
           >
             <XAxis 
               dataKey="gender" 
-              angle={isMobile ? -45 : 0}
-              textAnchor={isMobile ? "end" : "middle"}
-              height={60}
+              angle={-45}
+              textAnchor="end"
+              height={80}
               interval={0}
               tick={{ fontSize: isMobile ? 10 : 12, fill: '#4B5563' }}
               tickLine={{ stroke: '#9CA3AF' }}
@@ -88,13 +91,15 @@ const GenderChart = ({ data }: GenderChartProps) => {
             <YAxis 
               tick={{ fontSize: isMobile ? 10 : 12, fill: '#4B5563' }}
               tickLine={{ stroke: '#9CA3AF' }}
+              width={isMobile ? 30 : 45}
             />
             <Tooltip 
               contentStyle={{ 
                 backgroundColor: 'white',
                 borderRadius: '8px',
                 border: '1px solid #E5E7EB',
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                fontSize: isMobile ? '12px' : '14px'
               }}
               cursor={{ fill: 'rgba(243, 244, 246, 0.4)' }}
             />
