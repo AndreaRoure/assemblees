@@ -14,7 +14,7 @@ export interface Intervention {
   id: string;
   assemblyId: string;
   gender: 'man' | 'woman' | 'trans' | 'non-binary';
-  type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva';
+  type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica';
   timestamp: number;
 }
 
@@ -32,5 +32,6 @@ export interface AssemblyStats {
     interrupcio: number;
     llarga: number;
     ofensiva: number;
+    explica: number;
   };
 }

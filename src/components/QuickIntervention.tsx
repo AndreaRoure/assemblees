@@ -10,7 +10,7 @@ interface QuickInterventionProps {
 }
 
 const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventionProps) => {
-  const handleIntervention = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva') => {
+  const handleIntervention = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     addIntervention({ assemblyId, gender, type });
     onInterventionAdded();
   };
@@ -56,8 +56,17 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
       <Button
         variant="outline"
         size="sm"
+        onClick={() => handleIntervention(gender, 'explica')}
+        className="w-full"
+      >
+        {icon}
+        📚 Explica
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
         onClick={() => handleIntervention(gender, 'ofensiva')}
-        className="w-full col-span-2"
+        className="w-full"
       >
         {icon}
         ⚠️ Ofensiva
