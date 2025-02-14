@@ -28,13 +28,13 @@ const FiltersSection = ({
   onDownload
 }: FiltersSectionProps) => {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 w-full max-w-full">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Select
           value={selectedYear}
           onValueChange={onYearChange}
         >
-          <SelectTrigger className="h-11 md:h-10 text-sm">
+          <SelectTrigger className="h-11 md:h-10 text-sm max-w-full truncate">
             <SelectValue placeholder="Selecciona l'any" />
           </SelectTrigger>
           <SelectContent>
@@ -51,7 +51,7 @@ const FiltersSection = ({
           value={selectedGender}
           onValueChange={onGenderChange}
         >
-          <SelectTrigger className="h-11 md:h-10 text-sm">
+          <SelectTrigger className="h-11 md:h-10 text-sm max-w-full truncate">
             <SelectValue placeholder="Selecciona el gènere" />
           </SelectTrigger>
           <SelectContent>
@@ -63,7 +63,7 @@ const FiltersSection = ({
         </Select>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end w-full">
         <Button
           variant="outline"
           onClick={onDownload}
