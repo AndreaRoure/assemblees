@@ -33,37 +33,56 @@ export const initializeData = async () => {
   if (interventionData.data) interventions = interventionData.data;
 };
 
+// Initialize empty stats object
+const createEmptyGenderStats = () => ({
+  intervencio: 0,
+  dinamitza: 0,
+  interrupcio: 0,
+  llarga: 0,
+  ofensiva: 0,
+  explica: 0,
+});
+
 export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
+  // Filter interventions for the specific assembly
   const assemblyInterventions = interventions.filter(i => i.assembly_id === assemblyId);
   
-  const createGenderStats = (gender: string) => {
-    const genderInterventions = assemblyInterventions.filter(i => i.gender === gender);
-    return {
-      intervencio: genderInterventions.filter(i => i.type === 'intervencio').length,
-      dinamitza: genderInterventions.filter(i => i.type === 'dinamitza').length,
-      interrupcio: genderInterventions.filter(i => i.type === 'interrupcio').length,
-      llarga: genderInterventions.filter(i => i.type === 'llarga').length,
-      ofensiva: genderInterventions.filter(i => i.type === 'ofensiva').length,
-      explica: genderInterventions.filter(i => i.type === 'explica').length,
-    };
+  // Initialize stats objects
+  const genderStats = {
+    man: createEmptyGenderStats(),
+    woman: createEmptyGenderStats(),
+    trans: createEmptyGenderStats(),
+    'non-binary': createEmptyGenderStats(),
   };
+
+  const typeStats = {
+    intervencio: 0,
+    dinamitza: 0,
+    interrupcio: 0,
+    llarga: 0,
+    ofensiva: 0,
+    explica: 0,
+  };
+
+  // Aggregate interventions
+  assemblyInterventions.forEach(intervention => {
+    const { gender, type } = intervention;
+    
+    // Increment gender-specific count
+    if (genderStats[gender] && typeof genderStats[gender][type] === 'number') {
+      genderStats[gender][type]++;
+    }
+    
+    // Increment total type count
+    if (typeof typeStats[type] === 'number') {
+      typeStats[type]++;
+    }
+  });
 
   return {
     totalInterventions: assemblyInterventions.length,
-    byGender: {
-      man: createGenderStats('man'),
-      woman: createGenderStats('woman'),
-      trans: createGenderStats('trans'),
-      'non-binary': createGenderStats('non-binary'),
-    },
-    byType: {
-      intervencio: assemblyInterventions.filter(i => i.type === 'intervencio').length,
-      dinamitza: assemblyInterventions.filter(i => i.type === 'dinamitza').length,
-      interrupcio: assemblyInterventions.filter(i => i.type === 'interrupcio').length,
-      llarga: assemblyInterventions.filter(i => i.type === 'llarga').length,
-      ofensiva: assemblyInterventions.filter(i => i.type === 'ofensiva').length,
-      explica: assemblyInterventions.filter(i => i.type === 'explica').length,
-    },
+    byGender: genderStats,
+    byType: typeStats,
   };
 };
 

@@ -45,7 +45,7 @@ export type Database = {
           assembly_id: string
           gender: string
           id?: string
-          timestamp: number
+          timestamp?: number
           type: string
         }
         Update: {
