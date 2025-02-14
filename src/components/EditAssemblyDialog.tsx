@@ -27,7 +27,7 @@ interface EditAssemblyDialogProps {
 }
 
 const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: EditAssemblyDialogProps) => {
-  const [selectedGender, setSelectedGender] = React.useState(assembly.register.gender);
+  const [selectedGender, setSelectedGender] = React.useState<'man' | 'woman' | 'trans' | 'non-binary'>(assembly.register.gender);
 
   const form = useForm<EditFormData>({
     defaultValues: {
@@ -80,6 +80,11 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
     }
   }, [open, assembly.register.gender]);
 
+  const handleGenderChange = (value: string) => {
+    // Type assertion here is safe because we know the RadioGroup only allows our specific values
+    setSelectedGender(value as 'man' | 'woman' | 'trans' | 'non-binary');
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] md:max-w-[500px]">
@@ -101,7 +106,7 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
             <Label>Gènere</Label>
             <RadioGroup
               value={selectedGender}
-              onValueChange={setSelectedGender}
+              onValueChange={handleGenderChange}
               className="grid grid-cols-2 gap-4"
             >
               <div className="flex items-center space-x-2">
