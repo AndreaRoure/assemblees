@@ -9,7 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      assemblies: {
+        Row: {
+          date: string
+          description: string | null
+          id: string
+          name: string
+          register: Json
+        }
+        Insert: {
+          date: string
+          description?: string | null
+          id?: string
+          name: string
+          register?: Json
+        }
+        Update: {
+          date?: string
+          description?: string | null
+          id?: string
+          name?: string
+          register?: Json
+        }
+        Relationships: []
+      }
+      interventions: {
+        Row: {
+          assembly_id: string
+          gender: string
+          id: string
+          timestamp: number
+          type: string
+        }
+        Insert: {
+          assembly_id: string
+          gender: string
+          id?: string
+          timestamp: number
+          type: string
+        }
+        Update: {
+          assembly_id?: string
+          gender?: string
+          id?: string
+          timestamp?: number
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_assembly"
+            columns: ["assembly_id"]
+            isOneToOne: false
+            referencedRelation: "assemblies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interventions_assembly_id_fkey"
+            columns: ["assembly_id"]
+            isOneToOne: false
+            referencedRelation: "assemblies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
