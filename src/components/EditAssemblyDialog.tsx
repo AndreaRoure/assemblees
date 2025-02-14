@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Assembly } from '@/types';
 import { supabase } from '@/lib/supabase';
-import { Wand2 } from 'lucide-react';
 
 interface EditFormData {
   name: string;
@@ -29,7 +28,6 @@ interface EditAssemblyDialogProps {
 
 const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: EditAssemblyDialogProps) => {
   const [selectedGender, setSelectedGender] = React.useState<'man' | 'woman' | 'trans' | 'non-binary'>(assembly.register.gender);
-  const [isGeneratingDescription, setIsGeneratingDescription] = React.useState(false);
 
   const form = useForm<EditFormData>({
     defaultValues: {
@@ -75,6 +73,7 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
     }
   };
 
+  // Reset selected gender when dialog opens
   React.useEffect(() => {
     if (open) {
       setSelectedGender(assembly.register.gender);
@@ -82,31 +81,8 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
   }, [open, assembly.register.gender]);
 
   const handleGenderChange = (value: string) => {
+    // Type assertion here is safe because we know the RadioGroup only allows our specific values
     setSelectedGender(value as 'man' | 'woman' | 'trans' | 'non-binary');
-  };
-
-  const generateDescription = async () => {
-    try {
-      setIsGeneratingDescription(true);
-      const { data, error } = await supabase.functions.invoke('generate-description', {
-        body: {
-          assemblyName: form.getValues('assemblyName'),
-          currentDescription: form.getValues('description'),
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.suggestion) {
-        form.setValue('description', data.suggestion);
-        toast.success("Descripció generada correctament");
-      }
-    } catch (error) {
-      console.error('Error generating description:', error);
-      toast.error("Error generant la descripció");
-    } finally {
-      setIsGeneratingDescription(false);
-    }
   };
 
   return (
@@ -171,20 +147,7 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Descripció (opcional)</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={generateDescription}
-                disabled={isGeneratingDescription}
-                className="flex items-center gap-2"
-              >
-                <Wand2 className="h-4 w-4" />
-                {isGeneratingDescription ? "Generant..." : "Generar amb IA"}
-              </Button>
-            </div>
+            <Label>Descripció (opcional)</Label>
             <Textarea
               {...form.register('description')}
               placeholder="Descripció breu..."
