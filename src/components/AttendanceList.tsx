@@ -169,12 +169,12 @@ const AttendanceList = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 w-full md:w-auto">
           <Select
             value={selectedMonth}
             onValueChange={setSelectedMonth}
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-full md:w-[160px]">
               <SelectValue placeholder="Selecciona el mes" />
             </SelectTrigger>
             <SelectContent>
@@ -191,7 +191,7 @@ const AttendanceList = () => {
             value={selectedType}
             onValueChange={setSelectedType}
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-full md:w-[160px]">
               <SelectValue placeholder="Tipus d'assemblea" />
             </SelectTrigger>
             <SelectContent>
@@ -215,9 +215,12 @@ const AttendanceList = () => {
               <Button
                 variant="outline"
                 onClick={() => downloadCSV('assemblies')}
+                className="w-full md:w-auto"
+                size={isMobile ? "default" : "default"}
               >
-                <Download className="w-4 h-4 mr-2" />
-                Descarregar CSV
+                <Download className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Descarregar CSV</span>
+                <span className="inline md:hidden">CSV</span>
               </Button>
             </div>
 
@@ -264,9 +267,12 @@ const AttendanceList = () => {
               <Button
                 variant="outline"
                 onClick={() => downloadCSV('persons')}
+                className="w-full md:w-auto"
+                size={isMobile ? "default" : "default"}
               >
-                <Download className="w-4 h-4 mr-2" />
-                Descarregar CSV
+                <Download className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Descarregar CSV</span>
+                <span className="inline md:hidden">CSV</span>
               </Button>
             </div>
 

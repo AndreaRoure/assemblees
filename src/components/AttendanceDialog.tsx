@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useForm } from 'react-hook-form';
 import { UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface AttendanceFormData {
   name: string;
@@ -17,10 +17,10 @@ interface AttendanceFormData {
 
 const AttendanceDialog = () => {
   const [open, setOpen] = React.useState(false);
+  const isMobile = useIsMobile();
   const form = useForm<AttendanceFormData>();
 
   const onSubmit = async (data: AttendanceFormData) => {
-    // This is just a mock function for now
     console.log('Attendance data:', data);
     toast.success('Assistència registrada correctament');
     setOpen(false);
@@ -30,9 +30,10 @@ const AttendanceDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full md:w-auto" size="lg">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Registrar Assistència
+        <Button size={isMobile ? "default" : "lg"} className="w-full md:w-auto">
+          <UserPlus className="h-4 w-4 md:mr-2" />
+          <span className="hidden md:inline">Registrar Assistència</span>
+          <span className="inline md:hidden">Registrar</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

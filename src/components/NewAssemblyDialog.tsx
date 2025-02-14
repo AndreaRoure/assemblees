@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface RegisterFormData {
   name: string;
@@ -27,6 +28,7 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   const [open, setOpen] = React.useState(false);
   const [isGeneratingDescription, setIsGeneratingDescription] = React.useState(false);
   const form = useForm<RegisterFormData>();
+  const isMobile = useIsMobile();
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
@@ -84,9 +86,10 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full md:w-auto" size="lg">
-          <Plus className="mr-2 h-4 w-4" />
-          Nova Assemblea
+        <Button size={isMobile ? "default" : "lg"} className="w-full md:w-auto">
+          <Plus className="h-4 w-4 md:mr-2" />
+          <span className="hidden md:inline">Nova Assemblea</span>
+          <span className="inline md:hidden">Nova</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] md:max-w-[500px]">
@@ -155,10 +158,12 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
                 size="sm"
                 onClick={generateDescription}
                 disabled={isGeneratingDescription}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 md:gap-2 px-2 md:px-3"
               >
-                <Wand2 className="h-4 w-4" />
-                {isGeneratingDescription ? "Generant..." : "Generar amb IA"}
+                <Wand2 className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="text-xs md:text-sm">
+                  {isGeneratingDescription ? "Generant..." : "Generar amb IA"}
+                </span>
               </Button>
             </div>
             <Textarea
