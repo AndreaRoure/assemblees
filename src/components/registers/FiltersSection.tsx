@@ -77,14 +77,16 @@ const FiltersSection = ({
         </div>
 
         <div className="flex-1 min-w-[160px]">
-          <Button
-            variant="outline"
-            onClick={onDownload}
-            className="w-full h-9 text-sm"
-          >
-            <Download className="h-4 w-4 mr-2 flex-shrink-0" />
-            <span className="whitespace-nowrap">Descarregar CSV</span>
-          </Button>
+          <div className="h-9">
+            <Button
+              variant="outline"
+              onClick={onDownload}
+              className="w-full h-full text-sm"
+            >
+              <Download className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span className="whitespace-nowrap">Descarregar CSV</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
