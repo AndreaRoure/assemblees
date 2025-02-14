@@ -20,18 +20,14 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const RegistersList = () => {
   const [selectedYear, setSelectedYear] = React.useState<string>('all');
   const [selectedGender, setSelectedGender] = React.useState<string>('all');
   const [selectedType, setSelectedType] = React.useState<string>('all');
 
-  // Get unique years from assemblies where we actually have data
-  const years = [...new Set(assemblies
-    .filter(a => interventions.some(i => i.assemblyId === a.id))
-    .map(a => new Date(a.date).getFullYear()))]
-    .sort((a, b) => b - a);
+  // Get unique years from assemblies
+  const years = [...new Set(assemblies.map(a => new Date(a.date).getFullYear()))].sort((a, b) => b - a);
 
   // Filter assemblies based on selected year and gender
   const filteredAssemblies = assemblies.filter(assembly => {
@@ -53,47 +49,18 @@ const RegistersList = () => {
     return labels[type] || type;
   };
 
-  const countInterventionsByType = (assemblyId: string) => {
-    const assemblyInterventions = interventions.filter(i => {
-      const typeMatch = selectedType === 'all' || i.type === selectedType;
-      return i.assemblyId === assemblyId && typeMatch;
-    });
-
-    return {
-      intervencio: assemblyInterventions.filter(i => i.type === 'intervencio').length,
-      dinamitza: assemblyInterventions.filter(i => i.type === 'dinamitza').length,
-      interrupcio: assemblyInterventions.filter(i => i.type === 'interrupcio').length,
-      llarga: assemblyInterventions.filter(i => i.type === 'llarga').length,
-      ofensiva: assemblyInterventions.filter(i => i.type === 'ofensiva').length,
-      explica: assemblyInterventions.filter(i => i.type === 'explica').length,
-      total: assemblyInterventions.length,
-    };
-  };
-
-  const getTotalStats = () => {
-    const stats = filteredAssemblies.reduce((acc, assembly) => {
-      const counts = countInterventionsByType(assembly.id);
-      Object.keys(counts).forEach(key => {
-        if (key !== 'total') { // Exclude total from the graph
-          acc[key] = (acc[key] || 0) + counts[key];
-        }
-      });
-      return acc;
-    }, {} as Record<string, number>);
-
-    return [
-      { name: '🗣️ Intervenció', value: stats.intervencio || 0 },
-      { name: '✨ Dinamitza', value: stats.dinamitza || 0 },
-      { name: '✋ Interrupció', value: stats.interrupcio || 0 },
-      { name: '⏳ Llarga', value: stats.llarga || 0 },
-      { name: '⚠️ Ofensiva', value: stats.ofensiva || 0 },
-      { name: '📚 Explica', value: stats.explica || 0 },
-    ];
-  };
-
   const handleDownload = () => {
     const rows = filteredAssemblies.map(assembly => {
-      const counts = countInterventionsByType(assembly.id);
+      const assemblyInterventions = interventions.filter(i => i.assemblyId === assembly.id);
+      const interventionsByType = {
+        intervencio: assemblyInterventions.filter(i => i.type === 'intervencio').length,
+        dinamitza: assemblyInterventions.filter(i => i.type === 'dinamitza').length,
+        interrupcio: assemblyInterventions.filter(i => i.type === 'interrupcio').length,
+        llarga: assemblyInterventions.filter(i => i.type === 'llarga').length,
+        ofensiva: assemblyInterventions.filter(i => i.type === 'ofensiva').length,
+        explica: assemblyInterventions.filter(i => i.type === 'explica').length,
+      };
+
       return [
         new Date(assembly.date).toLocaleDateString('ca-ES'),
         assembly.name,
@@ -101,11 +68,17 @@ const RegistersList = () => {
         assembly.register.gender === 'man' ? 'Home' :
         assembly.register.gender === 'woman' ? 'Dona' :
         assembly.register.gender === 'trans' ? 'Trans' : 'No binari',
-        counts.total
+        interventionsByType.intervencio,
+        interventionsByType.dinamitza,
+        interventionsByType.interrupcio,
+        interventionsByType.llarga,
+        interventionsByType.ofensiva,
+        interventionsByType.explica,
+        assemblyInterventions.length
       ].join(',');
     });
 
-    const headers = ['Data', 'Assemblea', 'Registrador/a', 'Gènere', 'Total'].join(',');
+    const headers = ['Data', 'Assemblea', 'Registrador/a', 'Gènere', 'Intervencions', 'Dinamitza', 'Interrupcions', 'Llarga', 'Ofensiva', 'Explica', 'Total'].join(',');
     const csv = [headers, ...rows].join('\n');
     
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -182,17 +155,6 @@ const RegistersList = () => {
           </Button>
         </div>
 
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={getTotalStats()} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -201,12 +163,15 @@ const RegistersList = () => {
                 <TableHead>Assemblea</TableHead>
                 <TableHead>Registrador/a</TableHead>
                 <TableHead>Gènere</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+                <TableHead className="text-right">Intervencions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredAssemblies.map((assembly) => {
-                const counts = countInterventionsByType(assembly.id);
+                const assemblyInterventions = interventions.filter(i => {
+                  const typeMatch = selectedType === 'all' || i.type === selectedType;
+                  return i.assemblyId === assembly.id && typeMatch;
+                });
                 return (
                   <TableRow key={assembly.id}>
                     <TableCell>{new Date(assembly.date).toLocaleDateString('ca-ES')}</TableCell>
@@ -218,9 +183,9 @@ const RegistersList = () => {
                       {assembly.register.gender === 'trans' && 'Trans'}
                       {assembly.register.gender === 'non-binary' && 'No binari'}
                     </TableCell>
-                    <TableCell className="text-right font-medium">{counts.total}</TableCell>
+                    <TableCell className="text-right">{assemblyInterventions.length}</TableCell>
                   </TableRow>
-                );
+                )
               })}
               {filteredAssemblies.length === 0 && (
                 <TableRow>
