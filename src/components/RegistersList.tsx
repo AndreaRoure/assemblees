@@ -2,8 +2,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchInterventions, fetchAssemblies, supabase } from '@/lib/supabase';
-import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
 import YearSelect from './registers/YearSelect';
 import GenderSelect from './registers/GenderSelect';
 import InterventionStats from './registers/InterventionStats';
@@ -96,29 +94,6 @@ const RegistersList = () => {
     }));
   }, [interventions]);
 
-  const downloadCSV = () => {
-    const headers = ['Data', 'Tipus', 'Gènere', 'Assembly ID'];
-    const rows = filteredInterventions.map(i => [
-      new Date(i.timestamp).toLocaleDateString('ca-ES'),
-      i.type,
-      i.gender,
-      i.assembly_id
-    ]);
-    
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `interventions_${selectedYear}_${selectedGender}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   if (isLoadingInterventions || isLoadingAssemblies) {
     return <div className="text-center text-muted-foreground">Carregant...</div>;
   }
@@ -136,15 +111,6 @@ const RegistersList = () => {
           value={selectedGender}
           onValueChange={setSelectedGender}
         />
-
-        <Button
-          variant="outline"
-          onClick={downloadCSV}
-          className="ml-auto"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Descarregar CSV
-        </Button>
       </div>
 
       <InterventionStats stats={totals} />
