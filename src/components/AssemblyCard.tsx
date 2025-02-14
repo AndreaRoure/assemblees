@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { ca } from 'date-fns/locale';
 import { UserCircle2, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { deleteAssembly } from '@/data/assemblies';
+import { deleteAssembly } from '@/lib/supabase';
 
 interface AssemblyCardProps {
   assembly: Assembly;
@@ -15,10 +15,10 @@ interface AssemblyCardProps {
 }
 
 const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm('Estàs segur que vols eliminar aquesta assemblea?')) {
-      deleteAssembly(assembly.id);
+      await deleteAssembly(assembly.id);
       onEdited();
     }
   };

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus } from 'lucide-react';
-import { addIntervention, removeIntervention } from '@/data/assemblies';
+import { addIntervention, removeIntervention } from '@/lib/supabase';
 
 interface QuickInterventionProps {
   assemblyId: string;
@@ -50,8 +50,8 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
   });
 
-  const handleIncrement = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
-    addIntervention({
+  const handleIncrement = async (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
+    await addIntervention({
       assembly_id: assemblyId,
       gender,
       type
@@ -66,9 +66,9 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     onInterventionAdded();
   };
 
-  const handleDecrement = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
+  const handleDecrement = async (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     if (counts[gender][type] > 0) {
-      removeIntervention(assemblyId, type, gender);
+      await removeIntervention(assemblyId, type, gender);
       setCounts(prev => ({
         ...prev,
         [gender]: {
