@@ -3,12 +3,9 @@ import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Info } from "lucide-react";
-import {
-  Tooltip as UITooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface GenderChartProps {
   data: Array<{
@@ -31,33 +28,42 @@ const descriptions = {
   Ofensiva: "Comentario agresivo.",
 };
 
-const CustomLegend = ({ payload }: any) => {
+const InfoPopup = ({ term }: { term: string }) => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <TooltipProvider delayDuration={0}>
-      <div className="flex flex-wrap justify-center gap-4 pt-4">
-        {payload.map((entry: any, index: number) => (
-          <div key={`item-${index}`} className="flex items-center gap-2">
-            <div className="w-3 h-3" style={{ backgroundColor: entry.color }} />
-            <UITooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-1 cursor-help">
-                  <span className="text-sm">{entry.value}</span>
-                  <Info className="h-4 w-4 text-gray-500" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="bg-white p-2 z-50 shadow-lg border">
-                <p className="text-sm">{descriptions[entry.value]}</p>
-              </TooltipContent>
-            </UITooltip>
-          </div>
-        ))}
-      </div>
-    </TooltipProvider>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-500 hover:text-gray-700">
+          <Info className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="p-4">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold">{term}</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-gray-600">{descriptions[term]}</p>
+      </DialogContent>
+    </Dialog>
   );
 };
 
 const GenderChart = ({ data }: GenderChartProps) => {
   const isMobile = useIsMobile();
+  
+  const CustomLegend = ({ payload }: any) => {
+    return (
+      <div className="flex flex-wrap justify-center gap-4 pt-4">
+        {payload.map((entry: any, index: number) => (
+          <div key={`item-${index}`} className="flex items-center gap-2">
+            <div className="w-3 h-3" style={{ backgroundColor: entry.color }} />
+            <span className="text-sm">{entry.value}</span>
+            <InfoPopup term={entry.value} />
+          </div>
+        ))}
+      </div>
+    );
+  };
   
   return (
     <Card className="p-6 bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-all duration-200">
