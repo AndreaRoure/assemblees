@@ -119,7 +119,7 @@ const RegistersList = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-wrap gap-4">
         <Select
           value={selectedYear}
@@ -184,23 +184,23 @@ const RegistersList = () => {
       </ScrollArea>
 
       <Card className="p-4">
-        <div className="font-semibold mb-4">Intervencions per Gènere</div>
-        <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
+        <div className="font-semibold mb-2">Intervencions per Gènere</div>
+        <div className="w-full h-[250px] md:h-[350px] lg:h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={genderTotals}
               margin={{ 
                 top: 20, 
                 right: isMobile ? 10 : 30, 
-                left: isMobile ? 0 : 20, 
-                bottom: isMobile ? 120 : 80 
+                left: isMobile ? 30 : 40, 
+                bottom: isMobile ? 60 : 40 
               }}
             >
               <XAxis 
                 dataKey="gender"
                 angle={isMobile ? -45 : 0}
                 textAnchor={isMobile ? "end" : "middle"}
-                height={isMobile ? 80 : 60}
+                height={isMobile ? 60 : 30}
                 interval={0}
                 tick={{ fontSize: isMobile ? 10 : 12 }}
               />
@@ -216,11 +216,10 @@ const RegistersList = () => {
               />
               <Legend 
                 verticalAlign="bottom"
-                height={36}
+                height={isMobile ? 48 : 36}
                 wrapperStyle={{ 
-                  paddingTop: '20px',
                   fontSize: isMobile ? '10px' : '12px',
-                  marginBottom: isMobile ? '40px' : '20px'
+                  paddingTop: isMobile ? '8px' : '16px'
                 }}
               />
               <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
