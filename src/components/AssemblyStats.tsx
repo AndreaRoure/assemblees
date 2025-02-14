@@ -12,7 +12,6 @@ interface AssemblyStatsProps {
 const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   const isMobile = useIsMobile();
 
-  // Memoize the data transformation to prevent unnecessary recalculations
   const data = useMemo(() => [
     {
       name: 'Home',
@@ -44,8 +43,10 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   ], [stats]);
 
   return (
-    <Card className="p-4">
-      <h3 className="text-base md:text-lg font-semibold mb-4">Estadístiques per Gènere i Tipus</h3>
+    <Card className="p-4 animate-fade-in bg-gradient-to-br from-white to-gray-50">
+      <h3 className="text-base md:text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+        Estadístiques per Gènere i Tipus
+      </h3>
       <div className="h-[300px] md:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
@@ -61,7 +62,14 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
               tick={{ fontSize: isMobile ? 10 : 12 }}
             />
             <YAxis />
-            <Tooltip />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderRadius: '8px',
+                border: 'none',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+              }}
+            />
             <Legend 
               verticalAlign="bottom" 
               height={36}

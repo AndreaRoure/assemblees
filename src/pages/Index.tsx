@@ -73,17 +73,17 @@ const Index = () => {
       <div className="space-y-4 md:space-y-6">
         <div className="flex flex-col items-center">
           <Logo />
-          <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
+          <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
             Observació d&apos;Assemblees
           </h1>
           <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
         </div>
 
         {selectedAssembly ? (
-          <div className="space-y-4 md:space-y-6">
+          <div className="space-y-4 md:space-y-6 animate-fade-in">
             <button
               onClick={() => setSelectedAssembly(null)}
-              className="text-sm text-muted-foreground hover:text-foreground"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               ← Tornar a la llista
             </button>
@@ -102,7 +102,7 @@ const Index = () => {
               <TabsTrigger value="registers">Registres</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="assemblies">
+            <TabsContent value="assemblies" className="animate-fade-in">
               <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
                 <div className="space-y-3 md:space-y-4 pr-2">
                   {assemblies.map((assembly) => (
@@ -122,7 +122,7 @@ const Index = () => {
               </ScrollArea>
             </TabsContent>
 
-            <TabsContent value="registers">
+            <TabsContent value="registers" className="animate-fade-in">
               <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
                 <RegistersList />
               </ScrollArea>

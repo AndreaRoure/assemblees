@@ -1,14 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus } from 'lucide-react';
 import { addIntervention, removeIntervention, fetchAssemblyInterventions } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
-
-interface QuickInterventionProps {
-  assemblyId: string;
-  onInterventionAdded: () => void;
-}
+import { Card } from '@/components/ui/card';
 
 interface CounterProps {
   value: number;
@@ -25,17 +20,17 @@ const Counter = ({ value, onIncrement, onDecrement, label }: CounterProps) => (
         variant="ghost"
         size="sm"
         onClick={onDecrement}
-        className="h-full px-2 rounded-none border-r hover:bg-muted"
+        className="h-full px-2 rounded-none border-r hover:bg-red-50 transition-colors"
         disabled={value === 0}
       >
         <Minus className="h-3 w-3" />
       </Button>
-      <span className="px-3 text-sm tabular-nums">{value}</span>
+      <span className="px-3 text-sm tabular-nums font-medium">{value}</span>
       <Button
         variant="ghost"
         size="sm"
         onClick={onIncrement}
-        className="h-full px-2 rounded-none border-l hover:bg-muted"
+        className="h-full px-2 rounded-none border-l hover:bg-green-50 transition-colors"
       >
         <Plus className="h-3 w-3" />
       </Button>
@@ -43,7 +38,7 @@ const Counter = ({ value, onIncrement, onDecrement, label }: CounterProps) => (
   </div>
 );
 
-const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventionProps) => {
+const QuickIntervention = ({ assemblyId, onInterventionAdded }: { assemblyId: string, onInterventionAdded: () => void }) => {
   const { data: interventions = [] } = useQuery({
     queryKey: ['interventions', assemblyId],
     queryFn: () => fetchAssemblyInterventions(assemblyId),
@@ -55,7 +50,6 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
   });
 
-  // Update counts when interventions change
   useEffect(() => {
     const newCounts = {
       man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
@@ -122,20 +116,20 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium">Dona</h3>
+      <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
+        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">Dona</h3>
         {renderInterventionCounters('woman')}
-      </div>
+      </Card>
       
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium">Home</h3>
+      <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
+        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">Home</h3>
         {renderInterventionCounters('man')}
-      </div>
+      </Card>
 
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium">No binari</h3>
+      <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
+        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">No binari</h3>
         {renderInterventionCounters('non-binary')}
-      </div>
+      </Card>
     </div>
   );
 };
