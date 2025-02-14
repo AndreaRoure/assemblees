@@ -34,7 +34,7 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
   return (
     <>
       <Card
-        className="p-3 md:p-4 hover:bg-purple-50 hover:shadow-md hover:scale-[1.01] transition-all duration-200 cursor-pointer animate-fade-in group"
+        className="relative p-3 md:p-4 bg-gradient-to-br from-white to-gray-50/50 hover:from-purple-50/80 hover:to-purple-100/30 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 cursor-pointer animate-fade-in group border border-gray-100 hover:border-purple-200"
         onClick={onClick}
       >
         <div className="space-y-2">
@@ -49,7 +49,7 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
               {assembly.description}
             </p>
           )}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0 pt-2 border-t">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0 pt-2 border-t border-gray-100">
             <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
               <UserCircle2 className="h-4 w-4" />
               <span>Registrat per: {assembly.register.name}</span>
@@ -59,7 +59,7 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
                 variant="ghost" 
                 size="sm" 
                 onClick={handleEdit} 
-                className="h-6 w-6 md:h-8 md:w-8 p-0 hover:bg-purple-100 hover:text-purple-700 opacity-70 group-hover:opacity-100 transition-opacity"
+                className="h-6 w-6 md:h-8 md:w-8 p-0 opacity-0 group-hover:opacity-100 hover:bg-purple-200/70 hover:text-purple-700 transition-all duration-200"
               >
                 <Pencil className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
@@ -67,7 +67,7 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
                 variant="ghost" 
                 size="sm" 
                 onClick={handleDelete} 
-                className="h-6 w-6 md:h-8 md:w-8 p-0 hover:bg-red-100 hover:text-red-700 opacity-70 group-hover:opacity-100 transition-opacity"
+                className="h-6 w-6 md:h-8 md:w-8 p-0 opacity-0 group-hover:opacity-100 hover:bg-red-200/70 hover:text-red-700 transition-all duration-200"
               >
                 <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
