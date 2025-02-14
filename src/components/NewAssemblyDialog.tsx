@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus } from 'lucide-react';
+import { Plus, Calendar, MapPin, Hash } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { addAssembly } from '@/data/assemblies';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -25,10 +25,13 @@ interface NewAssemblyDialogProps {
   onAssemblyCreated: () => void;
 }
 
+type AssemblyField = 'date' | 'location' | 'number';
+
 const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   const [open, setOpen] = React.useState(false);
   const [step, setStep] = React.useState<'register' | 'assembly'>('register');
   const [registerData, setRegisterData] = React.useState<RegisterFormData | null>(null);
+  const [selectedField, setSelectedField] = React.useState<AssemblyField | null>(null);
   
   const registerForm = useForm<RegisterFormData>();
   const assemblyForm = useForm<AssemblyFormData>();
@@ -49,6 +52,7 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
     setOpen(false);
     setStep('register');
     setRegisterData(null);
+    setSelectedField(null);
     registerForm.reset();
     assemblyForm.reset();
     onAssemblyCreated();
@@ -59,6 +63,7 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
     if (!isOpen) {
       setStep('register');
       setRegisterData(null);
+      setSelectedField(null);
       registerForm.reset();
       assemblyForm.reset();
     }
@@ -112,40 +117,71 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
             <Button type="submit" className="w-full">Següent</Button>
           </form>
         ) : (
-          <form onSubmit={assemblyForm.handleSubmit(onAssemblySubmit)} className="space-y-4 mt-4">
-            <div className="space-y-2">
-              <Label>Nom de l&apos;assemblea</Label>
-              <Input
-                {...assemblyForm.register('name', { required: true })}
-                placeholder="Nom de l'assemblea"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Data</Label>
-              <Input
-                {...assemblyForm.register('date', { required: true })}
-                type="date"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Descripció (opcional)</Label>
-              <Textarea
-                {...assemblyForm.register('description')}
-                placeholder="Descripció breu..."
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => setStep('register')}
-              >
-                Enrere
-              </Button>
-              <Button type="submit" className="w-full">Crear</Button>
-            </div>
-          </form>
+          <div className="space-y-6 mt-4">
+            {!selectedField ? (
+              <div className="grid grid-cols-1 gap-4">
+                <Button
+                  variant="outline"
+                  className="w-full h-16 text-lg"
+                  onClick={() => setSelectedField('date')}
+                >
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Data
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full h-16 text-lg"
+                  onClick={() => setSelectedField('location')}
+                >
+                  <MapPin className="mr-2 h-5 w-5" />
+                  Ubicació
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full h-16 text-lg"
+                  onClick={() => setSelectedField('number')}
+                >
+                  <Hash className="mr-2 h-5 w-5" />
+                  Nombre Assemblea
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={assemblyForm.handleSubmit(onAssemblySubmit)} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Nom de l&apos;assemblea</Label>
+                  <Input
+                    {...assemblyForm.register('name', { required: true })}
+                    placeholder="Nom de l'assemblea"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Data</Label>
+                  <Input
+                    {...assemblyForm.register('date', { required: true })}
+                    type="date"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Descripció (opcional)</Label>
+                  <Textarea
+                    {...assemblyForm.register('description')}
+                    placeholder="Descripció breu..."
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setSelectedField(null)}
+                  >
+                    Enrere
+                  </Button>
+                  <Button type="submit" className="w-full">Crear</Button>
+                </div>
+              </form>
+            )}
+          </div>
         )}
       </DialogContent>
     </Dialog>
