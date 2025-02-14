@@ -9,6 +9,7 @@ import RegistersList from '@/components/RegistersList';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
+import Logo from '@/components/Logo';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
@@ -22,7 +23,8 @@ const Index = () => {
   return (
     <div className="container p-4 md:py-6 mx-auto">
       <div className="space-y-4 md:space-y-6">
-        <div>
+        <div className="flex flex-col items-center">
+          <Logo />
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
             Taula d&apos;Observació de Dinàmiques en Assemblees
           </h1>
