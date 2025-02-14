@@ -12,6 +12,8 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   const genderData = [
     { name: 'Home', value: stats.byGender.man },
     { name: 'Dona', value: stats.byGender.woman },
+    { name: 'Trans', value: stats.byGender.trans },
+    { name: 'No binari', value: stats.byGender['non-binary'] },
   ];
 
   const typeData = [

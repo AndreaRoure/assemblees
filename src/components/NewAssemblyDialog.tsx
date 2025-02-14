@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,7 @@ import { Label } from '@/components/ui/label';
 
 interface RegisterFormData {
   name: string;
-  gender: 'man' | 'woman';
+  gender: 'man' | 'woman' | 'trans' | 'non-binary';
 }
 
 interface AssemblyFormData {
@@ -97,11 +96,11 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
             <div className="space-y-2">
               <Label>Gènere</Label>
               <RadioGroup
-                onValueChange={(value: 'man' | 'woman') => 
+                onValueChange={(value: 'man' | 'woman' | 'trans' | 'non-binary') => 
                   registerForm.setValue('gender', value)
                 }
                 defaultValue="man"
-                className="flex gap-4"
+                className="grid grid-cols-2 gap-4"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="man" id="man" />
@@ -110,6 +109,14 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="woman" id="woman" />
                   <Label htmlFor="woman">Dona</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="trans" id="trans" />
+                  <Label htmlFor="trans">Trans</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="non-binary" id="non-binary" />
+                  <Label htmlFor="non-binary">No binari</Label>
                 </div>
               </RadioGroup>
             </div>

@@ -6,14 +6,14 @@ export interface Assembly {
   description?: string;
   register: {
     name: string;
-    gender: 'man' | 'woman';
+    gender: 'man' | 'woman' | 'trans' | 'non-binary';
   };
 }
 
 export interface Intervention {
   id: string;
   assemblyId: string;
-  gender: 'man' | 'woman';
+  gender: 'man' | 'woman' | 'trans' | 'non-binary';
   type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva';
   timestamp: number;
 }
@@ -23,6 +23,8 @@ export interface AssemblyStats {
   byGender: {
     man: number;
     woman: number;
+    trans: number;
+    'non-binary': number;
   };
   byType: {
     intervencio: number;

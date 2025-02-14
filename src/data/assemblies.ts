@@ -31,6 +31,8 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
     byGender: {
       man: assemblyInterventions.filter(i => i.gender === 'man').length,
       woman: assemblyInterventions.filter(i => i.gender === 'woman').length,
+      trans: assemblyInterventions.filter(i => i.gender === 'trans').length,
+      'non-binary': assemblyInterventions.filter(i => i.gender === 'non-binary').length,
     },
     byType: {
       intervencio: assemblyInterventions.filter(i => i.type === 'intervencio').length,
