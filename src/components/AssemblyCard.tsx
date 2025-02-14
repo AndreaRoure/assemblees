@@ -35,18 +35,8 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
       onClick={onClick}
     >
       <div className="space-y-2">
-        <div className="flex justify-between items-start">
-          <div className="text-sm text-muted-foreground">
-            {format(new Date(assembly.date), 'PPP', { locale: ca })}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon" onClick={handleEdit}>
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+        <div className="text-sm text-muted-foreground">
+          {format(new Date(assembly.date), 'PPP', { locale: ca })}
         </div>
         <h3 className="text-lg font-semibold">{assembly.name}</h3>
         {assembly.description && (
@@ -54,9 +44,21 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
             {assembly.description}
           </p>
         )}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
-          <UserCircle2 className="h-4 w-4" />
-          <span>Registrat per: {assembly.register.name}</span>
+        <div className="flex items-center justify-between pt-2 border-t">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <UserCircle2 className="h-4 w-4" />
+            <span>Registrat per: {assembly.register.name}</span>
+          </div>
+          <div className="flex gap-2 text-sm font-bold">
+            <Button variant="ghost" size="sm" onClick={handleEdit} className="font-bold">
+              <Pencil className="h-4 w-4 mr-1" />
+              Editar
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleDelete} className="font-bold">
+              <Trash2 className="h-4 w-4 mr-1" />
+              Eliminar
+            </Button>
+          </div>
         </div>
       </div>
     </Card>
