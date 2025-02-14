@@ -15,39 +15,39 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   const data = [
     {
       name: 'Home',
-      'Intervenció curta': stats.byGender.man.intervencio,
-      'Dinamitza': stats.byGender.man.dinamitza,
-      'Interrupció': stats.byGender.man.interrupcio,
-      'Intervenció llarga': stats.byGender.man.llarga,
-      'Ofensiva': stats.byGender.man.ofensiva,
-      'Explica': stats.byGender.man.explica,
+      'Intervenció curta': stats.byGender.man.intervencio || 0,
+      'Dinamitza': stats.byGender.man.dinamitza || 0,
+      'Interrupció': stats.byGender.man.interrupcio || 0,
+      'Intervenció llarga': stats.byGender.man.llarga || 0,
+      'Ofensiva': stats.byGender.man.ofensiva || 0,
+      'Explica': stats.byGender.man.explica || 0,
     },
     {
       name: 'Dona',
-      'Intervenció curta': stats.byGender.woman.intervencio,
-      'Dinamitza': stats.byGender.woman.dinamitza,
-      'Interrupció': stats.byGender.woman.interrupcio,
-      'Intervenció llarga': stats.byGender.woman.llarga,
-      'Ofensiva': stats.byGender.woman.ofensiva,
-      'Explica': stats.byGender.woman.explica,
+      'Intervenció curta': stats.byGender.woman.intervencio || 0,
+      'Dinamitza': stats.byGender.woman.dinamitza || 0,
+      'Interrupció': stats.byGender.woman.interrupcio || 0,
+      'Intervenció llarga': stats.byGender.woman.llarga || 0,
+      'Ofensiva': stats.byGender.woman.ofensiva || 0,
+      'Explica': stats.byGender.woman.explica || 0,
     },
     {
       name: 'Trans',
-      'Intervenció curta': stats.byGender.trans.intervencio,
-      'Dinamitza': stats.byGender.trans.dinamitza,
-      'Interrupció': stats.byGender.trans.interrupcio,
-      'Intervenció llarga': stats.byGender.trans.llarga,
-      'Ofensiva': stats.byGender.trans.ofensiva,
-      'Explica': stats.byGender.trans.explica,
+      'Intervenció curta': stats.byGender.trans.intervencio || 0,
+      'Dinamitza': stats.byGender.trans.dinamitza || 0,
+      'Interrupció': stats.byGender.trans.interrupcio || 0,
+      'Intervenció llarga': stats.byGender.trans.llarga || 0,
+      'Ofensiva': stats.byGender.trans.ofensiva || 0,
+      'Explica': stats.byGender.trans.explica || 0,
     },
     {
       name: 'No Binari',
-      'Intervenció curta': stats.byGender['non-binary'].intervencio,
-      'Dinamitza': stats.byGender['non-binary'].dinamitza,
-      'Interrupció': stats.byGender['non-binary'].interrupcio,
-      'Intervenció llarga': stats.byGender['non-binary'].llarga,
-      'Ofensiva': stats.byGender['non-binary'].ofensiva,
-      'Explica': stats.byGender['non-binary'].explica,
+      'Intervenció curta': stats.byGender['non-binary'].intervencio || 0,
+      'Dinamitza': stats.byGender['non-binary'].dinamitza || 0,
+      'Interrupció': stats.byGender['non-binary'].interrupcio || 0,
+      'Intervenció llarga': stats.byGender['non-binary'].llarga || 0,
+      'Ofensiva': stats.byGender['non-binary'].ofensiva || 0,
+      'Explica': stats.byGender['non-binary'].explica || 0,
     },
   ];
 
@@ -56,11 +56,28 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
       <h3 className="text-base md:text-lg font-semibold mb-4">Estadístiques per Gènere i Tipus</h3>
       <div className="h-[300px] md:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
-            <XAxis dataKey="name" angle={isMobile ? -45 : 0} textAnchor={isMobile ? "end" : "middle"} height={60} />
+          <BarChart 
+            data={data} 
+            margin={{ top: 20, right: 30, left: 20, bottom: isMobile ? 100 : 80 }}
+          >
+            <XAxis 
+              dataKey="name" 
+              angle={isMobile ? -45 : 0} 
+              textAnchor={isMobile ? "end" : "middle"} 
+              height={60} 
+              interval={0}
+              tick={{ fontSize: isMobile ? 10 : 12 }}
+            />
             <YAxis />
             <Tooltip />
-            <Legend verticalAlign="bottom" height={36} />
+            <Legend 
+              verticalAlign="bottom" 
+              height={36}
+              wrapperStyle={{ 
+                paddingTop: '20px',
+                fontSize: isMobile ? '10px' : '12px'
+              }}
+            />
             <Bar dataKey="Dinamitza" stackId="a" fill="#82ca9d" />
             <Bar dataKey="Explica" stackId="a" fill="#4ecdc4" />
             <Bar dataKey="Interrupció" stackId="a" fill="#ffc658" />
