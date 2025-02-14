@@ -78,7 +78,7 @@ const Index = () => {
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
             Observació d&apos;Assembleas
           </h1>
-          <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto">
             <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
             <AttendanceDialog />
           </div>
@@ -103,8 +103,8 @@ const Index = () => {
         ) : (
           <Tabs defaultValue="assemblies" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
-              <TabsTrigger value="assemblies">Assemblees</TabsTrigger>
-              <TabsTrigger value="stats">Registres i Assistències</TabsTrigger>
+              <TabsTrigger value="assemblies" className="text-sm md:text-base">Assemblees</TabsTrigger>
+              <TabsTrigger value="stats" className="text-sm md:text-base">Registres i Assistències</TabsTrigger>
             </TabsList>
             
             <TabsContent value="assemblies">
@@ -127,7 +127,7 @@ const Index = () => {
               </ScrollArea>
             </TabsContent>
 
-            <TabsContent value="stats">
+            <TabsContent value="stats" className="w-full">
               <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
                 <div className="space-y-6">
                   <RegistersList />

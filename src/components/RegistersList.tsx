@@ -120,13 +120,13 @@ const RegistersList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        <div className="flex flex-wrap gap-4 w-full md:w-auto">
+      <div className="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto">
           <Select
             value={selectedYear}
             onValueChange={setSelectedYear}
           >
-            <SelectTrigger className="w-full md:w-[160px]">
+            <SelectTrigger className="w-full text-sm">
               <SelectValue placeholder="Selecciona l'any" />
             </SelectTrigger>
             <SelectContent>
@@ -143,7 +143,7 @@ const RegistersList = () => {
             value={selectedGender}
             onValueChange={setSelectedGender}
           >
-            <SelectTrigger className="w-full md:w-[160px]">
+            <SelectTrigger className="w-full text-sm">
               <SelectValue placeholder="Selecciona el gènere" />
             </SelectTrigger>
             <SelectContent>
@@ -158,8 +158,8 @@ const RegistersList = () => {
         <Button
           variant="outline"
           onClick={downloadCSV}
-          className="w-full md:w-auto mt-2 md:mt-0"
-          size={isMobile ? "default" : "default"}
+          className="w-full md:w-auto text-sm"
+          size="sm"
         >
           <Download className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Descarregar CSV</span>
