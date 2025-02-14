@@ -13,28 +13,32 @@ interface CounterProps {
   value: number;
   onIncrement: () => void;
   onDecrement: () => void;
+  label: string;
 }
 
-const Counter = ({ value, onIncrement, onDecrement }: CounterProps) => (
-  <div className="flex items-center gap-2">
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={onDecrement}
-      className="h-8 w-8 p-0"
-      disabled={value === 0}
-    >
-      <Minus className="h-4 w-4" />
-    </Button>
-    <span className="min-w-[2rem] text-center">{value}</span>
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={onIncrement}
-      className="h-8 w-8 p-0"
-    >
-      <Plus className="h-4 w-4" />
-    </Button>
+const Counter = ({ value, onIncrement, onDecrement, label }: CounterProps) => (
+  <div className="flex items-center justify-between w-full">
+    <span className="text-sm text-muted-foreground flex-1">{label}</span>
+    <div className="flex items-center h-8 rounded-md border border-input bg-transparent">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onDecrement}
+        className="h-full px-2 rounded-none border-r hover:bg-muted"
+        disabled={value === 0}
+      >
+        <Minus className="h-3 w-3" />
+      </Button>
+      <span className="px-3 text-sm tabular-nums">{value}</span>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onIncrement}
+        className="h-full px-2 rounded-none border-l hover:bg-muted"
+      >
+        <Plus className="h-3 w-3" />
+      </Button>
+    </div>
   </div>
 );
 
@@ -73,25 +77,24 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
   };
 
   const renderInterventionCounters = (gender: 'man' | 'woman' | 'trans' | 'non-binary') => (
-    <div className="grid gap-3">
+    <div className="space-y-2">
       {['Intervenció', 'Dinamitza', 'Interrupció', 'Llarga', 'Explica', 'Ofensiva'].map((label, index) => {
         const type = ['intervencio', 'dinamitza', 'interrupcio', 'llarga', 'explica', 'ofensiva'][index] as 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica';
         return (
-          <div key={type} className="flex items-center justify-between">
-            <span className="text-sm">{label}</span>
-            <Counter
-              value={counts[gender][type]}
-              onIncrement={() => handleIncrement(gender, type)}
-              onDecrement={() => handleDecrement(gender, type)}
-            />
-          </div>
+          <Counter
+            key={type}
+            label={label}
+            value={counts[gender][type]}
+            onIncrement={() => handleIncrement(gender, type)}
+            onDecrement={() => handleDecrement(gender, type)}
+          />
         );
       })}
     </div>
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-3">
         <h3 className="text-sm font-medium">Home</h3>
         {renderInterventionCounters('man')}
