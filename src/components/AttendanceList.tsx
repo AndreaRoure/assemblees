@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Download, Users } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Mock data for now - we'll replace this with real data later
 const mockAttendanceData = [
@@ -37,6 +38,43 @@ const mockAttendanceData = [
     totalAbsent: 0,
     type: "in-person",
     percentage: "100%"
+  }
+];
+
+// Mock data for individual attendance
+const mockPersonAttendanceData = [
+  {
+    name: "Maria García",
+    totalAssemblies: 15,
+    attended: 13,
+    absent: 2,
+    percentage: "86.7%",
+    attendanceByType: {
+      online: "90%",
+      "in-person": "83.3%"
+    }
+  },
+  {
+    name: "Joan Puig",
+    totalAssemblies: 15,
+    attended: 15,
+    absent: 0,
+    percentage: "100%",
+    attendanceByType: {
+      online: "100%",
+      "in-person": "100%"
+    }
+  },
+  {
+    name: "Anna Martí",
+    totalAssemblies: 15,
+    attended: 12,
+    absent: 3,
+    percentage: "80%",
+    attendanceByType: {
+      online: "85.7%",
+      "in-person": "75%"
+    }
   }
 ];
 
@@ -69,29 +107,60 @@ const AttendanceList = () => {
     });
   }, [selectedType, selectedMonth]);
 
-  const downloadCSV = () => {
-    const headers = ['Nom', 'Data', 'Tipus', 'Assistents', 'Absents', 'Percentatge'];
-    const rows = filteredData.map(record => [
-      record.name,
-      record.date,
-      record.type === 'online' ? 'En línia' : 'Presencial',
-      record.totalAttendees,
-      record.totalAbsent,
-      record.percentage
-    ]);
-    
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `assistencia_${selectedMonth}_${selectedType}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const filteredPersonData = useMemo(() => {
+    // In the future, we'll filter based on selected month and type
+    return mockPersonAttendanceData;
+  }, []);
+
+  const downloadCSV = (type: 'assemblies' | 'persons') => {
+    if (type === 'assemblies') {
+      const headers = ['Nom', 'Data', 'Tipus', 'Assistents', 'Absents', 'Percentatge'];
+      const rows = filteredData.map(record => [
+        record.name,
+        record.date,
+        record.type === 'online' ? 'En línia' : 'Presencial',
+        record.totalAttendees,
+        record.totalAbsent,
+        record.percentage
+      ]);
+      
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `assistencia_assemblees_${selectedMonth}_${selectedType}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      const headers = ['Nom', 'Total Assemblees', 'Assistències', 'Absències', 'Percentatge Total', 'Percentatge Online', 'Percentatge Presencial'];
+      const rows = filteredPersonData.map(record => [
+        record.name,
+        record.totalAssemblies,
+        record.attended,
+        record.absent,
+        record.percentage,
+        record.attendanceByType.online,
+        record.attendanceByType["in-person"]
+      ]);
+      
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `assistencia_persones_${selectedMonth}_${selectedType}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (
@@ -129,43 +198,98 @@ const AttendanceList = () => {
             </SelectContent>
           </Select>
         </div>
-
-        <Button
-          variant="outline"
-          onClick={downloadCSV}
-          className="w-full md:w-auto"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Descarregar CSV
-        </Button>
       </div>
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nom</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead>Tipus</TableHead>
-              <TableHead className="text-right">Assistents</TableHead>
-              <TableHead className="text-right">Absents</TableHead>
-              <TableHead className="text-right">Percentatge</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredData.map((record, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{record.name}</TableCell>
-                <TableCell>{new Date(record.date).toLocaleDateString('ca-ES')}</TableCell>
-                <TableCell>{record.type === 'online' ? 'En línia' : 'Presencial'}</TableCell>
-                <TableCell className="text-right">{record.totalAttendees}</TableCell>
-                <TableCell className="text-right">{record.totalAbsent}</TableCell>
-                <TableCell className="text-right">{record.percentage}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+      <Tabs defaultValue="assemblies" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsTrigger value="assemblies">Per Assemblea</TabsTrigger>
+          <TabsTrigger value="persons">Per Persona</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="assemblies">
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => downloadCSV('assemblies')}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Descarregar CSV
+              </Button>
+            </div>
+
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Data</TableHead>
+                    <TableHead>Tipus</TableHead>
+                    <TableHead className="text-right">Assistents</TableHead>
+                    <TableHead className="text-right">Absents</TableHead>
+                    <TableHead className="text-right">Percentatge</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredData.map((record, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{record.name}</TableCell>
+                      <TableCell>{new Date(record.date).toLocaleDateString('ca-ES')}</TableCell>
+                      <TableCell>{record.type === 'online' ? 'En línia' : 'Presencial'}</TableCell>
+                      <TableCell className="text-right">{record.totalAttendees}</TableCell>
+                      <TableCell className="text-right">{record.totalAbsent}</TableCell>
+                      <TableCell className="text-right">{record.percentage}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="persons">
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => downloadCSV('persons')}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Descarregar CSV
+              </Button>
+            </div>
+
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nom</TableHead>
+                    <TableHead className="text-right">Total Assemblees</TableHead>
+                    <TableHead className="text-right">Assistències</TableHead>
+                    <TableHead className="text-right">Absències</TableHead>
+                    <TableHead className="text-right">% Total</TableHead>
+                    <TableHead className="text-right">% Online</TableHead>
+                    <TableHead className="text-right">% Presencial</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPersonData.map((record, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{record.name}</TableCell>
+                      <TableCell className="text-right">{record.totalAssemblies}</TableCell>
+                      <TableCell className="text-right">{record.attended}</TableCell>
+                      <TableCell className="text-right">{record.absent}</TableCell>
+                      <TableCell className="text-right">{record.percentage}</TableCell>
+                      <TableCell className="text-right">{record.attendanceByType.online}</TableCell>
+                      <TableCell className="text-right">{record.attendanceByType["in-person"]}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       <Card className="p-4">
         <div className="flex items-center gap-2 text-muted-foreground">
