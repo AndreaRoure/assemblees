@@ -43,6 +43,15 @@ const InterventionsChart = ({ data }: InterventionsChartProps) => {
               interval={0}
               tick={{ fontSize: isMobile ? 10 : 12 }}
               tickMargin={isMobile ? 20 : 10}
+              tickFormatter={(value) => {
+                // Break long text into multiple lines on mobile
+                if (isMobile && value.includes(' ')) {
+                  return value.split(' ').map((word, i) => 
+                    i === 0 ? word : `\n${word}`
+                  ).join('');
+                }
+                return value;
+              }}
             />
             <YAxis 
               width={isMobile ? 35 : 40}
