@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
@@ -75,7 +76,7 @@ const Index = () => {
         <div className="flex flex-col items-center">
           <Logo />
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
-            Taula d&apos;Observació de Dinàmiques en Assemblees
+            Observació d&apos;Assembleas
           </h1>
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
