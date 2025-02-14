@@ -1,24 +1,19 @@
+
 import React, { useMemo, useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchInterventions, fetchAssemblies, supabase } from '@/lib/supabase';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import YearSelect from './registers/YearSelect';
+import GenderSelect from './registers/GenderSelect';
+import InterventionStats from './registers/InterventionStats';
+import GenderChart from './registers/GenderChart';
 
 const RegistersList = () => {
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [selectedGender, setSelectedGender] = useState<string>('all');
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription
   useEffect(() => {
     const channel = supabase
       .channel('interventions-changes')
@@ -131,37 +126,16 @@ const RegistersList = () => {
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap gap-4">
-        <Select
+        <YearSelect 
           value={selectedYear}
+          years={years}
           onValueChange={setSelectedYear}
-        >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Selecciona l'any" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tots els anys</SelectItem>
-            {years.map(year => (
-              <SelectItem key={year} value={year.toString()}>
-                {year}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        />
 
-        <Select
+        <GenderSelect
           value={selectedGender}
           onValueChange={setSelectedGender}
-        >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Selecciona el gènere" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tots els gèneres</SelectItem>
-            <SelectItem value="man">Homes</SelectItem>
-            <SelectItem value="woman">Dones</SelectItem>
-            <SelectItem value="non-binary">Persones No Binàries</SelectItem>
-          </SelectContent>
-        </Select>
+        />
 
         <Button
           variant="outline"
@@ -173,41 +147,8 @@ const RegistersList = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {Object.entries(totals).map(([type, count]) => (
-          <Card key={type} className="p-4">
-            <div className="text-lg font-semibold">{count}</div>
-            <div className="text-sm text-muted-foreground">
-              {type === 'intervencio' && 'Intervencions'}
-              {type === 'dinamitza' && 'Dinamitza'}
-              {type === 'interrupcio' && 'Interrupcions'}
-              {type === 'llarga' && 'Intervencions llargues'}
-              {type === 'ofensiva' && 'Intervencions ofensives'}
-              {type === 'explica' && 'Explica'}
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      <Card className="p-4">
-        <div className="font-semibold mb-4">Intervencions per Gènere</div>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={genderTotals}>
-              <XAxis dataKey="gender" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
-              <Bar dataKey="dinamitza" stackId="a" fill="#82ca9d" name="Dinamitza" />
-              <Bar dataKey="interrupcio" stackId="a" fill="#ffc658" name="Interrupció" />
-              <Bar dataKey="llarga" stackId="a" fill="#ff8042" name="Intervenció llarga" />
-              <Bar dataKey="ofensiva" stackId="a" fill="#ff6b6b" name="Intervenció ofensiva" />
-              <Bar dataKey="explica" stackId="a" fill="#4ecdc4" name="Explica" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
+      <InterventionStats stats={totals} />
+      <GenderChart data={genderTotals} />
 
       <div className="text-sm text-muted-foreground text-center">
         Total d&apos;intervencions: {filteredInterventions.length}
