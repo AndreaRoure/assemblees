@@ -78,15 +78,29 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
 
   const renderInterventionCounters = (gender: 'man' | 'woman' | 'trans' | 'non-binary') => (
     <div className="space-y-2">
-      {['Intervenció', 'Dinamitza', 'Interrupció', 'Llarga', 'Explica', 'Ofensiva'].map((label, index) => {
-        const type = ['intervencio', 'dinamitza', 'interrupcio', 'llarga', 'explica', 'ofensiva'][index] as 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica';
+      {[
+        'Dinamitza',
+        'Explica',
+        'Interrupció',
+        'Intervenció curta',
+        'Intervenció llarga',
+        'Ofensiva'
+      ].map((label, index) => {
+        const typeMap = [
+          'dinamitza',
+          'explica',
+          'interrupcio',
+          'intervencio',
+          'llarga',
+          'ofensiva'
+        ] as const;
         return (
           <Counter
-            key={type}
+            key={typeMap[index]}
             label={label}
-            value={counts[gender][type]}
-            onIncrement={() => handleIncrement(gender, type)}
-            onDecrement={() => handleDecrement(gender, type)}
+            value={counts[gender][typeMap[index]]}
+            onIncrement={() => handleIncrement(gender, typeMap[index])}
+            onDecrement={() => handleDecrement(gender, typeMap[index])}
           />
         );
       })}
