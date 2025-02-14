@@ -19,12 +19,15 @@ import {
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, ListChecks } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const RegistersList = () => {
   const [selectedYear, setSelectedYear] = React.useState<string>('all');
   const [selectedGender, setSelectedGender] = React.useState<string>('all');
   const [selectedType, setSelectedType] = React.useState<string>('all');
+  const isMobile = useIsMobile();
 
   // Get unique years from assemblies
   const years = [...new Set(assemblies.map(a => new Date(a.date).getFullYear()))].sort((a, b) => b - a);
@@ -48,6 +51,59 @@ const RegistersList = () => {
     };
     return labels[type] || type;
   };
+
+  // Calculate summary statistics
+  const calculateSummary = () => {
+    const summary = {
+      intervencio: 0,
+      dinamitza: 0,
+      interrupcio: 0,
+      llarga: 0,
+      ofensiva: 0,
+      explica: 0,
+      total: 0
+    };
+
+    filteredAssemblies.forEach(assembly => {
+      const assemblyInterventions = interventions.filter(i => i.assemblyId === assembly.id);
+      assemblyInterventions.forEach(intervention => {
+        summary[intervention.type as keyof typeof summary]++;
+        summary.total++;
+      });
+    });
+
+    return summary;
+  };
+
+  const summary = calculateSummary();
+
+  // Prepare data for the chart
+  const chartData = [
+    {
+      name: 'Intervenció',
+      total: summary.intervencio,
+    },
+    {
+      name: 'Dinamitza',
+      total: summary.dinamitza,
+    },
+    {
+      name: 'Interrupció',
+      total: summary.interrupcio,
+    },
+    {
+      name: 'Llarga',
+      total: summary.llarga,
+    },
+    {
+      name: 'Ofensiva',
+      total: summary.ofensiva,
+    },
+    {
+      name: 'Explica',
+      total: summary.explica,
+    },
+  ];
 
   const handleDownload = () => {
     const rows = filteredAssemblies.map(assembly => {
@@ -146,6 +202,49 @@ const RegistersList = () => {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-4">
+              <ListChecks className="h-5 w-5" />
+              <h3 className="font-semibold">Resum d'Intervencions</h3>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {Object.entries(summary).map(([key, value]) => (
+                key !== 'total' && (
+                  <div key={key} className="space-y-1">
+                    <p className="text-sm text-muted-foreground">{getInterventionTypeLabel(key)}</p>
+                    <p className="text-2xl font-bold">{value}</p>
+                  </div>
+                )
+              ))}
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">Total</p>
+                <p className="text-2xl font-bold">{summary.total}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                  <XAxis 
+                    dataKey="name" 
+                    angle={isMobile ? -45 : -25} 
+                    textAnchor="end" 
+                    height={60} 
+                    interval={0}
+                  />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="total" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
         </div>
 
         <div className="flex justify-end">
