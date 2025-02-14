@@ -27,8 +27,11 @@ const RegistersList = () => {
   const [selectedGender, setSelectedGender] = React.useState<string>('all');
   const [selectedType, setSelectedType] = React.useState<string>('all');
 
-  // Get unique years from assemblies
-  const years = [...new Set(assemblies.map(a => new Date(a.date).getFullYear()))].sort((a, b) => b - a);
+  // Get unique years from assemblies where we actually have data
+  const years = [...new Set(assemblies
+    .filter(a => interventions.some(i => i.assemblyId === a.id))
+    .map(a => new Date(a.date).getFullYear()))]
+    .sort((a, b) => b - a);
 
   // Filter assemblies based on selected year and gender
   const filteredAssemblies = assemblies.filter(assembly => {
@@ -71,18 +74,20 @@ const RegistersList = () => {
     const stats = filteredAssemblies.reduce((acc, assembly) => {
       const counts = countInterventionsByType(assembly.id);
       Object.keys(counts).forEach(key => {
-        acc[key] = (acc[key] || 0) + counts[key];
+        if (key !== 'total') { // Exclude total from the graph
+          acc[key] = (acc[key] || 0) + counts[key];
+        }
       });
       return acc;
     }, {} as Record<string, number>);
 
     return [
-      { name: 'Intervenció', value: stats.intervencio || 0 },
-      { name: 'Dinamitza', value: stats.dinamitza || 0 },
-      { name: 'Interrupció', value: stats.interrupcio || 0 },
-      { name: 'Llarga', value: stats.llarga || 0 },
-      { name: 'Ofensiva', value: stats.ofensiva || 0 },
-      { name: 'Explica', value: stats.explica || 0 },
+      { name: '🗣️ Intervenció', value: stats.intervencio || 0 },
+      { name: '✨ Dinamitza', value: stats.dinamitza || 0 },
+      { name: '✋ Interrupció', value: stats.interrupcio || 0 },
+      { name: '⏳ Llarga', value: stats.llarga || 0 },
+      { name: '⚠️ Ofensiva', value: stats.ofensiva || 0 },
+      { name: '📚 Explica', value: stats.explica || 0 },
     ];
   };
 
@@ -96,17 +101,11 @@ const RegistersList = () => {
         assembly.register.gender === 'man' ? 'Home' :
         assembly.register.gender === 'woman' ? 'Dona' :
         assembly.register.gender === 'trans' ? 'Trans' : 'No binari',
-        counts.intervencio,
-        counts.dinamitza,
-        counts.interrupcio,
-        counts.llarga,
-        counts.ofensiva,
-        counts.explica,
         counts.total
       ].join(',');
     });
 
-    const headers = ['Data', 'Assemblea', 'Registrador/a', 'Gènere', 'Intervencions', 'Dinamitza', 'Interrupcions', 'Llarga', 'Ofensiva', 'Explica', 'Total'].join(',');
+    const headers = ['Data', 'Assemblea', 'Registrador/a', 'Gènere', 'Total'].join(',');
     const csv = [headers, ...rows].join('\n');
     
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -186,7 +185,7 @@ const RegistersList = () => {
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={getTotalStats()} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
               <YAxis />
               <Tooltip />
               <Bar dataKey="value" fill="#8884d8" />
@@ -202,12 +201,6 @@ const RegistersList = () => {
                 <TableHead>Assemblea</TableHead>
                 <TableHead>Registrador/a</TableHead>
                 <TableHead>Gènere</TableHead>
-                <TableHead className="text-right">Int.</TableHead>
-                <TableHead className="text-right">Din.</TableHead>
-                <TableHead className="text-right">Inter.</TableHead>
-                <TableHead className="text-right">Llarg.</TableHead>
-                <TableHead className="text-right">Of.</TableHead>
-                <TableHead className="text-right">Exp.</TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
@@ -225,19 +218,13 @@ const RegistersList = () => {
                       {assembly.register.gender === 'trans' && 'Trans'}
                       {assembly.register.gender === 'non-binary' && 'No binari'}
                     </TableCell>
-                    <TableCell className="text-right">{counts.intervencio}</TableCell>
-                    <TableCell className="text-right">{counts.dinamitza}</TableCell>
-                    <TableCell className="text-right">{counts.interrupcio}</TableCell>
-                    <TableCell className="text-right">{counts.llarga}</TableCell>
-                    <TableCell className="text-right">{counts.ofensiva}</TableCell>
-                    <TableCell className="text-right">{counts.explica}</TableCell>
                     <TableCell className="text-right font-medium">{counts.total}</TableCell>
                   </TableRow>
                 );
               })}
               {filteredAssemblies.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={11} className="text-center py-4 text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center py-4 text-muted-foreground">
                     No s&apos;han trobat registres
                   </TableCell>
                 </TableRow>
