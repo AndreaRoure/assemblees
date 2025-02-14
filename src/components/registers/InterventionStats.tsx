@@ -12,7 +12,7 @@ const getTypeLabel = (type: string) => {
     case 'dinamitza': return 'Dinamitza';
     case 'interrupcio': return 'Interrupcions';
     case 'llarga': return 'Intervencions llargues';
-    case 'ofensiva': return 'Intervencions ofensives';
+    case 'ofensiva': return 'Ofensiva';
     case 'explica': return 'Explica';
     default: return type;
   }
