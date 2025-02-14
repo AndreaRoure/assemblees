@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Minus } from 'lucide-react';
 import { addIntervention, removeIntervention } from '@/data/assemblies';
 
 interface QuickInterventionProps {
@@ -12,11 +11,6 @@ interface QuickInterventionProps {
 const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventionProps) => {
   const handleAdd = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     addIntervention({ assemblyId, gender, type });
-    onInterventionAdded();
-  };
-
-  const handleRemove = (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
-    removeIntervention(assemblyId, type, gender);
     onInterventionAdded();
   };
 
@@ -32,16 +26,6 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
               onClick={() => handleAdd(gender, type)}
               className="flex-1 text-xs md:text-sm px-2 md:px-4"
             >
-              <Plus className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-              {label}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleRemove(gender, type)}
-              className="flex-1 text-xs md:text-sm px-2 md:px-4"
-            >
-              <Minus className="h-3 w-3 md:h-4 md:w-4 mr-1" />
               {label}
             </Button>
           </div>
