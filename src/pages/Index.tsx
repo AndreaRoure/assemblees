@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
@@ -102,10 +101,9 @@ const Index = () => {
           </div>
         ) : (
           <Tabs defaultValue="assemblies" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-4 md:mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
               <TabsTrigger value="assemblies">Assemblees</TabsTrigger>
-              <TabsTrigger value="registers">Registres</TabsTrigger>
-              <TabsTrigger value="attendance">Assistències</TabsTrigger>
+              <TabsTrigger value="stats">Registres i Assistències</TabsTrigger>
             </TabsList>
             
             <TabsContent value="assemblies">
@@ -128,15 +126,13 @@ const Index = () => {
               </ScrollArea>
             </TabsContent>
 
-            <TabsContent value="registers">
+            <TabsContent value="stats">
               <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
-                <RegistersList />
-              </ScrollArea>
-            </TabsContent>
-
-            <TabsContent value="attendance">
-              <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
-                <AttendanceList />
+                <div className="space-y-6">
+                  <RegistersList />
+                  <div className="h-px bg-border" />
+                  <AttendanceList />
+                </div>
               </ScrollArea>
             </TabsContent>
           </Tabs>
