@@ -3,12 +3,15 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { AssemblyStats as AssemblyStatsType } from '@/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AssemblyStatsProps {
   stats: AssemblyStatsType;
 }
 
 const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
+  const isMobile = useIsMobile();
+
   const data = [
     {
       name: 'Home',
@@ -50,14 +53,14 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
 
   return (
     <Card className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Estadístiques per Gènere i Tipus</h3>
-      <div className="h-[400px]">
+      <h3 className="text-base md:text-lg font-semibold mb-4">Estadístiques per Gènere i Tipus</h3>
+      <div className="h-[300px] md:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
-            <XAxis dataKey="name" />
+          <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+            <XAxis dataKey="name" angle={isMobile ? -45 : 0} textAnchor={isMobile ? "end" : "middle"} height={60} />
             <YAxis />
             <Tooltip />
-            <Legend />
+            <Legend verticalAlign="bottom" height={36} />
             <Bar dataKey="Intervenció" stackId="a" fill="#8884d8" />
             <Bar dataKey="Dinamitza" stackId="a" fill="#82ca9d" />
             <Bar dataKey="Interrupció" stackId="a" fill="#ffc658" />

@@ -25,23 +25,23 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
       {['Intervenció', 'Dinamitza', 'Interrupció', 'Llarga', 'Explica', 'Ofensiva'].map((label, index) => {
         const type = ['intervencio', 'dinamitza', 'interrupcio', 'llarga', 'explica', 'ofensiva'][index] as 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica';
         return (
-          <div key={type} className="flex gap-2">
+          <div key={type} className="flex gap-1 md:gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleAdd(gender, type)}
-              className="flex-1"
+              className="flex-1 text-xs md:text-sm px-2 md:px-4"
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-3 w-3 md:h-4 md:w-4 mr-1" />
               {label}
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleRemove(gender, type)}
-              className="flex-1"
+              className="flex-1 text-xs md:text-sm px-2 md:px-4"
             >
-              <Minus className="h-4 w-4 mr-1" />
+              <Minus className="h-3 w-3 md:h-4 md:w-4 mr-1" />
               {label}
             </Button>
           </div>
@@ -51,7 +51,7 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
   );
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-2">
         <h3 className="text-sm font-medium mb-2">Home</h3>
         {renderInterventionButtons('man')}
