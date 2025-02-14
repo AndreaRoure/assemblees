@@ -82,11 +82,12 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
 
           <div className="space-y-2">
             <Label>Gènere</Label>
+            <input type="hidden" {...form.register('gender')} />
             <RadioGroup
-              defaultValue={assembly.register.gender}
+              defaultValue={form.getValues('gender')}
               value={form.getValues('gender')}
               onValueChange={(value: 'man' | 'woman' | 'trans' | 'non-binary') => {
-                form.setValue('gender', value);
+                form.setValue('gender', value, { shouldValidate: true });
               }}
               className="grid grid-cols-2 gap-4"
             >
