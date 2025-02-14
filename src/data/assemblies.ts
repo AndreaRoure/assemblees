@@ -33,6 +33,60 @@ export const initializeData = async () => {
   if (interventionData.data) interventions = interventionData.data;
 };
 
+export const addAssembly = async (assembly: Omit<Assembly, 'id'>) => {
+  const { data, error } = await supabase
+    .from('assemblies')
+    .insert([assembly])
+    .select()
+    .single();
+  
+  if (error) throw error;
+  if (data) assemblies.unshift(data);
+  return data;
+};
+
+export const deleteAssembly = async (id: string) => {
+  // First delete related interventions
+  const { error: interventionsError } = await supabase
+    .from('interventions')
+    .delete()
+    .eq('assembly_id', id);
+
+  if (interventionsError) throw interventionsError;
+
+  // Then delete the assembly
+  const { error } = await supabase
+    .from('assemblies')
+    .delete()
+    .eq('id', id);
+  
+  if (error) throw error;
+  
+  const index = assemblies.findIndex(a => a.id === id);
+  if (index !== -1) {
+    assemblies.splice(index, 1);
+    interventions = interventions.filter(i => i.assembly_id !== id);
+  }
+};
+
+export const updateAssembly = async (id: string, updates: Partial<Omit<Assembly, 'id'>>) => {
+  const { data, error } = await supabase
+    .from('assemblies')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  if (data) {
+    const index = assemblies.findIndex(a => a.id === id);
+    if (index !== -1) {
+      assemblies[index] = data;
+    }
+  }
+  return data;
+};
+
 export const addIntervention = async (intervention: { assembly_id: string, type: string, gender: string }) => {
   const { data, error } = await supabase
     .from('interventions')
@@ -41,6 +95,7 @@ export const addIntervention = async (intervention: { assembly_id: string, type:
     .single();
   
   if (error) throw error;
+  if (data) interventions.push(data);
   return data;
 };
 
