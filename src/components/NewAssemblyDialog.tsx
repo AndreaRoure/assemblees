@@ -4,12 +4,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus } from 'lucide-react';
+import { Plus, Wand2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { addAssembly } from '@/lib/supabase';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 interface RegisterFormData {
   name: string;
@@ -25,6 +26,7 @@ interface NewAssemblyDialogProps {
 
 const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   const [open, setOpen] = React.useState(false);
+  const [isGeneratingDescription, setIsGeneratingDescription] = React.useState(false);
   const form = useForm<RegisterFormData>();
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -53,6 +55,30 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
     setOpen(isOpen);
     if (!isOpen) {
       form.reset();
+    }
+  };
+
+  const generateDescription = async () => {
+    try {
+      setIsGeneratingDescription(true);
+      const { data, error } = await supabase.functions.invoke('generate-description', {
+        body: {
+          assemblyName: form.getValues('assemblyName'),
+          currentDescription: form.getValues('description'),
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.suggestion) {
+        form.setValue('description', data.suggestion);
+        toast.success("Descripció generada correctament");
+      }
+    } catch (error) {
+      console.error('Error generating description:', error);
+      toast.error("Error generant la descripció");
+    } finally {
+      setIsGeneratingDescription(false);
     }
   };
 
@@ -126,7 +152,20 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label>Descripció (opcional)</Label>
+            <div className="flex items-center justify-between">
+              <Label>Descripció (opcional)</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={generateDescription}
+                disabled={isGeneratingDescription}
+                className="flex items-center gap-2"
+              >
+                <Wand2 className="h-4 w-4" />
+                {isGeneratingDescription ? "Generant..." : "Generar amb IA"}
+              </Button>
+            </div>
             <Textarea
               {...form.register('description')}
               placeholder="Descripció breu..."
