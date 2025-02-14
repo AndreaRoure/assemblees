@@ -77,16 +77,23 @@ const FiltersSection = ({
         </div>
 
         <div className="flex-1 min-w-[160px]">
-          <div className="h-9">
-            <Button
-              variant="outline"
-              onClick={onDownload}
-              className="w-full h-full text-sm"
-            >
+          <Select
+            value="download"
+            onValueChange={() => onDownload()}
+          >
+            <SelectTrigger className="w-full h-9 text-sm">
               <Download className="h-4 w-4 mr-2 flex-shrink-0" />
               <span className="whitespace-nowrap">Descarregar CSV</span>
-            </Button>
-          </div>
+            </SelectTrigger>
+            <SelectContent 
+              className="w-[var(--radix-select-trigger-width)] min-w-[160px] z-[100]"
+              position="popper"
+              sideOffset={4}
+              align="start"
+            >
+              <SelectItem value="download">Descarregar CSV</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
