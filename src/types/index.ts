@@ -18,13 +18,22 @@ export interface Intervention {
   timestamp: number;
 }
 
+interface GenderStats {
+  intervencio: number;
+  dinamitza: number;
+  interrupcio: number;
+  llarga: number;
+  ofensiva: number;
+  explica: number;
+}
+
 export interface AssemblyStats {
   totalInterventions: number;
   byGender: {
-    man: number;
-    woman: number;
-    trans: number;
-    'non-binary': number;
+    man: GenderStats;
+    woman: GenderStats;
+    trans: GenderStats;
+    'non-binary': GenderStats;
   };
   byType: {
     intervencio: number;
