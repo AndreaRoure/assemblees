@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { assemblies, getAssemblyStats } from '@/data/assemblies';
+import { useQuery } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
 import AssemblyCard from '@/components/AssemblyCard';
 import QuickIntervention from '@/components/QuickIntervention';
@@ -10,13 +10,17 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
 import Logo from '@/components/Logo';
+import { fetchAssemblies } from '@/lib/supabase';
+import { getAssemblyStats } from '@/data/assemblies';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
-  const [, forceUpdate] = React.useState({});
   const isMobile = useIsMobile();
 
-  const refresh = () => forceUpdate({});
+  const { data: assemblies = [], refetch } = useQuery({
+    queryKey: ['assemblies'],
+    queryFn: fetchAssemblies
+  });
 
   const stats = selectedAssembly ? getAssemblyStats(selectedAssembly) : null;
 
@@ -28,7 +32,7 @@ const Index = () => {
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
             Taula d&apos;Observació de Dinàmiques en Assemblees
           </h1>
-          <NewAssemblyDialog onAssemblyCreated={refresh} />
+          <NewAssemblyDialog onAssemblyCreated={refetch} />
         </div>
 
         {selectedAssembly ? (
@@ -42,7 +46,7 @@ const Index = () => {
             
             <QuickIntervention
               assemblyId={selectedAssembly}
-              onInterventionAdded={refresh}
+              onInterventionAdded={refetch}
             />
             
             {stats && <AssemblyStats stats={stats} />}
@@ -62,7 +66,7 @@ const Index = () => {
                       key={assembly.id}
                       assembly={assembly}
                       onClick={() => setSelectedAssembly(assembly.id)}
-                      onEdited={refresh}
+                      onEdited={refetch}
                     />
                   ))}
                   {assemblies.length === 0 && (

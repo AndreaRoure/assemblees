@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { addAssembly } from '@/data/assemblies';
+import { addAssembly } from '@/lib/supabase';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 interface RegisterFormData {
   name: string;
@@ -26,20 +27,26 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   const [open, setOpen] = React.useState(false);
   const form = useForm<RegisterFormData>();
 
-  const onSubmit = (data: RegisterFormData) => {
-    addAssembly({
-      name: data.assemblyName,
-      date: data.date,
-      description: data.description,
-      register: {
-        name: data.name,
-        gender: data.gender,
-      },
-    });
-    
-    setOpen(false);
-    form.reset();
-    onAssemblyCreated();
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      await addAssembly({
+        name: data.assemblyName,
+        date: data.date,
+        description: data.description,
+        register: {
+          name: data.name,
+          gender: data.gender,
+        },
+      });
+      
+      setOpen(false);
+      form.reset();
+      onAssemblyCreated();
+      toast.success("Assemblea creada correctament");
+    } catch (error) {
+      console.error('Error creating assembly:', error);
+      toast.error("Error creant l'assemblea");
+    }
   };
 
   const handleOpenChange = (isOpen: boolean) => {
