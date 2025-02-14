@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,8 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const RegistersList = () => {
+  const isMobile = useIsMobile();
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [selectedGender, setSelectedGender] = useState<string>('all');
   const queryClient = useQueryClient();
@@ -179,13 +180,44 @@ const RegistersList = () => {
 
       <Card className="p-4">
         <div className="font-semibold mb-4">Intervencions per Gènere</div>
-        <div className="h-[300px]">
+        <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={genderTotals}>
-              <XAxis dataKey="gender" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
+            <BarChart 
+              data={genderTotals}
+              margin={{ 
+                top: 20, 
+                right: isMobile ? 10 : 30, 
+                left: isMobile ? 0 : 20, 
+                bottom: isMobile ? 120 : 80 
+              }}
+            >
+              <XAxis 
+                dataKey="gender"
+                angle={isMobile ? -45 : 0}
+                textAnchor={isMobile ? "end" : "middle"}
+                height={isMobile ? 80 : 60}
+                interval={0}
+                tick={{ fontSize: isMobile ? 10 : 12 }}
+              />
+              <YAxis 
+                width={isMobile ? 30 : 40}
+                tick={{ fontSize: isMobile ? 10 : 12 }}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  fontSize: isMobile ? '10px' : '12px',
+                  padding: isMobile ? '8px' : '10px'
+                }}
+              />
+              <Legend 
+                verticalAlign="bottom"
+                height={36}
+                wrapperStyle={{ 
+                  paddingTop: '20px',
+                  fontSize: isMobile ? '10px' : '12px',
+                  marginBottom: isMobile ? '40px' : '20px'
+                }}
+              />
               <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
               <Bar dataKey="dinamitza" stackId="a" fill="#82ca9d" name="Dinamitza" />
               <Bar dataKey="interrupcio" stackId="a" fill="#ffc658" name="Interrupció" />

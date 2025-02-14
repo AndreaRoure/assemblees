@@ -1,10 +1,9 @@
+
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { useQuery } from '@tanstack/react-query';
 import { AssemblyStats as AssemblyStatsType } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { fetchAssemblyInterventions } from '@/lib/supabase';
 
 interface AssemblyStatsProps {
   stats: AssemblyStatsType;
@@ -46,28 +45,42 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   return (
     <Card className="p-4">
       <h3 className="text-base md:text-lg font-semibold mb-4">Estadístiques per Gènere i Tipus</h3>
-      <div className="h-[300px] md:h-[400px]">
+      <div className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
             data={data} 
-            margin={{ top: 20, right: 30, left: 20, bottom: isMobile ? 100 : 80 }}
+            margin={{ 
+              top: 20, 
+              right: isMobile ? 10 : 30, 
+              left: isMobile ? 0 : 20, 
+              bottom: isMobile ? 120 : 80 
+            }}
           >
             <XAxis 
               dataKey="name" 
               angle={isMobile ? -45 : 0} 
               textAnchor={isMobile ? "end" : "middle"} 
-              height={60} 
+              height={isMobile ? 80 : 60} 
               interval={0}
               tick={{ fontSize: isMobile ? 10 : 12 }}
             />
-            <YAxis />
-            <Tooltip />
+            <YAxis 
+              width={isMobile ? 30 : 40}
+              tick={{ fontSize: isMobile ? 10 : 12 }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                fontSize: isMobile ? '10px' : '12px',
+                padding: isMobile ? '8px' : '10px'
+              }}
+            />
             <Legend 
               verticalAlign="bottom" 
               height={36}
               wrapperStyle={{ 
                 paddingTop: '20px',
-                fontSize: isMobile ? '10px' : '12px'
+                fontSize: isMobile ? '10px' : '12px',
+                marginBottom: isMobile ? '40px' : '20px'
               }}
             />
             <Bar dataKey="Dinamitza" stackId="a" fill="#82ca9d" />
