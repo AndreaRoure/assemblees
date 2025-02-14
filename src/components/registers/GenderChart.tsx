@@ -1,6 +1,7 @@
 
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface GenderChartProps {
   data: Array<{
@@ -15,21 +16,30 @@ interface GenderChartProps {
 }
 
 const GenderChart = ({ data }: GenderChartProps) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <Card className="p-6 bg-gradient-to-br from-white to-gray-50">
-      <div className="font-semibold mb-6 text-lg bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+    <Card className="p-6 bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-all duration-200">
+      <div className="text-base md:text-lg font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
         Intervencions per Gènere
       </div>
-      <div className="h-[400px]"> {/* Increased height for better visibility */}
+      <div className="h-[300px] md:h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
+          <BarChart 
+            data={data}
+            margin={{ top: 20, right: 30, left: 20, bottom: isMobile ? 100 : 80 }}
+          >
             <XAxis 
               dataKey="gender" 
-              tick={{ fill: '#4B5563' }} 
+              angle={isMobile ? -45 : 0}
+              textAnchor={isMobile ? "end" : "middle"}
+              height={60}
+              interval={0}
+              tick={{ fontSize: isMobile ? 10 : 12, fill: '#4B5563' }}
               tickLine={{ stroke: '#4B5563' }}
             />
             <YAxis 
-              tick={{ fill: '#4B5563' }} 
+              tick={{ fontSize: isMobile ? 10 : 12, fill: '#4B5563' }}
               tickLine={{ stroke: '#4B5563' }}
             />
             <Tooltip 
@@ -41,16 +51,19 @@ const GenderChart = ({ data }: GenderChartProps) => {
               }}
             />
             <Legend 
-              wrapperStyle={{
-                paddingTop: '20px'
+              verticalAlign="bottom"
+              height={36}
+              wrapperStyle={{ 
+                paddingTop: '20px',
+                fontSize: isMobile ? '10px' : '12px'
               }}
             />
-            <Bar dataKey="intervencio" stackId="a" fill="#8B5CF6" name="Intervenció" />
-            <Bar dataKey="dinamitza" stackId="a" fill="#10B981" name="Dinamitza" />
-            <Bar dataKey="interrupcio" stackId="a" fill="#F59E0B" name="Interrupció" />
-            <Bar dataKey="llarga" stackId="a" fill="#3B82F6" name="Intervenció llarga" />
-            <Bar dataKey="ofensiva" stackId="a" fill="#EF4444" name="Ofensiva" />
-            <Bar dataKey="explica" stackId="a" fill="#6366F1" name="Explica" />
+            <Bar dataKey="dinamitza" stackId="a" fill="#82ca9d" name="Dinamitza" />
+            <Bar dataKey="explica" stackId="a" fill="#4ecdc4" name="Explica" />
+            <Bar dataKey="interrupcio" stackId="a" fill="#ffc658" name="Interrupció" />
+            <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
+            <Bar dataKey="llarga" stackId="a" fill="#ff8042" name="Intervenció llarga" />
+            <Bar dataKey="ofensiva" stackId="a" fill="#ff6b6b" name="Ofensiva" />
           </BarChart>
         </ResponsiveContainer>
       </div>
