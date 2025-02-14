@@ -195,7 +195,6 @@ const AttendanceList = () => {
               <SelectItem value="all">Tots els tipus</SelectItem>
               <SelectItem value="in-person">Presencial</SelectItem>
               <SelectItem value="online">En línia</SelectItem>
-              <SelectItem value="hybrid">Híbrid</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -237,11 +236,7 @@ const AttendanceList = () => {
                       <TableCell className="font-medium">{record.name}</TableCell>
                       <TableCell>{new Date(record.date).toLocaleDateString('ca-ES')}</TableCell>
                       <TableCell>
-                        {record.type === 'online' 
-                          ? 'En línia' 
-                          : record.type === 'hybrid'
-                            ? 'Híbrid'
-                            : 'Presencial'}
+                        {record.type === 'online' ? 'En línia' : 'Presencial'}
                       </TableCell>
                       <TableCell className="text-right">{record.inPersonAttendees}</TableCell>
                       <TableCell className="text-right">{record.onlineAttendees}</TableCell>
