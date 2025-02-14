@@ -13,6 +13,24 @@ export const addAssembly = (assembly: Omit<Assembly, 'id'>) => {
   return newAssembly;
 };
 
+export const deleteAssembly = (id: string) => {
+  const index = assemblies.findIndex(a => a.id === id);
+  if (index !== -1) {
+    assemblies.splice(index, 1);
+    // Also delete related interventions
+    const filteredInterventions = interventions.filter(i => i.assemblyId !== id);
+    interventions.length = 0;
+    interventions.push(...filteredInterventions);
+  }
+};
+
+export const updateAssembly = (id: string, updates: Partial<Omit<Assembly, 'id'>>) => {
+  const assembly = assemblies.find(a => a.id === id);
+  if (assembly) {
+    Object.assign(assembly, updates);
+  }
+};
+
 export const addIntervention = (intervention: Omit<Intervention, 'id' | 'timestamp'>) => {
   const newIntervention = {
     ...intervention,
@@ -21,6 +39,17 @@ export const addIntervention = (intervention: Omit<Intervention, 'id' | 'timesta
   };
   interventions.push(newIntervention);
   return newIntervention;
+};
+
+export const removeIntervention = (assemblyId: string, type: string, gender: string) => {
+  const intervention = [...interventions]
+    .reverse()
+    .find(i => i.assemblyId === assemblyId && i.type === type && i.gender === gender);
+  
+  if (intervention) {
+    const index = interventions.indexOf(intervention);
+    interventions.splice(index, 1);
+  }
 };
 
 export const getAssemblyStats = (assemblyId: string): AssemblyStats => {

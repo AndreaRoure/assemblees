@@ -56,6 +56,7 @@ const Index = () => {
                       key={assembly.id}
                       assembly={assembly}
                       onClick={() => setSelectedAssembly(assembly.id)}
+                      onEdited={refresh}
                     />
                   ))}
                   {assemblies.length === 0 && (

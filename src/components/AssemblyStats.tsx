@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { AssemblyStats as AssemblyStatsType } from '@/types';
 
 interface AssemblyStatsProps {
@@ -9,51 +9,65 @@ interface AssemblyStatsProps {
 }
 
 const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
-  const genderData = [
-    { name: 'Home', value: stats.byGender.man },
-    { name: 'Dona', value: stats.byGender.woman },
-    { name: 'Trans', value: stats.byGender.trans },
-    { name: 'No binari', value: stats.byGender['non-binary'] },
-  ];
-
-  const typeData = [
-    { name: 'Intervenció', value: stats.byType.intervencio },
-    { name: 'Dinamitza', value: stats.byType.dinamitza },
-    { name: 'Interrupció', value: stats.byType.interrupcio },
-    { name: 'Llarga', value: stats.byType.llarga },
-    { name: 'Ofensiva', value: stats.byType.ofensiva },
+  const data = [
+    {
+      name: 'Home',
+      Intervenció: stats.byType.intervencio,
+      Dinamitza: stats.byType.dinamitza,
+      Interrupció: stats.byType.interrupcio,
+      Llarga: stats.byType.llarga,
+      Ofensiva: stats.byType.ofensiva,
+      Explica: stats.byType.explica,
+    },
+    {
+      name: 'Dona',
+      Intervenció: stats.byType.intervencio,
+      Dinamitza: stats.byType.dinamitza,
+      Interrupció: stats.byType.interrupcio,
+      Llarga: stats.byType.llarga,
+      Ofensiva: stats.byType.ofensiva,
+      Explica: stats.byType.explica,
+    },
+    {
+      name: 'Trans',
+      Intervenció: stats.byType.intervencio,
+      Dinamitza: stats.byType.dinamitza,
+      Interrupció: stats.byType.interrupcio,
+      Llarga: stats.byType.llarga,
+      Ofensiva: stats.byType.ofensiva,
+      Explica: stats.byType.explica,
+    },
+    {
+      name: 'No Binari',
+      Intervenció: stats.byType.intervencio,
+      Dinamitza: stats.byType.dinamitza,
+      Interrupció: stats.byType.interrupcio,
+      Llarga: stats.byType.llarga,
+      Ofensiva: stats.byType.ofensiva,
+      Explica: stats.byType.explica,
+    },
   ];
 
   return (
-    <div className="space-y-6">
-      <Card className="p-4">
-        <h3 className="text-lg font-semibold mb-4">Per Gènere</h3>
-        <div className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={genderData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-
-      <Card className="p-4">
-        <h3 className="text-lg font-semibold mb-4">Per Tipus</h3>
-        <div className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={typeData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-    </div>
+    <Card className="p-4">
+      <h3 className="text-lg font-semibold mb-4">Estadístiques per Gènere i Tipus</h3>
+      <div className="h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="Intervenció" stackId="a" fill="#8884d8" />
+            <Bar dataKey="Dinamitza" stackId="a" fill="#82ca9d" />
+            <Bar dataKey="Interrupció" stackId="a" fill="#ffc658" />
+            <Bar dataKey="Llarga" stackId="a" fill="#ff8042" />
+            <Bar dataKey="Ofensiva" stackId="a" fill="#ff6b6b" />
+            <Bar dataKey="Explica" stackId="a" fill="#4ecdc4" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </Card>
   );
 };
 
