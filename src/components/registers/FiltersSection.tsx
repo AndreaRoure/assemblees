@@ -75,17 +75,17 @@ const FiltersSection = ({
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      <div className="w-full">
-        <Button
-          variant="outline"
-          onClick={onDownload}
-          className="w-full h-9 text-sm min-[480px]:w-auto"
-        >
-          <Download className="h-4 w-4 mr-2 flex-shrink-0" />
-          <span className="whitespace-nowrap">Descarregar CSV</span>
-        </Button>
+        <div className="flex-1 min-w-[160px]">
+          <Button
+            variant="outline"
+            onClick={onDownload}
+            className="w-full h-9 text-sm"
+          >
+            <Download className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="whitespace-nowrap">Descarregar CSV</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
