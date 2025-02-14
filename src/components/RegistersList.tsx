@@ -20,7 +20,7 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Download, ListChecks } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const RegistersList = () => {
@@ -42,12 +42,12 @@ const RegistersList = () => {
 
   const getInterventionTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      'intervencio': '🗣️ Intervenció',
-      'dinamitza': '✨ Dinamitza',
-      'interrupcio': '✋ Interrupció',
-      'llarga': '⏳ Llarga',
-      'ofensiva': '⚠️ Ofensiva',
-      'explica': '📚 Explica'
+      'intervencio': 'Intervenció',
+      'dinamitza': 'Dinamitza',
+      'interrupcio': 'Interrupció',
+      'llarga': 'Llarga',
+      'ofensiva': 'Ofensiva',
+      'explica': 'Explica'
     };
     return labels[type] || type;
   };
@@ -193,12 +193,12 @@ const RegistersList = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tots els tipus</SelectItem>
-                <SelectItem value="intervencio">🗣️ Intervenció</SelectItem>
-                <SelectItem value="dinamitza">✨ Dinamitza</SelectItem>
-                <SelectItem value="interrupcio">✋ Interrupció</SelectItem>
-                <SelectItem value="llarga">⏳ Llarga</SelectItem>
-                <SelectItem value="ofensiva">⚠️ Ofensiva</SelectItem>
-                <SelectItem value="explica">📚 Explica</SelectItem>
+                <SelectItem value="intervencio">Intervenció</SelectItem>
+                <SelectItem value="dinamitza">Dinamitza</SelectItem>
+                <SelectItem value="interrupcio">Interrupció</SelectItem>
+                <SelectItem value="llarga">Llarga</SelectItem>
+                <SelectItem value="ofensiva">Ofensiva</SelectItem>
+                <SelectItem value="explica">Explica</SelectItem>
               </SelectContent>
             </Select>
           </div>
