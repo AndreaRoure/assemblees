@@ -27,6 +27,8 @@ interface EditAssemblyDialogProps {
 }
 
 const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: EditAssemblyDialogProps) => {
+  const [selectedGender, setSelectedGender] = React.useState(assembly.register.gender);
+
   const form = useForm<EditFormData>({
     defaultValues: {
       name: assembly.register.name,
@@ -39,6 +41,11 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
 
   const onSubmit = async (data: EditFormData) => {
     try {
+      console.log('Submitting data:', {
+        ...data,
+        gender: selectedGender,
+      });
+
       const { error } = await supabase
         .from('assemblies')
         .update({
@@ -47,12 +54,15 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
           description: data.description,
           register: {
             name: data.name,
-            gender: data.gender,
+            gender: selectedGender,
           },
         })
         .eq('id', assembly.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       
       onOpenChange(false);
       onAssemblyEdited();
@@ -62,6 +72,13 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
       toast.error("Error actualitzant l'assemblea");
     }
   };
+
+  // Reset selected gender when dialog opens
+  React.useEffect(() => {
+    if (open) {
+      setSelectedGender(assembly.register.gender);
+    }
+  }, [open, assembly.register.gender]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -82,13 +99,9 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
 
           <div className="space-y-2">
             <Label>Gènere</Label>
-            <input type="hidden" {...form.register('gender')} />
             <RadioGroup
-              defaultValue={form.getValues('gender')}
-              value={form.getValues('gender')}
-              onValueChange={(value: 'man' | 'woman' | 'trans' | 'non-binary') => {
-                form.setValue('gender', value, { shouldValidate: true });
-              }}
+              value={selectedGender}
+              onValueChange={setSelectedGender}
               className="grid grid-cols-2 gap-4"
             >
               <div className="flex items-center space-x-2">
