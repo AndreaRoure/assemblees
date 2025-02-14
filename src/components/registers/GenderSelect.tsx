@@ -22,7 +22,7 @@ const GenderSelect = ({ value, onValueChange }: GenderSelectProps) => {
         <SelectItem value="all">Tots els gèneres</SelectItem>
         <SelectItem value="man">Homes</SelectItem>
         <SelectItem value="woman">Dones</SelectItem>
-        <SelectItem value="non-binary">Persones No Binàries</SelectItem>
+        <SelectItem value="non-binary">No binàries</SelectItem>
       </SelectContent>
     </Select>
   );
