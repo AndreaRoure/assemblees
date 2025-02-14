@@ -1,8 +1,8 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { useQuery } from '@tanstack/react-query';
-import { fetchInterventions } from '@/lib/supabase';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { fetchInterventions, supabase } from '@/lib/supabase';
 import {
   Select,
   SelectContent,
@@ -16,8 +16,31 @@ import { Download } from "lucide-react";
 const RegistersList = () => {
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [selectedGender, setSelectedGender] = useState<string>('all');
+  const queryClient = useQueryClient();
 
-  const { data: interventions = [] } = useQuery({
+  // Set up real-time subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel('interventions-changes')
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'interventions' 
+        }, 
+        () => {
+          // Invalidate and refetch interventions when there are changes
+          queryClient.invalidateQueries({ queryKey: ['interventions'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  const { data: interventions = [], isLoading } = useQuery({
     queryKey: ['interventions'],
     queryFn: fetchInterventions
   });
@@ -84,69 +107,75 @@ const RegistersList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-4">
-        <Select
-          value={selectedYear}
-          onValueChange={setSelectedYear}
-        >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Selecciona l'any" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tots els anys</SelectItem>
-            {years.map(year => (
-              <SelectItem key={year} value={year.toString()}>
-                {year}
-              </SelectItem>
+      {isLoading ? (
+        <div className="text-center text-muted-foreground">Carregant...</div>
+      ) : (
+        <>
+          <div className="flex flex-wrap gap-4">
+            <Select
+              value={selectedYear}
+              onValueChange={setSelectedYear}
+            >
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Selecciona l'any" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tots els anys</SelectItem>
+                {years.map(year => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={selectedGender}
+              onValueChange={setSelectedGender}
+            >
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Selecciona el gènere" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tots els gèneres</SelectItem>
+                <SelectItem value="man">Homes</SelectItem>
+                <SelectItem value="woman">Dones</SelectItem>
+                <SelectItem value="trans">Persones Trans</SelectItem>
+                <SelectItem value="non-binary">Persones No Binàries</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant="outline"
+              onClick={downloadCSV}
+              className="ml-auto"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Descarregar CSV
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Object.entries(totals).map(([type, count]) => (
+              <Card key={type} className="p-4">
+                <div className="text-lg font-semibold">{count}</div>
+                <div className="text-sm text-muted-foreground">
+                  {type === 'intervencio' && 'Intervencions'}
+                  {type === 'dinamitza' && 'Dinamitza'}
+                  {type === 'interrupcio' && 'Interrupcions'}
+                  {type === 'llarga' && 'Intervencions llargues'}
+                  {type === 'ofensiva' && 'Intervencions ofensives'}
+                  {type === 'explica' && 'Explica'}
+                </div>
+              </Card>
             ))}
-          </SelectContent>
-        </Select>
+          </div>
 
-        <Select
-          value={selectedGender}
-          onValueChange={setSelectedGender}
-        >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Selecciona el gènere" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tots els gèneres</SelectItem>
-            <SelectItem value="man">Homes</SelectItem>
-            <SelectItem value="woman">Dones</SelectItem>
-            <SelectItem value="trans">Persones Trans</SelectItem>
-            <SelectItem value="non-binary">Persones No Binàries</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Button
-          variant="outline"
-          onClick={downloadCSV}
-          className="ml-auto"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Descarregar CSV
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {Object.entries(totals).map(([type, count]) => (
-          <Card key={type} className="p-4">
-            <div className="text-lg font-semibold">{count}</div>
-            <div className="text-sm text-muted-foreground">
-              {type === 'intervencio' && 'Intervencions'}
-              {type === 'dinamitza' && 'Dinamitza'}
-              {type === 'interrupcio' && 'Interrupcions'}
-              {type === 'llarga' && 'Intervencions llargues'}
-              {type === 'ofensiva' && 'Intervencions ofensives'}
-              {type === 'explica' && 'Explica'}
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      <div className="text-sm text-muted-foreground text-center">
-        Total d&apos;intervencions: {filteredInterventions.length}
-      </div>
+          <div className="text-sm text-muted-foreground text-center">
+            Total d&apos;intervencions: {filteredInterventions.length}
+          </div>
+        </>
+      )}
     </div>
   );
 };
