@@ -49,14 +49,12 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
             <UserCircle2 className="h-4 w-4" />
             <span>Registrat per: {assembly.register.name}</span>
           </div>
-          <div className="flex gap-2 text-sm font-bold">
-            <Button variant="ghost" size="sm" onClick={handleEdit} className="font-bold">
-              <Pencil className="h-4 w-4 mr-1" />
-              Editar
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={handleEdit} className="h-8 w-8 p-0">
+              <Pencil className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleDelete} className="font-bold">
-              <Trash2 className="h-4 w-4 mr-1" />
-              Eliminar
+            <Button variant="ghost" size="sm" onClick={handleDelete} className="h-8 w-8 p-0">
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
