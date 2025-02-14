@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
@@ -223,12 +224,12 @@ const RegistersList = () => {
                   paddingTop: '16px'
                 }}
               />
-              <Bar dataKey="intervencio" fill="#8884d8" name="Intervenció" />
-              <Bar dataKey="dinamitza" fill="#82ca9d" name="Dinamitza" />
-              <Bar dataKey="interrupcio" fill="#ffc658" name="Interrupció" />
-              <Bar dataKey="llarga" fill="#ff8042" name="Intervenció llarga" />
-              <Bar dataKey="ofensiva" fill="#ff6b6b" name="Ofensiva" />
-              <Bar dataKey="explica" fill="#4ecdc4" name="Explica" />
+              <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
+              <Bar dataKey="dinamitza" stackId="a" fill="#82ca9d" name="Dinamitza" />
+              <Bar dataKey="interrupcio" stackId="a" fill="#ffc658" name="Interrupció" />
+              <Bar dataKey="llarga" stackId="a" fill="#ff8042" name="Intervenció llarga" />
+              <Bar dataKey="ofensiva" stackId="a" fill="#ff6b6b" name="Ofensiva" />
+              <Bar dataKey="explica" stackId="a" fill="#4ecdc4" name="Explica" />
             </BarChart>
           </ResponsiveContainer>
         </div>
