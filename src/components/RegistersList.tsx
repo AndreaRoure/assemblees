@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -87,7 +86,6 @@ const RegistersList = () => {
     const totals = {
       man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 },
       woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 },
-      trans: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 },
       'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 }
     };
 
@@ -98,7 +96,6 @@ const RegistersList = () => {
     return Object.entries(totals).map(([gender, counts]) => ({
       gender: gender === 'man' ? 'Homes' :
              gender === 'woman' ? 'Dones' :
-             gender === 'trans' ? 'Persones Trans' :
              'Persones No Binàries',
       ...counts
     }));
@@ -162,7 +159,6 @@ const RegistersList = () => {
             <SelectItem value="all">Tots els gèneres</SelectItem>
             <SelectItem value="man">Homes</SelectItem>
             <SelectItem value="woman">Dones</SelectItem>
-            <SelectItem value="trans">Persones Trans</SelectItem>
             <SelectItem value="non-binary">Persones No Binàries</SelectItem>
           </SelectContent>
         </Select>

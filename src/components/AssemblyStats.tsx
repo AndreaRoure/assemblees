@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -14,7 +13,6 @@ interface AssemblyStatsProps {
 const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   const isMobile = useIsMobile();
 
-  // Memoize the data transformation to prevent unnecessary recalculations
   const data = useMemo(() => [
     {
       name: 'Home',
@@ -33,15 +31,6 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
       'Intervenció llarga': stats.byGender.woman.llarga,
       'Ofensiva': stats.byGender.woman.ofensiva,
       'Explica': stats.byGender.woman.explica,
-    },
-    {
-      name: 'Trans',
-      'Intervenció curta': stats.byGender.trans.intervencio,
-      'Dinamitza': stats.byGender.trans.dinamitza,
-      'Interrupció': stats.byGender.trans.interrupcio,
-      'Intervenció llarga': stats.byGender.trans.llarga,
-      'Ofensiva': stats.byGender.trans.ofensiva,
-      'Explica': stats.byGender.trans.explica,
     },
     {
       name: 'No Binari',

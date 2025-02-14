@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,7 @@ import { Wand2 } from 'lucide-react';
 
 interface EditFormData {
   name: string;
-  gender: 'man' | 'woman' | 'trans' | 'non-binary';
+  gender: 'man' | 'woman' | 'non-binary';
   assemblyName: string;
   date: string;
   description?: string;
@@ -28,7 +27,7 @@ interface EditAssemblyDialogProps {
 }
 
 const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: EditAssemblyDialogProps) => {
-  const [selectedGender, setSelectedGender] = React.useState<'man' | 'woman' | 'trans' | 'non-binary'>(assembly.register.gender);
+  const [selectedGender, setSelectedGender] = React.useState<'man' | 'woman' | 'non-binary'>(assembly.register.gender);
   const [isGeneratingDescription, setIsGeneratingDescription] = React.useState(false);
 
   const form = useForm<EditFormData>({
@@ -82,7 +81,7 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
   }, [open, assembly.register.gender]);
 
   const handleGenderChange = (value: string) => {
-    setSelectedGender(value as 'man' | 'woman' | 'trans' | 'non-binary');
+    setSelectedGender(value as 'man' | 'woman' | 'non-binary');
   };
 
   const generateDescription = async () => {
@@ -140,10 +139,6 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="woman" id="edit-woman" />
                 <Label htmlFor="edit-woman">Dona</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="trans" id="edit-trans" />
-                <Label htmlFor="edit-trans">Trans</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="non-binary" id="edit-non-binary" />
