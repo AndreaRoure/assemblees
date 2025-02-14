@@ -120,43 +120,45 @@ const RegistersList = () => {
 
   return (
     <div className="space-y-6 w-full max-w-full">
-      <div className="flex flex-col space-y-3">
-        <Select
-          value={selectedYear}
-          onValueChange={setSelectedYear}
-        >
-          <SelectTrigger className="h-11 md:h-10 text-sm w-full">
-            <SelectValue placeholder="Selecciona l'any" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tots els anys</SelectItem>
-            {years.map(year => (
-              <SelectItem key={year} value={year.toString()}>
-                {year}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <Select
+            value={selectedYear}
+            onValueChange={setSelectedYear}
+          >
+            <SelectTrigger className="h-11 md:h-10 text-sm">
+              <SelectValue placeholder="Selecciona l'any" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tots els anys</SelectItem>
+              {years.map(year => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={selectedGender}
-          onValueChange={setSelectedGender}
-        >
-          <SelectTrigger className="h-11 md:h-10 text-sm w-full">
-            <SelectValue placeholder="Selecciona el gènere" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tots els gèneres</SelectItem>
-            <SelectItem value="man">Homes</SelectItem>
-            <SelectItem value="woman">Dones</SelectItem>
-            <SelectItem value="non-binary">Persones No Binàries</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select
+            value={selectedGender}
+            onValueChange={setSelectedGender}
+          >
+            <SelectTrigger className="h-11 md:h-10 text-sm">
+              <SelectValue placeholder="Selecciona el gènere" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tots els gèneres</SelectItem>
+              <SelectItem value="man">Homes</SelectItem>
+              <SelectItem value="woman">Dones</SelectItem>
+              <SelectItem value="non-binary">Persones No Binàries</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         <Button
           variant="outline"
           onClick={downloadCSV}
-          className="h-11 md:h-10 text-sm w-full md:w-auto"
+          className="h-11 md:h-10 text-sm w-full md:w-auto md:self-end"
         >
           <Download className="h-4 w-4 mr-2 flex-shrink-0" />
           <span className="whitespace-nowrap">Descarregar CSV</span>
