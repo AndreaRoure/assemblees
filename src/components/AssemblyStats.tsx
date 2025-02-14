@@ -15,39 +15,39 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   const data = [
     {
       name: 'Home',
-      Intervenció: stats.byType.intervencio,
-      Dinamitza: stats.byType.dinamitza,
-      Interrupció: stats.byType.interrupcio,
-      Llarga: stats.byType.llarga,
-      Ofensiva: stats.byType.ofensiva,
-      Explica: stats.byType.explica,
+      'Intervenció curta': stats.byGender.man?.intervencio || 0,
+      'Dinamitza': stats.byGender.man?.dinamitza || 0,
+      'Interrupció': stats.byGender.man?.interrupcio || 0,
+      'Intervenció llarga': stats.byGender.man?.llarga || 0,
+      'Ofensiva': stats.byGender.man?.ofensiva || 0,
+      'Explica': stats.byGender.man?.explica || 0,
     },
     {
       name: 'Dona',
-      Intervenció: stats.byType.intervencio,
-      Dinamitza: stats.byType.dinamitza,
-      Interrupció: stats.byType.interrupcio,
-      Llarga: stats.byType.llarga,
-      Ofensiva: stats.byType.ofensiva,
-      Explica: stats.byType.explica,
+      'Intervenció curta': stats.byGender.woman?.intervencio || 0,
+      'Dinamitza': stats.byGender.woman?.dinamitza || 0,
+      'Interrupció': stats.byGender.woman?.interrupcio || 0,
+      'Intervenció llarga': stats.byGender.woman?.llarga || 0,
+      'Ofensiva': stats.byGender.woman?.ofensiva || 0,
+      'Explica': stats.byGender.woman?.explica || 0,
     },
     {
       name: 'Trans',
-      Intervenció: stats.byType.intervencio,
-      Dinamitza: stats.byType.dinamitza,
-      Interrupció: stats.byType.interrupcio,
-      Llarga: stats.byType.llarga,
-      Ofensiva: stats.byType.ofensiva,
-      Explica: stats.byType.explica,
+      'Intervenció curta': stats.byGender.trans?.intervencio || 0,
+      'Dinamitza': stats.byGender.trans?.dinamitza || 0,
+      'Interrupció': stats.byGender.trans?.interrupcio || 0,
+      'Intervenció llarga': stats.byGender.trans?.llarga || 0,
+      'Ofensiva': stats.byGender.trans?.ofensiva || 0,
+      'Explica': stats.byGender.trans?.explica || 0,
     },
     {
       name: 'No Binari',
-      Intervenció: stats.byType.intervencio,
-      Dinamitza: stats.byType.dinamitza,
-      Interrupció: stats.byType.interrupcio,
-      Llarga: stats.byType.llarga,
-      Ofensiva: stats.byType.ofensiva,
-      Explica: stats.byType.explica,
+      'Intervenció curta': stats.byGender['non-binary']?.intervencio || 0,
+      'Dinamitza': stats.byGender['non-binary']?.dinamitza || 0,
+      'Interrupció': stats.byGender['non-binary']?.interrupcio || 0,
+      'Intervenció llarga': stats.byGender['non-binary']?.llarga || 0,
+      'Ofensiva': stats.byGender['non-binary']?.ofensiva || 0,
+      'Explica': stats.byGender['non-binary']?.explica || 0,
     },
   ];
 
@@ -61,12 +61,12 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
             <YAxis />
             <Tooltip />
             <Legend verticalAlign="bottom" height={36} />
-            <Bar dataKey="Intervenció" stackId="a" fill="#8884d8" />
             <Bar dataKey="Dinamitza" stackId="a" fill="#82ca9d" />
-            <Bar dataKey="Interrupció" stackId="a" fill="#ffc658" />
-            <Bar dataKey="Llarga" stackId="a" fill="#ff8042" />
-            <Bar dataKey="Ofensiva" stackId="a" fill="#ff6b6b" />
             <Bar dataKey="Explica" stackId="a" fill="#4ecdc4" />
+            <Bar dataKey="Interrupció" stackId="a" fill="#ffc658" />
+            <Bar dataKey="Intervenció curta" stackId="a" fill="#8884d8" />
+            <Bar dataKey="Intervenció llarga" stackId="a" fill="#ff8042" />
+            <Bar dataKey="Ofensiva" stackId="a" fill="#ff6b6b" />
           </BarChart>
         </ResponsiveContainer>
       </div>
