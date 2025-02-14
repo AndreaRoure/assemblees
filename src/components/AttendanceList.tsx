@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Download, Users } from 'lucide-react';
+import { Download, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -76,8 +76,8 @@ const mockPersonAttendanceData = [
 
 const AttendanceList = () => {
   const isMobile = useIsMobile();
-  const [selectedType, setSelectedType] = React.useState<string>('all');
   const [selectedMonth, setSelectedMonth] = React.useState<string>('all');
+  const [selectedType, setSelectedType] = React.useState<string>('all');
 
   const months = useMemo(() => {
     return [
@@ -164,40 +164,38 @@ const AttendanceList = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-3">
-        <div className="grid gap-3 md:flex md:flex-row md:gap-4 md:items-center">
-          <Select
-            value={selectedMonth}
-            onValueChange={setSelectedMonth}
-          >
-            <SelectTrigger className="h-9 w-full text-sm">
-              <SelectValue placeholder="Selecciona el mes" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tots els mesos</SelectItem>
-              {months.map(month => (
-                <SelectItem key={month.value} value={month.value}>
-                  {month.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="space-y-4">
+      <div className="flex flex-col space-y-2">
+        <Select
+          value={selectedMonth}
+          onValueChange={setSelectedMonth}
+        >
+          <SelectTrigger className="h-9 text-sm">
+            <SelectValue placeholder="Selecciona el mes" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tots els mesos</SelectItem>
+            {months.map(month => (
+              <SelectItem key={month.value} value={month.value}>
+                {month.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-          <Select
-            value={selectedType}
-            onValueChange={setSelectedType}
-          >
-            <SelectTrigger className="h-9 w-full text-sm">
-              <SelectValue placeholder="Tipus d'assemblea" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tots els tipus</SelectItem>
-              <SelectItem value="in-person">Presencial</SelectItem>
-              <SelectItem value="online">En línia</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Select
+          value={selectedType}
+          onValueChange={setSelectedType}
+        >
+          <SelectTrigger className="h-9 text-sm">
+            <SelectValue placeholder="Tipus d'assemblea" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tots els tipus</SelectItem>
+            <SelectItem value="in-person">Presencial</SelectItem>
+            <SelectItem value="online">En línia</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Tabs defaultValue="assemblies" className="w-full">
@@ -212,45 +210,54 @@ const AttendanceList = () => {
               <Button
                 variant="outline"
                 onClick={() => downloadCSV('assemblies')}
-                className="h-9 w-full md:w-auto text-sm"
+                className="h-9 text-sm"
                 size="sm"
               >
                 <Download className="h-4 w-4 mr-2" />
-                <span className="inline">Descarregar CSV</span>
+                <span className="inline md:hidden">CSV</span>
+                <span className="hidden md:inline">Descarregar CSV</span>
               </Button>
             </div>
 
             <Card>
               <ScrollArea className="w-full" type="always">
-                <div className="min-w-[800px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[200px]">Nom</TableHead>
-                        <TableHead className="w-[120px]">Data</TableHead>
-                        <TableHead className="w-[120px]">Tipus</TableHead>
-                        <TableHead className="text-right w-[150px]">Assistents Presencials</TableHead>
-                        <TableHead className="text-right w-[150px]">Assistents Online</TableHead>
-                        <TableHead className="text-right w-[150px]">Total Assistents</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredData.map((record, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{record.name}</TableCell>
-                          <TableCell>{new Date(record.date).toLocaleDateString('ca-ES')}</TableCell>
-                          <TableCell>
-                            {record.type === 'online' ? 'En línia' : 'Presencial'}
-                          </TableCell>
-                          <TableCell className="text-right">{record.inPersonAttendees}</TableCell>
-                          <TableCell className="text-right">{record.onlineAttendees}</TableCell>
-                          <TableCell className="text-right font-medium">
-                            {record.inPersonAttendees + record.onlineAttendees}
-                          </TableCell>
+                <div className="relative">
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gradient-to-r from-background/80 to-transparent w-8 h-full flex items-center justify-start md:hidden">
+                    <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gradient-to-l from-background/80 to-transparent w-8 h-full flex items-center justify-end md:hidden">
+                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-[600px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[200px]">Nom</TableHead>
+                          <TableHead className="w-[120px]">Data</TableHead>
+                          <TableHead className="w-[120px]">Tipus</TableHead>
+                          <TableHead className="text-right w-[150px]">Assistents Presencials</TableHead>
+                          <TableHead className="text-right w-[150px]">Assistents Online</TableHead>
+                          <TableHead className="text-right w-[150px]">Total Assistents</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredData.map((record, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{record.name}</TableCell>
+                            <TableCell>{new Date(record.date).toLocaleDateString('ca-ES')}</TableCell>
+                            <TableCell>
+                              {record.type === 'online' ? 'En línia' : 'Presencial'}
+                            </TableCell>
+                            <TableCell className="text-right">{record.inPersonAttendees}</TableCell>
+                            <TableCell className="text-right">{record.onlineAttendees}</TableCell>
+                            <TableCell className="text-right font-medium">
+                              {record.inPersonAttendees + record.onlineAttendees}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </ScrollArea>
             </Card>
@@ -263,43 +270,52 @@ const AttendanceList = () => {
               <Button
                 variant="outline"
                 onClick={() => downloadCSV('persons')}
-                className="h-9 w-full md:w-auto text-sm"
+                className="h-9 text-sm"
                 size="sm"
               >
                 <Download className="h-4 w-4 mr-2" />
-                <span className="inline">Descarregar CSV</span>
+                <span className="inline md:hidden">CSV</span>
+                <span className="hidden md:inline">Descarregar CSV</span>
               </Button>
             </div>
 
             <Card>
               <ScrollArea className="w-full" type="always">
-                <div className="min-w-[900px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[200px]">Nom</TableHead>
-                        <TableHead className="text-right w-[120px]">Total Assemblees</TableHead>
-                        <TableHead className="text-right w-[120px]">Assistències</TableHead>
-                        <TableHead className="text-right w-[120px]">Absències</TableHead>
-                        <TableHead className="text-right w-[100px]">% Total</TableHead>
-                        <TableHead className="text-right w-[100px]">% Online</TableHead>
-                        <TableHead className="text-right w-[100px]">% Presencial</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredPersonData.map((record, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{record.name}</TableCell>
-                          <TableCell className="text-right">{record.totalAssemblies}</TableCell>
-                          <TableCell className="text-right">{record.attended}</TableCell>
-                          <TableCell className="text-right">{record.absent}</TableCell>
-                          <TableCell className="text-right">{record.percentage}</TableCell>
-                          <TableCell className="text-right">{record.attendanceByType.online}</TableCell>
-                          <TableCell className="text-right">{record.attendanceByType["in-person"]}</TableCell>
+                <div className="relative">
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gradient-to-r from-background/80 to-transparent w-8 h-full flex items-center justify-start md:hidden">
+                    <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gradient-to-l from-background/80 to-transparent w-8 h-full flex items-center justify-end md:hidden">
+                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="min-w-[600px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[200px]">Nom</TableHead>
+                          <TableHead className="text-right w-[120px]">Total Assemblees</TableHead>
+                          <TableHead className="text-right w-[120px]">Assistències</TableHead>
+                          <TableHead className="text-right w-[120px]">Absències</TableHead>
+                          <TableHead className="text-right w-[100px]">% Total</TableHead>
+                          <TableHead className="text-right w-[100px]">% Online</TableHead>
+                          <TableHead className="text-right w-[100px]">% Presencial</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredPersonData.map((record, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">{record.name}</TableCell>
+                            <TableCell className="text-right">{record.totalAssemblies}</TableCell>
+                            <TableCell className="text-right">{record.attended}</TableCell>
+                            <TableCell className="text-right">{record.absent}</TableCell>
+                            <TableCell className="text-right">{record.percentage}</TableCell>
+                            <TableCell className="text-right">{record.attendanceByType.online}</TableCell>
+                            <TableCell className="text-right">{record.attendanceByType["in-person"]}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </ScrollArea>
             </Card>
@@ -307,12 +323,9 @@ const AttendanceList = () => {
         </TabsContent>
       </Tabs>
 
-      <Card className="p-4">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Users className="h-4 w-4" />
-          <span>Total d&apos;assemblees: {filteredData.length}</span>
-        </div>
-      </Card>
+      <div className="text-sm text-muted-foreground text-center">
+        Total d&apos;assemblees: {filteredData.length}
+      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchInterventions, fetchAssemblies, supabase } from '@/lib/supabase';
+import { useQuery } from '@tanstack/react-query';
+import { fetchInterventions } from '@/lib/supabase';
 import {
   Select,
   SelectContent,
@@ -10,16 +10,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const RegistersList = () => {
   const isMobile = useIsMobile();
-  const [selectedYear, setSelectedYear] = useState<string>('all');
-  const [selectedGender, setSelectedGender] = useState<string>('all');
-  const queryClient = useQueryClient();
+  const [selectedYear, setSelectedYear] = React.useState<string>('all');
+  const [selectedGender, setSelectedGender] = React.useState<string>('all');
 
   const { data: interventions = [], isLoading: isLoadingInterventions } = useQuery({
     queryKey: ['interventions'],
@@ -119,60 +118,59 @@ const RegistersList = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-3">
-        <div className="grid gap-3 md:flex md:flex-row md:gap-4 md:items-center">
-          <Select
-            value={selectedYear}
-            onValueChange={setSelectedYear}
-          >
-            <SelectTrigger className="h-9 w-full text-sm">
-              <SelectValue placeholder="Selecciona l'any" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tots els anys</SelectItem>
-              {years.map(year => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="space-y-4">
+      <div className="flex flex-col space-y-2">
+        <Select
+          value={selectedYear}
+          onValueChange={setSelectedYear}
+        >
+          <SelectTrigger className="h-9 text-sm">
+            <SelectValue placeholder="Selecciona l'any" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tots els anys</SelectItem>
+            {years.map(year => (
+              <SelectItem key={year} value={year.toString()}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-          <Select
-            value={selectedGender}
-            onValueChange={setSelectedGender}
-          >
-            <SelectTrigger className="h-9 w-full text-sm">
-              <SelectValue placeholder="Selecciona el gènere" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tots els gèneres</SelectItem>
-              <SelectItem value="man">Homes</SelectItem>
-              <SelectItem value="woman">Dones</SelectItem>
-              <SelectItem value="non-binary">Persones No Binàries</SelectItem>
-            </SelectContent>
-          </Select>
+        <Select
+          value={selectedGender}
+          onValueChange={setSelectedGender}
+        >
+          <SelectTrigger className="h-9 text-sm">
+            <SelectValue placeholder="Selecciona el gènere" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tots els gèneres</SelectItem>
+            <SelectItem value="man">Homes</SelectItem>
+            <SelectItem value="woman">Dones</SelectItem>
+            <SelectItem value="non-binary">Persones No Binàries</SelectItem>
+          </SelectContent>
+        </Select>
 
-          <Button
-            variant="outline"
-            onClick={downloadCSV}
-            className="h-9 w-full md:w-auto text-sm"
-            size="sm"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            <span className="inline">Descarregar CSV</span>
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          onClick={downloadCSV}
+          className="h-9 text-sm"
+          size="sm"
+        >
+          <Download className="h-4 w-4 mr-2" />
+          <span className="inline md:hidden">CSV</span>
+          <span className="hidden md:inline">Descarregar CSV</span>
+        </Button>
       </div>
 
       <ScrollArea className="w-full" type="always">
-        <div className="min-w-[800px]">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="min-w-[300px] md:min-w-[600px]">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
             {Object.entries(totals).map(([type, count]) => (
-              <Card key={type} className="p-4">
-                <div className="text-lg font-semibold">{count}</div>
-                <div className="text-sm text-muted-foreground">
+              <Card key={type} className="p-3 md:p-4">
+                <div className="text-base md:text-lg font-semibold">{count}</div>
+                <div className="text-xs md:text-sm text-muted-foreground truncate">
                   {type === 'intervencio' && 'Intervencions'}
                   {type === 'dinamitza' && 'Dinamitza'}
                   {type === 'interrupcio' && 'Interrupcions'}
@@ -187,15 +185,15 @@ const RegistersList = () => {
       </ScrollArea>
 
       <Card className="p-4">
-        <div className="font-semibold mb-2">Intervencions per Gènere</div>
-        <div className="w-full h-[250px] md:h-[350px] lg:h-[400px]">
+        <div className="font-semibold mb-2 text-sm md:text-base">Intervencions per Gènere</div>
+        <div className="w-full h-[250px] md:h-[350px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={genderTotals}
               margin={{ 
                 top: 20, 
                 right: isMobile ? 10 : 30, 
-                left: isMobile ? 30 : 40, 
+                left: isMobile ? 20 : 40, 
                 bottom: isMobile ? 60 : 40 
               }}
             >
@@ -203,7 +201,7 @@ const RegistersList = () => {
                 dataKey="gender"
                 angle={isMobile ? -45 : 0}
                 textAnchor={isMobile ? "end" : "middle"}
-                height={isMobile ? 60 : 30}
+                height={60}
                 interval={0}
                 tick={{ fontSize: isMobile ? 10 : 12 }}
               />
@@ -219,26 +217,22 @@ const RegistersList = () => {
               />
               <Legend 
                 verticalAlign="bottom"
-                height={isMobile ? 48 : 36}
+                height={36}
                 wrapperStyle={{ 
                   fontSize: isMobile ? '10px' : '12px',
-                  paddingTop: isMobile ? '8px' : '16px'
+                  paddingTop: '16px'
                 }}
               />
-              <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
-              <Bar dataKey="dinamitza" stackId="a" fill="#82ca9d" name="Dinamitza" />
-              <Bar dataKey="interrupcio" stackId="a" fill="#ffc658" name="Interrupció" />
-              <Bar dataKey="llarga" stackId="a" fill="#ff8042" name="Intervenció llarga" />
-              <Bar dataKey="ofensiva" stackId="a" fill="#ff6b6b" name="Intervenció ofensiva" />
-              <Bar dataKey="explica" stackId="a" fill="#4ecdc4" name="Explica" />
+              <Bar dataKey="intervencio" fill="#8884d8" name="Intervenció" />
+              <Bar dataKey="dinamitza" fill="#82ca9d" name="Dinamitza" />
+              <Bar dataKey="interrupcio" fill="#ffc658" name="Interrupció" />
+              <Bar dataKey="llarga" fill="#ff8042" name="Intervenció llarga" />
+              <Bar dataKey="ofensiva" fill="#ff6b6b" name="Ofensiva" />
+              <Bar dataKey="explica" fill="#4ecdc4" name="Explica" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </Card>
-
-      <div className="text-sm text-muted-foreground text-center">
-        Total d&apos;intervencions: {filteredInterventions.length}
-      </div>
     </div>
   );
 };
