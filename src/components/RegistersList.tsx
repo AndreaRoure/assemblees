@@ -1,9 +1,15 @@
 
 import React from 'react';
-import { interventions } from '@/data/assemblies';
 import { Card } from '@/components/ui/card';
+import { useQuery } from '@tanstack/react-query';
+import { fetchInterventions } from '@/lib/supabase';
 
 const RegistersList = () => {
+  const { data: interventions = [] } = useQuery({
+    queryKey: ['interventions'],
+    queryFn: fetchInterventions
+  });
+
   const getInterventionsByType = (gender: string) => {
     const genderInterventions = interventions.filter(i => i.gender === gender);
     return {

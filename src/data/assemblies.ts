@@ -12,7 +12,7 @@ const createEmptyGenderStats = () => ({
   explica: 0,
 });
 
-export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
+export const getAssemblyStats = async (assemblyId: string): Promise<AssemblyStats> => {
   const genderStats = {
     man: createEmptyGenderStats(),
     woman: createEmptyGenderStats(),
@@ -29,9 +29,16 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
     explica: 0,
   };
 
-  // Fresh aggregation of interventions
-  const assemblyInterventions = interventions.filter(i => i.assembly_id === assemblyId);
-  assemblyInterventions.forEach(intervention => {
+  // Fetch interventions from the database
+  const { data: assemblyInterventions, error } = await supabase
+    .from('interventions')
+    .select('*')
+    .eq('assembly_id', assemblyId);
+
+  if (error) throw error;
+
+  // Aggregate the interventions
+  assemblyInterventions?.forEach(intervention => {
     const { gender, type } = intervention;
     if (genderStats[gender] && type in genderStats[gender]) {
       genderStats[gender][type]++;
@@ -40,7 +47,7 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
   });
 
   return {
-    totalInterventions: assemblyInterventions.length,
+    totalInterventions: assemblyInterventions?.length || 0,
     byGender: genderStats,
     byType: typeStats,
   };
