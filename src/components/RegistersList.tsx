@@ -93,22 +93,22 @@ const RegistersList = () => {
 
   const genderTotals = useMemo(() => {
     const totals = {
-      man: 0,
-      woman: 0,
-      trans: 0,
-      'non-binary': 0
+      man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 },
+      woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 },
+      trans: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 },
+      'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 }
     };
 
     interventions.forEach(i => {
-      totals[i.gender]++;
+      totals[i.gender][i.type]++;
     });
 
-    return Object.entries(totals).map(([gender, value]) => ({
+    return Object.entries(totals).map(([gender, counts]) => ({
       gender: gender === 'man' ? 'Homes' :
              gender === 'woman' ? 'Dones' :
              gender === 'trans' ? 'Persones Trans' :
              'Persones No Binàries',
-      total: value
+      ...counts
     }));
   }, [interventions]);
 
@@ -209,7 +209,13 @@ const RegistersList = () => {
               <XAxis dataKey="gender" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="total" fill="#8884d8" name="Total d'intervencions" />
+              <Legend />
+              <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
+              <Bar dataKey="dinamitza" stackId="a" fill="#82ca9d" name="Dinamitza" />
+              <Bar dataKey="interrupcio" stackId="a" fill="#ffc658" name="Interrupció" />
+              <Bar dataKey="llarga" stackId="a" fill="#ff8042" name="Intervenció llarga" />
+              <Bar dataKey="ofensiva" stackId="a" fill="#ff6b6b" name="Intervenció ofensiva" />
+              <Bar dataKey="explica" stackId="a" fill="#4ecdc4" name="Explica" />
             </BarChart>
           </ResponsiveContainer>
         </div>
