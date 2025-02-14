@@ -82,12 +82,12 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
                 fontSize: isMobile ? '10px' : '12px'
               }}
             />
-            <Bar dataKey="Dinamitza" stackId="a" fill="#82ca9d" />
-            <Bar dataKey="Explica" stackId="a" fill="#4ecdc4" />
-            <Bar dataKey="Interrupció" stackId="a" fill="#ffc658" />
-            <Bar dataKey="Intervenció curta" stackId="a" fill="#8884d8" />
-            <Bar dataKey="Intervenció llarga" stackId="a" fill="#ff8042" />
-            <Bar dataKey="Ofensiva" stackId="a" fill="#ff6b6b" />
+            <Bar dataKey="Dinamitza" stackId="a" fill="#8B5CF6" />
+            <Bar dataKey="Explica" stackId="a" fill="#06B6D4" />
+            <Bar dataKey="Interrupció" stackId="a" fill="#F59E0B" />
+            <Bar dataKey="Intervenció curta" stackId="a" fill="#3B82F6" />
+            <Bar dataKey="Intervenció llarga" stackId="a" fill="#EC4899" />
+            <Bar dataKey="Ofensiva" stackId="a" fill="#EF4444" />
           </BarChart>
         </ResponsiveContainer>
       </div>

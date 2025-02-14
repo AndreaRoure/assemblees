@@ -58,12 +58,12 @@ const GenderChart = ({ data }: GenderChartProps) => {
                 fontSize: isMobile ? '10px' : '12px'
               }}
             />
-            <Bar dataKey="dinamitza" stackId="a" fill="#82ca9d" name="Dinamitza" />
-            <Bar dataKey="explica" stackId="a" fill="#4ecdc4" name="Explica" />
-            <Bar dataKey="interrupcio" stackId="a" fill="#ffc658" name="Interrupció" />
-            <Bar dataKey="intervencio" stackId="a" fill="#8884d8" name="Intervenció" />
-            <Bar dataKey="llarga" stackId="a" fill="#ff8042" name="Intervenció llarga" />
-            <Bar dataKey="ofensiva" stackId="a" fill="#ff6b6b" name="Ofensiva" />
+            <Bar dataKey="dinamitza" stackId="a" fill="#8B5CF6" name="Dinamitza" />
+            <Bar dataKey="explica" stackId="a" fill="#06B6D4" name="Explica" />
+            <Bar dataKey="interrupcio" stackId="a" fill="#F59E0B" name="Interrupció" />
+            <Bar dataKey="intervencio" stackId="a" fill="#3B82F6" name="Intervenció" />
+            <Bar dataKey="llarga" stackId="a" fill="#EC4899" name="Intervenció llarga" />
+            <Bar dataKey="ofensiva" stackId="a" fill="#EF4444" name="Ofensiva" />
           </BarChart>
         </ResponsiveContainer>
       </div>
