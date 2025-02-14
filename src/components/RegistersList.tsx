@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
+
+import React, { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchInterventions, fetchAssemblies, supabase } from '@/lib/supabase';
@@ -18,35 +19,9 @@ const RegistersList = () => {
   const [selectedGender, setSelectedGender] = useState<string>('all');
   const queryClient = useQueryClient();
 
-  // Set up real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('interventions-changes')
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'interventions' 
-        }, 
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['interventions'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
-
   const { data: interventions = [], isLoading: isLoadingInterventions } = useQuery({
     queryKey: ['interventions'],
     queryFn: fetchInterventions
-  });
-
-  const { data: assemblies = [], isLoading: isLoadingAssemblies } = useQuery({
-    queryKey: ['assemblies'],
-    queryFn: fetchAssemblies
   });
 
   const years = useMemo(() => {
@@ -76,21 +51,34 @@ const RegistersList = () => {
     };
     
     filteredInterventions.forEach(i => {
-      counts[i.type]++;
+      if (i.type in counts) {
+        counts[i.type]++;
+      }
     });
     
     return counts;
   }, [filteredInterventions]);
 
   const genderTotals = useMemo(() => {
-    const totals = {
-      man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 },
-      woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 },
-      'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0 }
+    const initialCounts = {
+      intervencio: 0,
+      dinamitza: 0,
+      interrupcio: 0,
+      llarga: 0,
+      ofensiva: 0,
+      explica: 0
     };
 
-    interventions.forEach(i => {
-      totals[i.gender][i.type]++;
+    const totals = {
+      man: { ...initialCounts },
+      woman: { ...initialCounts },
+      'non-binary': { ...initialCounts }
+    };
+
+    filteredInterventions.forEach(i => {
+      if (i.gender in totals && i.type in totals[i.gender]) {
+        totals[i.gender][i.type]++;
+      }
     });
 
     return Object.entries(totals).map(([gender, counts]) => ({
@@ -99,7 +87,7 @@ const RegistersList = () => {
              'Persones No Binàries',
       ...counts
     }));
-  }, [interventions]);
+  }, [filteredInterventions]);
 
   const downloadCSV = () => {
     const headers = ['Data', 'Tipus', 'Gènere', 'Assembly ID'];
@@ -124,7 +112,7 @@ const RegistersList = () => {
     document.body.removeChild(link);
   };
 
-  if (isLoadingInterventions || isLoadingAssemblies) {
+  if (isLoadingInterventions) {
     return <div className="text-center text-muted-foreground">Carregant...</div>;
   }
 

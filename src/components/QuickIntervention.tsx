@@ -52,7 +52,6 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
   const [counts, setCounts] = useState<Record<string, Record<string, number>>>({
     man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
     woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
-    trans: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
     'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
   });
 
@@ -61,7 +60,6 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     const newCounts = {
       man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
       woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
-      trans: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
       'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
     };
 
@@ -75,7 +73,7 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     setCounts(newCounts);
   }, [interventions]);
 
-  const handleIncrement = async (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
+  const handleIncrement = async (gender: 'man' | 'woman' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     await addIntervention({
       assembly_id: assemblyId,
       gender,
@@ -84,14 +82,14 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
     onInterventionAdded();
   };
 
-  const handleDecrement = async (gender: 'man' | 'woman' | 'trans' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
+  const handleDecrement = async (gender: 'man' | 'woman' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     if (counts[gender][type] > 0) {
       await removeIntervention(assemblyId, type, gender);
       onInterventionAdded();
     }
   };
 
-  const renderInterventionCounters = (gender: 'man' | 'woman' | 'trans' | 'non-binary') => (
+  const renderInterventionCounters = (gender: 'man' | 'woman' | 'non-binary') => (
     <div className="space-y-2">
       {[
         'Dinamitza',
@@ -137,11 +135,6 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: QuickInterventio
       <div className="space-y-3">
         <h3 className="text-sm font-medium">No binari</h3>
         {renderInterventionCounters('non-binary')}
-      </div>
-
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium">Trans</h3>
-        {renderInterventionCounters('trans')}
       </div>
     </div>
   );
