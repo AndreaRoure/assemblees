@@ -1,5 +1,5 @@
 
-import { Assembly, Intervention } from '@/types';
+import { Assembly, Intervention, AssemblyStats } from '@/types';
 
 export const assemblies: Assembly[] = [];
 export const interventions: Intervention[] = [];

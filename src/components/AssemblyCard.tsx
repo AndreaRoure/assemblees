@@ -4,6 +4,7 @@ import { Assembly } from '@/types';
 import { Card } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { ca } from 'date-fns/locale';
+import { UserCircle2 } from 'lucide-react';
 
 interface AssemblyCardProps {
   assembly: Assembly;
@@ -26,6 +27,10 @@ const AssemblyCard = ({ assembly, onClick }: AssemblyCardProps) => {
             {assembly.description}
           </p>
         )}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
+          <UserCircle2 className="h-4 w-4" />
+          <span>Registrat per: {assembly.register.name}</span>
+        </div>
       </div>
     </Card>
   );

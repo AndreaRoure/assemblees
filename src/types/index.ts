@@ -4,6 +4,10 @@ export interface Assembly {
   name: string;
   date: string;
   description?: string;
+  register: {
+    name: string;
+    gender: 'man' | 'woman';
+  };
 }
 
 export interface Intervention {
