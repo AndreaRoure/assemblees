@@ -20,6 +20,7 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const RegistersList = () => {
   const [selectedYear, setSelectedYear] = React.useState<string>('all');
@@ -49,18 +50,45 @@ const RegistersList = () => {
     return labels[type] || type;
   };
 
+  const countInterventionsByType = (assemblyId: string) => {
+    const assemblyInterventions = interventions.filter(i => {
+      const typeMatch = selectedType === 'all' || i.type === selectedType;
+      return i.assemblyId === assemblyId && typeMatch;
+    });
+
+    return {
+      intervencio: assemblyInterventions.filter(i => i.type === 'intervencio').length,
+      dinamitza: assemblyInterventions.filter(i => i.type === 'dinamitza').length,
+      interrupcio: assemblyInterventions.filter(i => i.type === 'interrupcio').length,
+      llarga: assemblyInterventions.filter(i => i.type === 'llarga').length,
+      ofensiva: assemblyInterventions.filter(i => i.type === 'ofensiva').length,
+      explica: assemblyInterventions.filter(i => i.type === 'explica').length,
+      total: assemblyInterventions.length,
+    };
+  };
+
+  const getTotalStats = () => {
+    const stats = filteredAssemblies.reduce((acc, assembly) => {
+      const counts = countInterventionsByType(assembly.id);
+      Object.keys(counts).forEach(key => {
+        acc[key] = (acc[key] || 0) + counts[key];
+      });
+      return acc;
+    }, {} as Record<string, number>);
+
+    return [
+      { name: 'Intervenció', value: stats.intervencio || 0 },
+      { name: 'Dinamitza', value: stats.dinamitza || 0 },
+      { name: 'Interrupció', value: stats.interrupcio || 0 },
+      { name: 'Llarga', value: stats.llarga || 0 },
+      { name: 'Ofensiva', value: stats.ofensiva || 0 },
+      { name: 'Explica', value: stats.explica || 0 },
+    ];
+  };
+
   const handleDownload = () => {
     const rows = filteredAssemblies.map(assembly => {
-      const assemblyInterventions = interventions.filter(i => i.assemblyId === assembly.id);
-      const interventionsByType = {
-        intervencio: assemblyInterventions.filter(i => i.type === 'intervencio').length,
-        dinamitza: assemblyInterventions.filter(i => i.type === 'dinamitza').length,
-        interrupcio: assemblyInterventions.filter(i => i.type === 'interrupcio').length,
-        llarga: assemblyInterventions.filter(i => i.type === 'llarga').length,
-        ofensiva: assemblyInterventions.filter(i => i.type === 'ofensiva').length,
-        explica: assemblyInterventions.filter(i => i.type === 'explica').length,
-      };
-
+      const counts = countInterventionsByType(assembly.id);
       return [
         new Date(assembly.date).toLocaleDateString('ca-ES'),
         assembly.name,
@@ -68,13 +96,13 @@ const RegistersList = () => {
         assembly.register.gender === 'man' ? 'Home' :
         assembly.register.gender === 'woman' ? 'Dona' :
         assembly.register.gender === 'trans' ? 'Trans' : 'No binari',
-        interventionsByType.intervencio,
-        interventionsByType.dinamitza,
-        interventionsByType.interrupcio,
-        interventionsByType.llarga,
-        interventionsByType.ofensiva,
-        interventionsByType.explica,
-        assemblyInterventions.length
+        counts.intervencio,
+        counts.dinamitza,
+        counts.interrupcio,
+        counts.llarga,
+        counts.ofensiva,
+        counts.explica,
+        counts.total
       ].join(',');
     });
 
@@ -155,6 +183,17 @@ const RegistersList = () => {
           </Button>
         </div>
 
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={getTotalStats()} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -163,15 +202,18 @@ const RegistersList = () => {
                 <TableHead>Assemblea</TableHead>
                 <TableHead>Registrador/a</TableHead>
                 <TableHead>Gènere</TableHead>
-                <TableHead className="text-right">Intervencions</TableHead>
+                <TableHead className="text-right">Int.</TableHead>
+                <TableHead className="text-right">Din.</TableHead>
+                <TableHead className="text-right">Inter.</TableHead>
+                <TableHead className="text-right">Llarg.</TableHead>
+                <TableHead className="text-right">Of.</TableHead>
+                <TableHead className="text-right">Exp.</TableHead>
+                <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredAssemblies.map((assembly) => {
-                const assemblyInterventions = interventions.filter(i => {
-                  const typeMatch = selectedType === 'all' || i.type === selectedType;
-                  return i.assemblyId === assembly.id && typeMatch;
-                });
+                const counts = countInterventionsByType(assembly.id);
                 return (
                   <TableRow key={assembly.id}>
                     <TableCell>{new Date(assembly.date).toLocaleDateString('ca-ES')}</TableCell>
@@ -183,13 +225,19 @@ const RegistersList = () => {
                       {assembly.register.gender === 'trans' && 'Trans'}
                       {assembly.register.gender === 'non-binary' && 'No binari'}
                     </TableCell>
-                    <TableCell className="text-right">{assemblyInterventions.length}</TableCell>
+                    <TableCell className="text-right">{counts.intervencio}</TableCell>
+                    <TableCell className="text-right">{counts.dinamitza}</TableCell>
+                    <TableCell className="text-right">{counts.interrupcio}</TableCell>
+                    <TableCell className="text-right">{counts.llarga}</TableCell>
+                    <TableCell className="text-right">{counts.ofensiva}</TableCell>
+                    <TableCell className="text-right">{counts.explica}</TableCell>
+                    <TableCell className="text-right font-medium">{counts.total}</TableCell>
                   </TableRow>
-                )
+                );
               })}
               {filteredAssemblies.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-4 text-muted-foreground">
+                  <TableCell colSpan={11} className="text-center py-4 text-muted-foreground">
                     No s&apos;han trobat registres
                   </TableCell>
                 </TableRow>
