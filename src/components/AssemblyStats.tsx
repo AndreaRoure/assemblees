@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { AssemblyStats as AssemblyStatsType } from '@/types';
@@ -12,44 +12,45 @@ interface AssemblyStatsProps {
 const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
   const isMobile = useIsMobile();
 
-  const data = [
+  // Memoize the data transformation to prevent unnecessary recalculations
+  const data = useMemo(() => [
     {
       name: 'Home',
-      'Intervenció curta': stats.byGender.man.intervencio || 0,
-      'Dinamitza': stats.byGender.man.dinamitza || 0,
-      'Interrupció': stats.byGender.man.interrupcio || 0,
-      'Intervenció llarga': stats.byGender.man.llarga || 0,
-      'Ofensiva': stats.byGender.man.ofensiva || 0,
-      'Explica': stats.byGender.man.explica || 0,
+      'Intervenció curta': stats.byGender.man.intervencio,
+      'Dinamitza': stats.byGender.man.dinamitza,
+      'Interrupció': stats.byGender.man.interrupcio,
+      'Intervenció llarga': stats.byGender.man.llarga,
+      'Ofensiva': stats.byGender.man.ofensiva,
+      'Explica': stats.byGender.man.explica,
     },
     {
       name: 'Dona',
-      'Intervenció curta': stats.byGender.woman.intervencio || 0,
-      'Dinamitza': stats.byGender.woman.dinamitza || 0,
-      'Interrupció': stats.byGender.woman.interrupcio || 0,
-      'Intervenció llarga': stats.byGender.woman.llarga || 0,
-      'Ofensiva': stats.byGender.woman.ofensiva || 0,
-      'Explica': stats.byGender.woman.explica || 0,
+      'Intervenció curta': stats.byGender.woman.intervencio,
+      'Dinamitza': stats.byGender.woman.dinamitza,
+      'Interrupció': stats.byGender.woman.interrupcio,
+      'Intervenció llarga': stats.byGender.woman.llarga,
+      'Ofensiva': stats.byGender.woman.ofensiva,
+      'Explica': stats.byGender.woman.explica,
     },
     {
       name: 'Trans',
-      'Intervenció curta': stats.byGender.trans.intervencio || 0,
-      'Dinamitza': stats.byGender.trans.dinamitza || 0,
-      'Interrupció': stats.byGender.trans.interrupcio || 0,
-      'Intervenció llarga': stats.byGender.trans.llarga || 0,
-      'Ofensiva': stats.byGender.trans.ofensiva || 0,
-      'Explica': stats.byGender.trans.explica || 0,
+      'Intervenció curta': stats.byGender.trans.intervencio,
+      'Dinamitza': stats.byGender.trans.dinamitza,
+      'Interrupció': stats.byGender.trans.interrupcio,
+      'Intervenció llarga': stats.byGender.trans.llarga,
+      'Ofensiva': stats.byGender.trans.ofensiva,
+      'Explica': stats.byGender.trans.explica,
     },
     {
       name: 'No Binari',
-      'Intervenció curta': stats.byGender['non-binary'].intervencio || 0,
-      'Dinamitza': stats.byGender['non-binary'].dinamitza || 0,
-      'Interrupció': stats.byGender['non-binary'].interrupcio || 0,
-      'Intervenció llarga': stats.byGender['non-binary'].llarga || 0,
-      'Ofensiva': stats.byGender['non-binary'].ofensiva || 0,
-      'Explica': stats.byGender['non-binary'].explica || 0,
+      'Intervenció curta': stats.byGender['non-binary'].intervencio,
+      'Dinamitza': stats.byGender['non-binary'].dinamitza,
+      'Interrupció': stats.byGender['non-binary'].interrupcio,
+      'Intervenció llarga': stats.byGender['non-binary'].llarga,
+      'Ofensiva': stats.byGender['non-binary'].ofensiva,
+      'Explica': stats.byGender['non-binary'].explica,
     },
-  ];
+  ], [stats]);
 
   return (
     <Card className="p-4">

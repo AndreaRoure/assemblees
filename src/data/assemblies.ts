@@ -5,25 +5,23 @@ import { supabase } from '@/lib/supabase';
 export let assemblies: Assembly[] = [];
 export let interventions: Intervention[] = [];
 
-// Subscribe to real-time changes
+// Subscribe to real-time changes with better error handling and data refresh
 supabase
   .channel('assemblies')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'assemblies' }, async () => {
-    const { data } = await supabase.from('assemblies').select('*').order('date', { ascending: false });
-    if (data) assemblies = data;
+    await refreshData();
   })
   .subscribe();
 
 supabase
   .channel('interventions')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'interventions' }, async () => {
-    const { data } = await supabase.from('interventions').select('*').order('timestamp', { ascending: true });
-    if (data) interventions = data;
+    await refreshData();
   })
   .subscribe();
 
-// Initial data load
-export const initializeData = async () => {
+// Centralized data refresh function
+const refreshData = async () => {
   const [assemblyData, interventionData] = await Promise.all([
     supabase.from('assemblies').select('*').order('date', { ascending: false }),
     supabase.from('interventions').select('*').order('timestamp', { ascending: true })
@@ -32,6 +30,9 @@ export const initializeData = async () => {
   if (assemblyData.data) assemblies = assemblyData.data;
   if (interventionData.data) interventions = interventionData.data;
 };
+
+// Initialize data when the module loads
+export const initializeData = refreshData;
 
 // Initialize empty stats object
 const createEmptyGenderStats = () => ({
@@ -44,10 +45,9 @@ const createEmptyGenderStats = () => ({
 });
 
 export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
-  // Filter interventions for the specific assembly
+  // Reset and recompute stats from scratch each time
   const assemblyInterventions = interventions.filter(i => i.assembly_id === assemblyId);
   
-  // Initialize stats objects
   const genderStats = {
     man: createEmptyGenderStats(),
     woman: createEmptyGenderStats(),
@@ -64,17 +64,11 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
     explica: 0,
   };
 
-  // Aggregate interventions
+  // Fresh aggregation of interventions
   assemblyInterventions.forEach(intervention => {
     const { gender, type } = intervention;
-    
-    // Increment gender-specific count
-    if (genderStats[gender] && typeof genderStats[gender][type] === 'number') {
+    if (genderStats[gender] && type in genderStats[gender]) {
       genderStats[gender][type]++;
-    }
-    
-    // Increment total type count
-    if (typeof typeStats[type] === 'number') {
       typeStats[type]++;
     }
   });
@@ -86,5 +80,5 @@ export const getAssemblyStats = (assemblyId: string): AssemblyStats => {
   };
 };
 
-// Initialize data when the module loads
+// Initialize data
 initializeData();
