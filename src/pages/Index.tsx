@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
 import AssemblyCard from '@/components/AssemblyCard';
 import QuickIntervention from '@/components/QuickIntervention';
-import AssemblyStats from '@/components/AssemblyStats';
+import ResponsiveAssemblyStats from '@/components/ResponsiveAssemblyStats';
 import RegistersList from '@/components/RegistersList';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -93,7 +93,7 @@ const Index = () => {
               onInterventionAdded={handleInterventionChange}
             />
             
-            {stats && <AssemblyStats stats={stats} />}
+            {stats && <ResponsiveAssemblyStats stats={stats} />}
           </div>
         ) : (
           <Tabs defaultValue="assemblies" className="w-full">
