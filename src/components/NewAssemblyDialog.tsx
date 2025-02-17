@@ -31,7 +31,11 @@ const genderOptions = [
 
 const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   const [open, setOpen] = React.useState(false);
-  const form = useForm<RegisterFormData>();
+  const form = useForm<RegisterFormData>({
+    defaultValues: {
+      gender: 'man'
+    }
+  });
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
