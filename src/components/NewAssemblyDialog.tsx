@@ -23,6 +23,12 @@ interface NewAssemblyDialogProps {
   onAssemblyCreated: () => void;
 }
 
+const genderOptions = [
+  { value: 'man', label: 'Home' },
+  { value: 'woman', label: 'Dona' },
+  { value: 'non-binary', label: 'No binari' }
+];
+
 const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   const [open, setOpen] = React.useState(false);
   const form = useForm<RegisterFormData>();
@@ -88,18 +94,12 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
               defaultValue="man"
               className="grid grid-cols-3 gap-4"
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="man" id="man" />
-                <Label htmlFor="man">Home</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="woman" id="woman" />
-                <Label htmlFor="woman">Dona</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="non-binary" id="non-binary" />
-                <Label htmlFor="non-binary">No binari</Label>
-              </div>
+              {genderOptions.map(({ value, label }) => (
+                <div key={value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={value} id={value} />
+                  <Label htmlFor={value}>{label}</Label>
+                </div>
+              ))}
             </RadioGroup>
           </div>
 
