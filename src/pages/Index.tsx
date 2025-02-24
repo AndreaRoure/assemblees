@@ -143,16 +143,16 @@ const Index = () => {
               />
             </div>
 
-            {stats && attendance && (
-              <InterventionStats stats={stats} attendance={attendance} />
-            )}
-
             <QuickIntervention
               assemblyId={selectedAssembly}
               onInterventionAdded={handleInterventionChange}
             />
             
             {stats && <ResponsiveAssemblyStats stats={stats} />}
+
+            {stats && attendance && (
+              <InterventionStats stats={stats} attendance={attendance} />
+            )}
           </div>
         ) : (
           <Tabs defaultValue="assemblies" className="w-full">
