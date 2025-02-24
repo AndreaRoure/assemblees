@@ -1,13 +1,15 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Assembly } from '@/types';
 import { Card } from '@/components/ui/card';
-import { format } from 'date-fns';
+import { format, isPast, parseISO } from 'date-fns';
 import { ca } from 'date-fns/locale';
-import { UserCircle2, Pencil, Trash2 } from 'lucide-react';
+import { UserCircle2, Pencil, Trash2, Calendar, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { deleteAssembly } from '@/lib/supabase';
 import EditAssemblyDialog from './EditAssemblyDialog';
+import { Badge } from '@/components/ui/badge';
+import { fetchAssemblyInterventions } from '@/lib/supabase';
 
 interface AssemblyCardProps {
   assembly: Assembly;
@@ -17,6 +19,21 @@ interface AssemblyCardProps {
 
 const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [totalInterventions, setTotalInterventions] = useState<number>(0);
+  const isPastAssembly = isPast(parseISO(assembly.date));
+
+  useEffect(() => {
+    const loadInterventions = async () => {
+      try {
+        const interventions = await fetchAssemblyInterventions(assembly.id);
+        setTotalInterventions(interventions.length);
+      } catch (error) {
+        console.error('Error loading interventions:', error);
+      }
+    };
+
+    loadInterventions();
+  }, [assembly.id]);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -38,17 +55,36 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
         onClick={onClick}
       >
         <div className="space-y-3">
-          <div className="text-xs md:text-sm text-gray-500 font-medium">
-            {format(new Date(assembly.date), 'PPP', { locale: ca })}
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-gray-500" />
+              <span className="text-xs md:text-sm text-gray-500 font-medium">
+                {format(new Date(assembly.date), 'PPP', { locale: ca })}
+              </span>
+            </div>
+            <Badge 
+              variant={isPastAssembly ? "secondary" : "default"}
+              className={`${isPastAssembly ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-700'}`}
+            >
+              {isPastAssembly ? 'Realitzada' : 'Pendent'}
+            </Badge>
           </div>
+
           <h3 className="text-base md:text-lg font-semibold text-gray-900 group-hover:bg-clip-text group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-700 group-hover:to-blue-600 transition-colors duration-300">
             {assembly.name}
           </h3>
+
           {assembly.description && (
             <p className="text-xs md:text-sm text-gray-600 line-clamp-2">
               {assembly.description}
             </p>
           )}
+
+          <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
+            <MessageCircle className="h-4 w-4" />
+            <span>{totalInterventions} intervencions</span>
+          </div>
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0 pt-3 border-t border-gray-100">
             <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500">
               <UserCircle2 className="h-4 w-4" />
