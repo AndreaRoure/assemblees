@@ -63,8 +63,8 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
               </span>
             </div>
             <Badge 
-              variant={isPastAssembly ? "secondary" : "default"}
-              className={`${isPastAssembly ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-700'}`}
+              variant={isPastAssembly ? "default" : "secondary"}
+              className={`${isPastAssembly ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}
             >
               {isPastAssembly ? 'Realitzada' : 'Pendent'}
             </Badge>
