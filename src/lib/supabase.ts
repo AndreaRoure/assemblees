@@ -1,6 +1,5 @@
-
 import { createClient } from '@supabase/supabase-js';
-import { Assembly, Intervention } from '@/types';
+import { Assembly, Intervention, AssemblyAttendance } from '@/types';
 
 const supabaseUrl = 'https://ivtmizupnvaluhccszqp.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2dG1penVwbnZhbHVoY2NzenFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1NDM4MDQsImV4cCI6MjA1NTExOTgwNH0.KRFIGcyXZOtUiedJdKdA5ddCS0rtZ6WQLyTxl9AZWnI';
@@ -96,4 +95,29 @@ export const removeIntervention = async (assemblyId: string, type: string, gende
 
     if (error) throw error;
   }
+};
+
+export const fetchAssemblyAttendance = async (assemblyId: string) => {
+  const { data, error } = await supabase
+    .from('assembly_attendance')
+    .select('*')
+    .eq('assembly_id', assemblyId)
+    .single();
+  
+  if (error) throw error;
+  return data as AssemblyAttendance;
+};
+
+export const updateAssemblyAttendance = async (assemblyId: string, attendance: Partial<AssemblyAttendance>) => {
+  const { data, error } = await supabase
+    .from('assembly_attendance')
+    .upsert({
+      assembly_id: assemblyId,
+      ...attendance
+    })
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return data as AssemblyAttendance;
 };

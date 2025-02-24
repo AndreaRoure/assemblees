@@ -33,6 +33,38 @@ export type Database = {
         }
         Relationships: []
       }
+      assembly_attendance: {
+        Row: {
+          assembly_id: string | null
+          female_count: number | null
+          id: string
+          male_count: number | null
+          non_binary_count: number | null
+        }
+        Insert: {
+          assembly_id?: string | null
+          female_count?: number | null
+          id?: string
+          male_count?: number | null
+          non_binary_count?: number | null
+        }
+        Update: {
+          assembly_id?: string | null
+          female_count?: number | null
+          id?: string
+          male_count?: number | null
+          non_binary_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assembly_attendance_assembly_id_fkey"
+            columns: ["assembly_id"]
+            isOneToOne: true
+            referencedRelation: "assemblies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interventions: {
         Row: {
           assembly_id: string

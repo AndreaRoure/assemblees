@@ -1,4 +1,3 @@
-
 export interface Assembly {
   id: string;
   name: string;
@@ -42,4 +41,12 @@ export interface AssemblyStats {
     ofensiva: number;
     explica: number;
   };
+}
+
+export interface AssemblyAttendance {
+  id: string;
+  assembly_id: string;
+  female_count: number;
+  male_count: number;
+  non_binary_count: number;
 }

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
@@ -10,16 +9,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
 import Logo from '@/components/Logo';
-import { fetchAssemblies, fetchAssemblyInterventions } from '@/lib/supabase';
+import { 
+  fetchAssemblies, 
+  fetchAssemblyInterventions, 
+  fetchAssemblyAttendance,
+  updateAssemblyAttendance 
+} from '@/lib/supabase';
 import { getAssemblyStats } from '@/data/assemblies';
 import { supabase } from '@/lib/supabase';
+import AttendanceCounter from '@/components/AttendanceCounter';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
 
-  // Subscribe to real-time changes
   React.useEffect(() => {
     const assemblyChannel = supabase
       .channel('assemblies-changes')
@@ -61,11 +65,39 @@ const Index = () => {
     enabled: !!selectedAssembly
   });
 
+  const { data: attendance, refetch: refetchAttendance } = useQuery({
+    queryKey: ['attendance', selectedAssembly],
+    queryFn: () => selectedAssembly ? fetchAssemblyAttendance(selectedAssembly) : Promise.resolve(null),
+    enabled: !!selectedAssembly,
+    initialData: selectedAssembly ? {
+      assembly_id: selectedAssembly,
+      female_count: 0,
+      male_count: 0,
+      non_binary_count: 0
+    } : null
+  });
+
   const handleInterventionChange = () => {
     if (selectedAssembly) {
       queryClient.invalidateQueries({ queryKey: ['interventions', selectedAssembly] });
       queryClient.invalidateQueries({ queryKey: ['assemblyStats', selectedAssembly] });
     }
+  };
+
+  const handleUpdateAttendance = async (
+    type: 'female_count' | 'male_count' | 'non_binary_count',
+    increment: boolean
+  ) => {
+    if (!selectedAssembly || !attendance) return;
+
+    const newCount = increment 
+      ? (attendance[type] || 0) + 1 
+      : Math.max(0, (attendance[type] || 0) - 1);
+
+    await updateAssemblyAttendance(selectedAssembly, {
+      [type]: newCount
+    });
+    refetchAttendance();
   };
 
   return (
@@ -88,6 +120,27 @@ const Index = () => {
               ← Tornar a la llista
             </button>
             
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <AttendanceCounter
+                label="Dones assistents"
+                count={attendance?.female_count || 0}
+                onIncrement={() => handleUpdateAttendance('female_count', true)}
+                onDecrement={() => handleUpdateAttendance('female_count', false)}
+              />
+              <AttendanceCounter
+                label="Homes assistents"
+                count={attendance?.male_count || 0}
+                onIncrement={() => handleUpdateAttendance('male_count', true)}
+                onDecrement={() => handleUpdateAttendance('male_count', false)}
+              />
+              <AttendanceCounter
+                label="No binàries assistents"
+                count={attendance?.non_binary_count || 0}
+                onIncrement={() => handleUpdateAttendance('non_binary_count', true)}
+                onDecrement={() => handleUpdateAttendance('non_binary_count', false)}
+              />
+            </div>
+
             <QuickIntervention
               assemblyId={selectedAssembly}
               onInterventionAdded={handleInterventionChange}
