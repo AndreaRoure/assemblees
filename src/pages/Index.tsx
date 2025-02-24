@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
@@ -18,6 +19,7 @@ import {
 import { getAssemblyStats } from '@/data/assemblies';
 import { supabase } from '@/lib/supabase';
 import AttendanceCounter from '@/components/AttendanceCounter';
+import InterventionStats from '@/components/InterventionStats';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
@@ -140,6 +142,10 @@ const Index = () => {
                 onDecrement={() => handleUpdateAttendance('non_binary_count', false)}
               />
             </div>
+
+            {stats && attendance && (
+              <InterventionStats stats={stats} attendance={attendance} />
+            )}
 
             <QuickIntervention
               assemblyId={selectedAssembly}
