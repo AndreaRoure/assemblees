@@ -20,6 +20,7 @@ import { getAssemblyStats } from '@/data/assemblies';
 import { supabase } from '@/lib/supabase';
 import AttendanceCounter from '@/components/AttendanceCounter';
 import InterventionStats from '@/components/InterventionStats';
+import { toast } from 'sonner';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
@@ -44,9 +45,19 @@ const Index = () => {
       })
       .subscribe();
 
+    const attendanceChannel = supabase
+      .channel('attendance-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'assembly_attendance' }, () => {
+        if (selectedAssembly) {
+          queryClient.invalidateQueries({ queryKey: ['attendance', selectedAssembly] });
+        }
+      })
+      .subscribe();
+
     return () => {
       supabase.removeChannel(assemblyChannel);
       supabase.removeChannel(interventionsChannel);
+      supabase.removeChannel(attendanceChannel);
     };
   }, [queryClient, selectedAssembly]);
 
@@ -92,14 +103,27 @@ const Index = () => {
   ) => {
     if (!selectedAssembly || !attendance) return;
 
-    const newCount = increment 
-      ? (attendance[type] || 0) + 1 
-      : Math.max(0, (attendance[type] || 0) - 1);
+    try {
+      const newCount = increment 
+        ? (attendance[type] || 0) + 1 
+        : Math.max(0, (attendance[type] || 0) - 1);
 
-    await updateAssemblyAttendance(selectedAssembly, {
-      [type]: newCount
-    });
-    refetchAttendance();
+      await updateAssemblyAttendance(selectedAssembly, {
+        [type]: newCount
+      });
+      
+      // Update the local data immediately for a responsive UI
+      queryClient.setQueryData(['attendance', selectedAssembly], {
+        ...attendance,
+        [type]: newCount
+      });
+      
+      // Still refetch to ensure data consistency
+      refetchAttendance();
+    } catch (error) {
+      console.error('Error updating attendance:', error);
+      toast.error('No s\'ha pogut actualitzar l\'assistència. Intenta-ho de nou.');
+    }
   };
 
   return (

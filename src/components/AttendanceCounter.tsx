@@ -26,6 +26,8 @@ const AttendanceCounter = ({ label, count, onIncrement, onDecrement }: Attendanc
             onClick={onDecrement}
             disabled={count <= 0}
             className="h-8 w-8 p-0"
+            title="Disminuir"
+            aria-label={`Disminuir ${label}`}
           >
             <Minus className="h-4 w-4" />
           </Button>
@@ -35,6 +37,8 @@ const AttendanceCounter = ({ label, count, onIncrement, onDecrement }: Attendanc
             size="sm"
             onClick={onIncrement}
             className="h-8 w-8 p-0"
+            title="Incrementar"
+            aria-label={`Incrementar ${label}`}
           >
             <Plus className="h-4 w-4" />
           </Button>
