@@ -47,17 +47,20 @@ interface InterventionStatsProps {
 }
 
 const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
+  // Function to count all interventions for a gender
   const getTotalInterventions = (gender: 'man' | 'woman' | 'non-binary') => {
     const genderStats = stats.byGender[gender];
     return Object.values(genderStats).reduce((sum, count) => sum + count, 0);
   };
 
+  // Calculate totals
   const totalAttendees = attendance.female_count + attendance.male_count + attendance.non_binary_count;
-  const menInterventions = getTotalInterventions('man');
   const womenInterventions = getTotalInterventions('woman');
+  const menInterventions = getTotalInterventions('man');
   const nonBinaryInterventions = getTotalInterventions('non-binary');
-  const totalInterventions = menInterventions + womenInterventions + nonBinaryInterventions;
+  const totalInterventions = womenInterventions + menInterventions + nonBinaryInterventions;
 
+  // Helper functions for calculating percentages and per-attendee rates
   const calculatePercentage = (interventions: number) => {
     if (totalInterventions === 0) return 0;
     return (interventions / totalInterventions) * 100;
