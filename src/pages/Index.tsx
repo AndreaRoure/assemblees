@@ -81,13 +81,7 @@ const Index = () => {
   const { data: attendance, refetch: refetchAttendance } = useQuery({
     queryKey: ['attendance', selectedAssembly],
     queryFn: () => selectedAssembly ? fetchAssemblyAttendance(selectedAssembly) : Promise.resolve(null),
-    enabled: !!selectedAssembly,
-    initialData: selectedAssembly ? {
-      assembly_id: selectedAssembly,
-      female_count: 0,
-      male_count: 0,
-      non_binary_count: 0
-    } : null
+    enabled: !!selectedAssembly
   });
 
   const handleInterventionChange = () => {
@@ -107,22 +101,30 @@ const Index = () => {
       const newCount = increment 
         ? (attendance[type] || 0) + 1 
         : Math.max(0, (attendance[type] || 0) - 1);
+      
+      const updatedAttendance = {
+        ...attendance,
+        [type]: newCount
+      };
 
+      // Update local state immediately for responsive UI
+      queryClient.setQueryData(['attendance', selectedAssembly], updatedAttendance);
+      
+      // Send update to database
       await updateAssemblyAttendance(selectedAssembly, {
         [type]: newCount
       });
       
-      // Update the local data immediately for a responsive UI
-      queryClient.setQueryData(['attendance', selectedAssembly], {
-        ...attendance,
-        [type]: newCount
-      });
-      
-      // Still refetch to ensure data consistency
+      // Refetch to ensure data consistency
       refetchAttendance();
+      
+      console.log(`Updated ${type} to ${newCount}`);
     } catch (error) {
       console.error('Error updating attendance:', error);
       toast.error('No s\'ha pogut actualitzar l\'assistència. Intenta-ho de nou.');
+      
+      // Revert optimistic update on error
+      refetchAttendance();
     }
   };
 

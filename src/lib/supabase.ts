@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import { Assembly, Intervention, AssemblyAttendance } from '@/types';
 
@@ -102,22 +103,62 @@ export const fetchAssemblyAttendance = async (assemblyId: string) => {
     .from('assembly_attendance')
     .select('*')
     .eq('assembly_id', assemblyId)
-    .single();
+    .maybeSingle();
   
   if (error) throw error;
+  
+  // If no record exists yet, return a default one
+  if (!data) {
+    return {
+      assembly_id: assemblyId,
+      female_count: 0,
+      male_count: 0,
+      non_binary_count: 0
+    } as AssemblyAttendance;
+  }
+  
   return data as AssemblyAttendance;
 };
 
 export const updateAssemblyAttendance = async (assemblyId: string, attendance: Partial<AssemblyAttendance>) => {
-  const { data, error } = await supabase
+  // Check if a record already exists
+  const { data: existingRecord } = await supabase
     .from('assembly_attendance')
-    .upsert({
-      assembly_id: assemblyId,
-      ...attendance
-    })
-    .select()
-    .single();
+    .select('id')
+    .eq('assembly_id', assemblyId)
+    .maybeSingle();
   
-  if (error) throw error;
-  return data as AssemblyAttendance;
+  let result;
+  
+  if (existingRecord) {
+    // Update existing record
+    const { data, error } = await supabase
+      .from('assembly_attendance')
+      .update({
+        ...attendance
+      })
+      .eq('assembly_id', assemblyId)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    result = data;
+  } else {
+    // Insert new record
+    const { data, error } = await supabase
+      .from('assembly_attendance')
+      .insert([{
+        assembly_id: assemblyId,
+        female_count: attendance.female_count || 0,
+        male_count: attendance.male_count || 0,
+        non_binary_count: attendance.non_binary_count || 0
+      }])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    result = data;
+  }
+  
+  return result as AssemblyAttendance;
 };
