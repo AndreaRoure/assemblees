@@ -6,6 +6,8 @@ import AssemblyCard from '@/components/AssemblyCard';
 import QuickIntervention from '@/components/QuickIntervention';
 import ResponsiveAssemblyStats from '@/components/ResponsiveAssemblyStats';
 import RegistersList from '@/components/RegistersList';
+import AudioRecorder from '@/components/AudioRecorder';
+import Transcriptions from '@/components/Transcriptions';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -24,6 +26,7 @@ import { toast } from 'sonner';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
+  const [transcription, setTranscription] = React.useState<string>('');
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
 
@@ -128,6 +131,10 @@ const Index = () => {
     }
   };
 
+  const handleTranscriptionComplete = (text: string) => {
+    setTranscription(text);
+  };
+
   return (
     <div className="container p-4 md:py-6 mx-auto">
       <div className="space-y-4 md:space-y-6">
@@ -168,6 +175,13 @@ const Index = () => {
                 onDecrement={() => handleUpdateAttendance('non_binary_count', false)}
               />
             </div>
+
+            <AudioRecorder 
+              assemblyId={selectedAssembly}
+              onTranscriptionComplete={handleTranscriptionComplete}
+            />
+
+            {transcription && <Transcriptions transcription={transcription} />}
 
             <QuickIntervention
               assemblyId={selectedAssembly}
