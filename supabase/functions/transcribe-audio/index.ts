@@ -55,6 +55,8 @@ serve(async (req) => {
       throw new Error('No audio data provided');
     }
 
+    console.log('Received audio data. Processing...');
+
     // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio);
     

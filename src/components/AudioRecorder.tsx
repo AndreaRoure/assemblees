@@ -24,6 +24,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
   const startRecording = async () => {
     try {
+      console.log("Starting recording...");
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       
@@ -55,6 +56,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
   const stopRecording = () => {
     if (!mediaRecorderRef.current) return;
     
+    console.log("Stopping recording...");
     mediaRecorderRef.current.stop();
     mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
     
@@ -72,6 +74,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
       setIsProcessing(true);
       
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      console.log("Audio blob created, size:", audioBlob.size);
       
       // Convert blob to base64
       const reader = new FileReader();
@@ -86,16 +89,21 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
             throw new Error("Failed to convert audio to base64");
           }
           
+          console.log("Audio converted to base64, calling Supabase function...");
+          
           // Call our Supabase Edge Function
           const { data, error } = await supabase.functions.invoke("transcribe-audio", {
             body: { audio: base64Audio }
           });
+          
+          console.log("Supabase function response:", data, error);
           
           if (error || !data) {
             throw new Error(error?.message || "Error during transcription");
           }
           
           if (data.text) {
+            console.log("Transcription received:", data.text.substring(0, 50) + "...");
             onTranscriptionComplete(data.text);
             toast.success("Transcripció completada");
           } else {
