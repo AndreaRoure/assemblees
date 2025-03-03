@@ -6,14 +6,17 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { Copy, Save, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import ZapierIntegration from './ZapierIntegration';
 
 interface TranscriptionsProps {
   transcription: string;
+  assemblyId?: string;
   onTextEdit?: (text: string) => void;
 }
 
 const Transcriptions: React.FC<TranscriptionsProps> = ({ 
   transcription,
+  assemblyId,
   onTextEdit
 }) => {
   const [copied, setCopied] = useState(false);
@@ -92,6 +95,15 @@ const Transcriptions: React.FC<TranscriptionsProps> = ({
             <div className="text-sm whitespace-pre-wrap">{transcription}</div>
           )}
         </ScrollArea>
+        
+        {assemblyId && (
+          <div className="mt-4">
+            <ZapierIntegration 
+              transcription={isEditing ? editedText : transcription} 
+              assemblyId={assemblyId}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

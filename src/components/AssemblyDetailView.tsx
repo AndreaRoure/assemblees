@@ -119,7 +119,11 @@ const AssemblyDetailView = ({ assemblyId, onBack }: AssemblyDetailViewProps) => 
         onTranscriptionComplete={handleTranscriptionComplete}
       />
 
-      {transcription && <Transcriptions transcription={transcription} />}
+      {transcription && <Transcriptions 
+        transcription={transcription} 
+        assemblyId={assemblyId}
+        onTextEdit={setTranscription}
+      />}
 
       <QuickIntervention
         assemblyId={assemblyId}
