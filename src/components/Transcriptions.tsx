@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -9,16 +9,24 @@ import { toast } from 'sonner';
 
 interface TranscriptionsProps {
   transcription: string;
+  onTextEdit?: (text: string) => void;
 }
 
-const Transcriptions: React.FC<TranscriptionsProps> = ({ transcription }) => {
+const Transcriptions: React.FC<TranscriptionsProps> = ({ 
+  transcription,
+  onTextEdit
+}) => {
   const [copied, setCopied] = useState(false);
   const [editedText, setEditedText] = useState(transcription);
   const [isEditing, setIsEditing] = useState(false);
 
+  useEffect(() => {
+    setEditedText(transcription);
+  }, [transcription]);
+
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(transcription);
+      await navigator.clipboard.writeText(isEditing ? editedText : transcription);
       setCopied(true);
       toast.success("Text copiat al portapapers");
       setTimeout(() => setCopied(false), 2000);
@@ -30,6 +38,9 @@ const Transcriptions: React.FC<TranscriptionsProps> = ({ transcription }) => {
   const handleEditToggle = () => {
     if (isEditing) {
       // Save changes
+      if (onTextEdit) {
+        onTextEdit(editedText);
+      }
       toast.success("Canvis guardats");
     }
     setIsEditing(!isEditing);
