@@ -46,13 +46,27 @@ serve(async (req) => {
   try {
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not set');
+      console.error('OPENAI_API_KEY is not set');
+      return new Response(
+        JSON.stringify({ error: 'OPENAI_API_KEY is not set' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     const { audio } = await req.json();
     
     if (!audio) {
-      throw new Error('No audio data provided');
+      console.error('No audio data provided');
+      return new Response(
+        JSON.stringify({ error: 'No audio data provided' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     console.log('Received audio data. Processing...');
@@ -81,7 +95,14 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenAI API error:', errorText);
-      throw new Error(`OpenAI API error: ${errorText}`);
+      
+      return new Response(
+        JSON.stringify({ error: `OpenAI API error: ${errorText}` }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     const result = await response.json();
@@ -94,6 +115,7 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in transcribe-audio function:', error);
+    
     return new Response(
       JSON.stringify({ error: error.message }),
       {
