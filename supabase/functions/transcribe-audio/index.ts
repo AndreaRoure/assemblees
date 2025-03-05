@@ -75,7 +75,7 @@ serve(async (req) => {
       );
     }
     
-    const { audio } = requestBody;
+    const { audio, language = 'ca' } = requestBody;
     
     if (!audio) {
       console.error('No audio data provided in request');
@@ -106,13 +106,22 @@ serve(async (req) => {
       );
     }
     
+    // Map language codes to what OpenAI Whisper expects
+    const languageMap: Record<string, string> = {
+      'ca': 'ca', // Catalan
+      'es': 'es', // Spanish
+      'en': 'en', // English
+    };
+    
+    const whisperLanguage = languageMap[language] || 'ca'; // Default to Catalan if unknown
+    
     // Prepare form data
-    console.log("Preparing form data for OpenAI API...");
+    console.log(`Preparing form data for OpenAI API (language: ${whisperLanguage})...`);
     const formData = new FormData();
     const blob = new Blob([binaryAudio], { type: 'audio/webm' });
     formData.append('file', blob, 'audio.webm');
     formData.append('model', 'whisper-1');
-    formData.append('language', 'ca'); // Catalan language
+    formData.append('language', whisperLanguage);
 
     console.log("Sending audio to OpenAI Whisper API...");
     

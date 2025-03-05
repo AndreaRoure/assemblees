@@ -3,9 +3,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSelector from '@/components/LanguageSelector';
 
 const Header = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <header className="border-b">
@@ -21,11 +24,12 @@ const Header = () => {
           </h1>
         </div>
         <div className="flex gap-4 items-center">
+          <LanguageSelector />
           <Button variant="outline" onClick={() => navigate('/signin')}>
-            Iniciar Sesión
+            {t('login')}
           </Button>
           <Button onClick={() => navigate('/signup')}>
-            Comenzar
+            {t('signup')}
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         </div>

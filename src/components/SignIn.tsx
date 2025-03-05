@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Logo from '@/components/Logo';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,46 +23,46 @@ const SignIn = () => {
         <div className="flex flex-col items-center justify-center">
           <Logo />
           <h1 className="text-2xl font-bold mt-4 mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
-            Bienvenido/a de nuevo
+            {t('signin.welcome')}
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-center">
-            Inicia sesión en tu cuenta para continuar
+            {t('signin.subtitle')}
           </p>
         </div>
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Iniciar sesión</CardTitle>
+            <CardTitle className="text-xl">{t('signin.title')}</CardTitle>
             <CardDescription>
-              Introduce tus credenciales para acceder a tu cuenta
+              {t('signin.credentials')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('signin.email')}</Label>
                 <Input id="email" type="email" placeholder="m@ejemplo.com" required />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Contraseña</Label>
+                  <Label htmlFor="password">{t('signin.password')}</Label>
                   <a 
                     href="#" 
                     className="text-sm text-primary underline"
                   >
-                    ¿Olvidaste tu contraseña?
+                    {t('signin.forgot')}
                   </a>
                 </div>
                 <Input id="password" type="password" required />
               </div>
               <Button type="submit" className="w-full">
-                Iniciar sesión
+                {t('signin.submit')}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center gap-2">
             <div className="text-sm text-muted-foreground">
-              ¿No tienes cuenta?{" "}
+              {t('signin.noaccount')}{" "}
               <a 
                 href="#" 
                 className="text-primary underline"
@@ -69,7 +71,7 @@ const SignIn = () => {
                   navigate('/signup');
                 }}
               >
-                Regístrate
+                {t('signin.register')}
               </a>
             </div>
           </CardFooter>
@@ -84,7 +86,7 @@ const SignIn = () => {
               navigate('/');
             }}
           >
-            Volver al inicio
+            {t('signin.back')}
           </a>
         </div>
       </div>
