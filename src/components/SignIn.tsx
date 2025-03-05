@@ -21,46 +21,46 @@ const SignIn = () => {
         <div className="flex flex-col items-center justify-center">
           <Logo />
           <h1 className="text-2xl font-bold mt-4 mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
-            Welcome back
+            Bienvenido/a de nuevo
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-center">
-            Sign in to your account to continue
+            Inicia sesión en tu cuenta para continuar
           </p>
         </div>
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Sign in</CardTitle>
+            <CardTitle className="text-xl">Iniciar sesión</CardTitle>
             <CardDescription>
-              Enter your credentials to access your account
+              Introduce tus credenciales para acceder a tu cuenta
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <Input id="email" type="email" placeholder="m@ejemplo.com" required />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Contraseña</Label>
                   <a 
                     href="#" 
                     className="text-sm text-primary underline"
                   >
-                    Forgot password?
+                    ¿Olvidaste tu contraseña?
                   </a>
                 </div>
                 <Input id="password" type="password" required />
               </div>
               <Button type="submit" className="w-full">
-                Sign in
+                Iniciar sesión
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center gap-2">
             <div className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              ¿No tienes cuenta?{" "}
               <a 
                 href="#" 
                 className="text-primary underline"
@@ -69,7 +69,7 @@ const SignIn = () => {
                   navigate('/signup');
                 }}
               >
-                Sign up
+                Regístrate
               </a>
             </div>
           </CardFooter>
@@ -84,7 +84,7 @@ const SignIn = () => {
               navigate('/');
             }}
           >
-            Back to home
+            Volver al inicio
           </a>
         </div>
       </div>
