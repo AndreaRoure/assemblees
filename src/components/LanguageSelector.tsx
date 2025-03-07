@@ -29,7 +29,11 @@ const LanguageSelector = () => {
   };
 
   return (
-    <div className="flex items-center">
+    <motion.div 
+      className="flex items-center"
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2 }}
+    >
       <Select 
         value={language} 
         onValueChange={handleValueChange}
@@ -40,17 +44,18 @@ const LanguageSelector = () => {
         </SelectTrigger>
         <SelectContent>
           {Object.entries(languageLabels).map(([key, label]) => (
-            <SelectItem 
-              key={key} 
-              value={key}
-              className="cursor-pointer transition-colors hover:bg-purple-50"
-            >
-              {label}
-            </SelectItem>
+            <motion.div key={key} whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
+              <SelectItem 
+                value={key}
+                className="cursor-pointer transition-colors hover:bg-purple-50"
+              >
+                {label}
+              </SelectItem>
+            </motion.div>
           ))}
         </SelectContent>
       </Select>
-    </div>
+    </motion.div>
   );
 };
 
