@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchInterventions, fetchAssemblies, supabase } from '@/lib/supabase';
@@ -126,6 +127,10 @@ const RegistersList = () => {
         <div className="transform hover:scale-[1.01] transition-transform duration-200">
           <GenderChart data={genderTotals} />
         </div>
+      </div>
+
+      <div className="text-sm text-primary font-medium text-center bg-primary/5 py-3 px-4 rounded-full inline-block mx-auto">
+        Total d&apos;intervencions: {filteredInterventions.length}
       </div>
     </div>
   );

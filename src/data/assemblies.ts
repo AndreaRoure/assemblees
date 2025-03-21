@@ -16,6 +16,7 @@ export const getAssemblyStats = async (assemblyId: string): Promise<AssemblyStat
   const genderStats = {
     man: createEmptyGenderStats(),
     woman: createEmptyGenderStats(),
+    trans: createEmptyGenderStats(),
     'non-binary': createEmptyGenderStats(),
   };
 
@@ -39,18 +40,9 @@ export const getAssemblyStats = async (assemblyId: string): Promise<AssemblyStat
   // Aggregate the interventions
   assemblyInterventions?.forEach(intervention => {
     const { gender, type } = intervention;
-    
-    // Map the gender from database to our stats object keys
-    let statsGender = gender;
-    if (gender === 'man' || gender === 'woman' || gender === 'non-binary') {
-      statsGender = gender;
-    }
-    
-    if (genderStats[statsGender] && type in genderStats[statsGender]) {
-      genderStats[statsGender][type]++;
+    if (genderStats[gender] && type in genderStats[gender]) {
+      genderStats[gender][type]++;
       typeStats[type]++;
-    } else {
-      console.warn(`Unrecognized gender or type: ${gender}, ${type}`);
     }
   });
 
