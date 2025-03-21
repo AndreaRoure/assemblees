@@ -52,3 +52,13 @@ export const getAssemblyStats = async (assemblyId: string): Promise<AssemblyStat
     byType: typeStats,
   };
 };
+
+// Function to count the total number of assemblies
+export const getTotalAssembliesCount = async (): Promise<number> => {
+  const { count, error } = await supabase
+    .from('assemblies')
+    .select('*', { count: 'exact', head: true });
+  
+  if (error) throw error;
+  return count || 0;
+};

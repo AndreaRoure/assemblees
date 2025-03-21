@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
@@ -16,11 +15,12 @@ import {
   fetchAssemblyAttendance,
   updateAssemblyAttendance 
 } from '@/lib/supabase';
-import { getAssemblyStats } from '@/data/assemblies';
+import { getAssemblyStats, getTotalAssembliesCount } from '@/data/assemblies';
 import { supabase } from '@/lib/supabase';
 import AttendanceCounter from '@/components/AttendanceCounter';
 import InterventionStats from '@/components/InterventionStats';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
@@ -64,6 +64,11 @@ const Index = () => {
   const { data: assemblies = [], refetch: refetchAssemblies } = useQuery({
     queryKey: ['assemblies'],
     queryFn: fetchAssemblies
+  });
+
+  const { data: totalAssembliesCount } = useQuery({
+    queryKey: ['totalAssembliesCount'],
+    queryFn: getTotalAssembliesCount
   });
 
   const { data: interventions = [] } = useQuery({
@@ -183,7 +188,14 @@ const Index = () => {
         ) : (
           <Tabs defaultValue="assemblies" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
-              <TabsTrigger value="assemblies">Assemblees</TabsTrigger>
+              <TabsTrigger value="assemblies">
+                Assemblees
+                {totalAssembliesCount !== undefined && (
+                  <Badge variant="secondary" className="ml-2 bg-purple-100 text-purple-700">
+                    {totalAssembliesCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="registers">Registres</TabsTrigger>
             </TabsList>
             
