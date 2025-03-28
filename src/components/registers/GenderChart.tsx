@@ -68,7 +68,7 @@ const GenderChart = ({ data }: GenderChartProps) => {
   return (
     <Card className="p-3 md:p-6 bg-gradient-to-br from-white to-gray-50">
       <div className="text-sm md:text-lg font-semibold mb-4 md:mb-6 text-foreground">
-        Tipus d&apos;intervencions per Gènere
+        Estadístiques per Gènere i Tipus
       </div>
       <div className="h-[400px] md:h-[400px] -mx-2 md:mx-0">
         <ResponsiveContainer width="100%" height="100%">
@@ -104,12 +104,12 @@ const GenderChart = ({ data }: GenderChartProps) => {
               cursor={{ fill: 'rgba(243, 244, 246, 0.4)' }}
             />
             <Legend content={CustomLegend} />
-            <Bar dataKey="dinamitza" stackId="a" fill="#E5DEFF" name="Dinamitza" />
-            <Bar dataKey="explica" stackId="a" fill="#FDE1D3" name="Explica" />
-            <Bar dataKey="interrupcio" stackId="a" fill="#F2FCE2" name="Interrupció" />
-            <Bar dataKey="intervencio" stackId="a" fill="#D3E4FD" name="Intervenció" />
-            <Bar dataKey="llarga" stackId="a" fill="#FFDEE2" name="Intervenció llarga" />
-            <Bar dataKey="ofensiva" stackId="a" fill="#FEF7CD" name="Ofensiva" />
+            <Bar dataKey="dinamitza" stackId="a" fill="#EC4899" name="Dinamitza" />
+            <Bar dataKey="explica" stackId="a" fill="#8B5CF6" name="Explica" />
+            <Bar dataKey="interrupcio" stackId="a" fill="#F59E0B" name="Interrupció" />
+            <Bar dataKey="intervencio" stackId="a" fill="#3B82F6" name="Intervenció" />
+            <Bar dataKey="llarga" stackId="a" fill="#10B981" name="Intervenció llarga" />
+            <Bar dataKey="ofensiva" stackId="a" fill="#EF4444" name="Ofensiva" />
           </BarChart>
         </ResponsiveContainer>
       </div>
