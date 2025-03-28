@@ -9,6 +9,14 @@ import TotalAssembliesCard from './registers/TotalAssembliesCard';
 import GenderDistributionChart from './registers/GenderDistributionChart';
 import YearlyEvolutionChart from './registers/YearlyEvolutionChart';
 
+interface YearlyData {
+  year: string;
+  man: number;
+  woman: number;
+  'non-binary': number;
+  total: number;
+}
+
 const RegistersList = () => {
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const queryClient = useQueryClient();
@@ -132,7 +140,7 @@ const RegistersList = () => {
 
   // Generate data for the yearly evolution chart
   const yearlyEvolutionData = useMemo(() => {
-    const yearData = {};
+    const yearData: Record<string, YearlyData> = {};
     
     // Initialize years with zero counts
     years.forEach(year => {
@@ -155,7 +163,7 @@ const RegistersList = () => {
     });
     
     // Convert to array and sort by year
-    return Object.values(yearData).sort((a: any, b: any) => parseInt(a.year) - parseInt(b.year));
+    return Object.values(yearData).sort((a, b) => parseInt(a.year) - parseInt(b.year));
   }, [interventions, years]);
 
   if (isLoadingInterventions || isLoadingAssemblies) {
@@ -195,7 +203,7 @@ const RegistersList = () => {
               totalInterventions: attendanceSummary.totalInterventions
             }}
             attendance={{
-              female_count: 10, // Placeholder values since real attendance data is not available
+              female_count: 10,
               male_count: 10,
               non_binary_count: 5
             }}

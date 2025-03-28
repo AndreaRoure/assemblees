@@ -3,14 +3,16 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip as RechartsTooltip } from 'recharts';
 
+interface YearlyData {
+  year: string;
+  man: number;
+  woman: number;
+  'non-binary': number;
+  total: number;
+}
+
 interface YearlyEvolutionChartProps {
-  data: Array<{
-    year: string;
-    man: number;
-    woman: number;
-    'non-binary': number;
-    total: number;
-  }>;
+  data: YearlyData[];
 }
 
 const YearlyEvolutionChart = ({ data }: YearlyEvolutionChartProps) => {
