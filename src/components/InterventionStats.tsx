@@ -52,7 +52,14 @@ const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
     return Object.values(genderStats).reduce((sum, count) => sum + count, 0);
   };
 
-  const totalAttendees = attendance.female_count + attendance.male_count + attendance.non_binary_count;
+  // Ensure we have valid attendance counts
+  const safeAttendance = {
+    female_count: Math.max(0, attendance?.female_count || 0),
+    male_count: Math.max(0, attendance?.male_count || 0),
+    non_binary_count: Math.max(0, attendance?.non_binary_count || 0),
+  };
+
+  const totalAttendees = safeAttendance.female_count + safeAttendance.male_count + safeAttendance.non_binary_count;
   const menInterventions = getTotalInterventions('man');
   const womenInterventions = getTotalInterventions('woman');
   const nonBinaryInterventions = getTotalInterventions('non-binary');
@@ -77,23 +84,23 @@ const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
         <StatsCard
           type="Intervencions de dones"
           count={womenInterventions}
-          totalAttendees={attendance.female_count}
+          totalAttendees={safeAttendance.female_count}
           percentage={calculatePercentage(womenInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(womenInterventions, attendance.female_count)}
+          interventionsPerAttendee={calculateInterventionsPerAttendee(womenInterventions, safeAttendance.female_count)}
         />
         <StatsCard
           type="Intervencions d'homes"
           count={menInterventions}
-          totalAttendees={attendance.male_count}
+          totalAttendees={safeAttendance.male_count}
           percentage={calculatePercentage(menInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(menInterventions, attendance.male_count)}
+          interventionsPerAttendee={calculateInterventionsPerAttendee(menInterventions, safeAttendance.male_count)}
         />
         <StatsCard
           type="Intervencions no binàries"
           count={nonBinaryInterventions}
-          totalAttendees={attendance.non_binary_count}
+          totalAttendees={safeAttendance.non_binary_count}
           percentage={calculatePercentage(nonBinaryInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(nonBinaryInterventions, attendance.non_binary_count)}
+          interventionsPerAttendee={calculateInterventionsPerAttendee(nonBinaryInterventions, safeAttendance.non_binary_count)}
         />
       </div>
       
