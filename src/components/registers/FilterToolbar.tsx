@@ -23,7 +23,7 @@ const FilterToolbar = ({ selectedYear, years, onYearChange }: FilterToolbarProps
           />
         </div>
         <div>
-          <DownloadPDF>
+          <DownloadPDF selectedYear={selectedYear}>
             <Button variant="outline" className="flex items-center gap-2">
               <FileDown className="h-4 w-4" />
               <span className="hidden sm:inline">Descarregar PDF</span>
