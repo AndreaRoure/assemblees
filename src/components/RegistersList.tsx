@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchInterventions, fetchAssemblies, supabase } from '@/lib/supabase';
 import YearSelect from './registers/YearSelect';
 import GenderSelect from './registers/GenderSelect';
-import InterventionStats from './registers/InterventionStats';
+import InterventionStats from './InterventionStats';
 import GenderChart from './registers/GenderChart';
 import { Card } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
@@ -100,7 +100,6 @@ const RegistersList = () => {
 
   // Calculate attendance per gender from all assemblies
   const attendanceSummary = useMemo(() => {
-    const assemblyIds = new Set(assemblies.map(a => a.id));
     const totalInterventions = interventions.length;
     
     // Count interventions by gender
@@ -132,7 +131,7 @@ const RegistersList = () => {
       percentageByGender,
       pieChartData
     };
-  }, [assemblies, interventions]);
+  }, [assemblies.length, interventions]);
 
   if (isLoadingInterventions || isLoadingAssemblies) {
     return (
@@ -142,11 +141,12 @@ const RegistersList = () => {
     );
   }
 
-  const COLORS = ['#3B82F6', '#EC4899', '#8B5CF6'];
+  // Inclusive color palette
+  const COLORS = ['#8B5CF6', '#0EA5E9', '#D946EF'];
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="p-6 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 shadow-sm">
+      <div className="p-4 md:p-6 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 shadow-sm">
         <div className="flex flex-wrap gap-4 justify-center md:justify-start">
           <YearSelect 
             value={selectedYear}
@@ -161,30 +161,14 @@ const RegistersList = () => {
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-4 hover:shadow-md transition-all">
-          <h3 className="text-lg font-semibold">Assemblees Totals</h3>
-          <p className="text-3xl font-bold text-purple-600">{attendanceSummary.assemblyCount}</p>
-        </Card>
-        
-        <Card className="p-4 hover:shadow-md transition-all">
-          <h3 className="text-lg font-semibold">Intervencions Totals</h3>
-          <p className="text-3xl font-bold text-blue-600">{attendanceSummary.totalInterventions}</p>
-        </Card>
-        
-        <Card className="p-4 hover:shadow-md transition-all">
-          <h3 className="text-lg font-semibold">Interv. per Assemblea</h3>
-          <p className="text-3xl font-bold text-indigo-600">
-            {attendanceSummary.assemblyCount > 0 
-              ? (attendanceSummary.totalInterventions / attendanceSummary.assemblyCount).toFixed(1) 
-              : '0'}
-          </p>
-        </Card>
-      </div>
+      {/* Total Assemblees Card */}
+      <Card className="p-4 hover:shadow-md transition-all bg-primary text-white">
+        <h3 className="text-lg font-semibold">Assemblees Totals</h3>
+        <p className="text-3xl font-bold">{attendanceSummary.assemblyCount}</p>
+      </Card>
 
       {/* Gender Distribution Chart */}
-      <Card className="p-6">
+      <Card className="p-4 md:p-6">
         <h3 className="text-lg font-semibold mb-4">Distribució d'Intervencions per Gènere</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="h-[250px]">
@@ -214,7 +198,7 @@ const RegistersList = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Gènere</TableHead>
-                  <TableHead className="text-right">Intervencions</TableHead>
+                  <TableHead className="text-right">Total Intervencions</TableHead>
                   <TableHead className="text-right">Percentatge</TableHead>
                 </TableRow>
               </TableHeader>
@@ -242,16 +226,26 @@ const RegistersList = () => {
 
       <div className="grid gap-8">
         <div className="transform hover:scale-[1.01] transition-transform duration-200">
-          <InterventionStats stats={totals} />
+          <InterventionStats 
+            stats={{
+              byGender: {
+                man: { intervencio: genderTotals[0].intervencio, dinamitza: genderTotals[0].dinamitza, interrupcio: genderTotals[0].interrupcio, llarga: genderTotals[0].llarga, ofensiva: genderTotals[0].ofensiva, explica: genderTotals[0].explica },
+                woman: { intervencio: genderTotals[1].intervencio, dinamitza: genderTotals[1].dinamitza, interrupcio: genderTotals[1].interrupcio, llarga: genderTotals[1].llarga, ofensiva: genderTotals[1].ofensiva, explica: genderTotals[1].explica },
+                'non-binary': { intervencio: genderTotals[2].intervencio, dinamitza: genderTotals[2].dinamitza, interrupcio: genderTotals[2].interrupcio, llarga: genderTotals[2].llarga, ofensiva: genderTotals[2].ofensiva, explica: genderTotals[2].explica },
+              },
+              totalInterventions: attendanceSummary.totalInterventions
+            }}
+            attendance={{
+              female_count: 10, // Placeholder values since real attendance data is not available
+              male_count: 10,
+              non_binary_count: 5
+            }}
+          />
         </div>
 
         <div className="transform hover:scale-[1.01] transition-transform duration-200">
           <GenderChart data={genderTotals} />
         </div>
-      </div>
-
-      <div className="text-sm text-primary font-medium text-center bg-primary/5 py-3 px-4 rounded-full inline-block mx-auto">
-        Total d&apos;intervencions: {filteredInterventions.length}
       </div>
     </div>
   );
