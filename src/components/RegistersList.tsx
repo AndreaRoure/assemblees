@@ -109,7 +109,7 @@ const RegistersList = () => {
       'non-binary': interventions.filter(i => i.gender === 'non-binary').length,
     };
     
-    // Calculate percentages
+    // Calculate percentages - Fix here: ensure we're working with numbers
     const totalPercentage = totalInterventions > 0 ? 100 : 0;
     const percentageByGender = {
       man: totalInterventions > 0 ? (interventionsByGender.man / totalInterventions) * 100 : 0,
@@ -182,13 +182,23 @@ const RegistersList = () => {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                  label={({ name, percent }) => {
+                    // Ensure percent is a number before performing arithmetic
+                    const numericPercent = typeof percent === 'number' ? percent : 0;
+                    return `${name}: ${(numericPercent * 100).toFixed(1)}%`;
+                  }}
                 >
                   {attendanceSummary.pieChartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <RechartsTooltip formatter={(value, name) => [`${value} (${((value / attendanceSummary.totalInterventions) * 100).toFixed(1)}%)`, name]} />
+                <RechartsTooltip formatter={(value, name) => {
+                  // Ensure value is a number
+                  const numericValue = typeof value === 'number' ? value : 0;
+                  const numericTotal = typeof totalInterventions === 'number' ? totalInterventions : 0;
+                  const percentage = numericTotal > 0 ? ((numericValue / numericTotal) * 100).toFixed(1) : '0.0';
+                  return [`${numericValue} (${percentage}%)`, name];
+                }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
