@@ -1,8 +1,8 @@
 
 import React, { ReactNode } from 'react';
-import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
+import html2canvas from 'html2canvas';
 
 interface DownloadPDFProps {
   children: ReactNode;
@@ -13,65 +13,68 @@ export const DownloadPDF = ({ children }: DownloadPDFProps) => {
     toast.info('Preparant el PDF, si us plau espera un moment...');
     
     try {
-      // Target the entire page content
       const element = document.querySelector('.animate-fade-in');
       if (!element) {
         toast.error('No s\'ha pogut trobar el contingut per descarregar');
         return;
       }
       
-      // Create canvas from the element
-      const canvas = await html2canvas(element as HTMLElement, {
-        scale: 2, // Higher scale for better quality
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-      
-      // Calculate dimensions for A4 paper
-      const imgWidth = 210; // mm (A4 width)
-      const pageHeight = 297; // mm (A4 height)
-      const imgHeight = canvas.height * imgWidth / canvas.width;
-      
-      // Create PDF document
+      // Improved PDF generation approach
       const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
       
       // Add title
       pdf.setFontSize(16);
-      pdf.text('Informe d\'Assemblees i Intervencions', 105, 15, { align: 'center' });
+      pdf.text('Informe d\'Assemblees i Intervencions', pageWidth / 2, 15, { align: 'center' });
       pdf.setFontSize(12);
       
       // Add date
       const today = new Date();
-      pdf.text(`Generat el: ${today.toLocaleDateString('ca-ES')}`, 105, 25, { align: 'center' });
+      pdf.text(`Generat el: ${today.toLocaleDateString('ca-ES')}`, pageWidth / 2, 25, { align: 'center' });
       
-      // Add the image
-      let position = 30;
-      pdf.addImage(
-        canvas.toDataURL('image/png'), 
-        'PNG', 
-        0, 
-        position, 
-        imgWidth, 
-        imgHeight
-      );
+      // Process each chart and table separately for better reliability
+      const sections = element.querySelectorAll('.transform');
+      let yPosition = 40;
       
-      // If the image is taller than the page, add new pages
-      let heightLeft = imgHeight;
-      
-      while (heightLeft > pageHeight) {
-        position = heightLeft - pageHeight;
-        pdf.addPage();
-        pdf.addImage(
-          canvas.toDataURL('image/png'),
-          'PNG',
-          0,
-          -position,
-          imgWidth,
-          imgHeight
-        );
-        heightLeft -= pageHeight;
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        
+        try {
+          // Create canvas from the section
+          const canvas = await html2canvas(section as HTMLElement, {
+            scale: 1.5,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff'
+          });
+          
+          // Calculate dimensions to fit on page
+          const imgWidth = pageWidth - 20; // 10mm margin on each side
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          // Check if we need a new page
+          if (yPosition + imgHeight > pageHeight - 20) {
+            pdf.addPage();
+            yPosition = 20;
+          }
+          
+          // Add the image
+          pdf.addImage(
+            canvas.toDataURL('image/jpeg', 0.95), // Use JPEG with high quality for better compatibility
+            'JPEG',
+            10, // x position (10mm margin)
+            yPosition,
+            imgWidth,
+            imgHeight
+          );
+          
+          // Update position for next section
+          yPosition += imgHeight + 15; // Add 15mm spacing between sections
+        } catch (sectionError) {
+          console.log(`Error processing section ${i}:`, sectionError);
+          // Continue with the next section
+        }
       }
       
       // Save the PDF
