@@ -1,9 +1,6 @@
 
 import React from 'react';
 import YearSelect from './YearSelect';
-import { DownloadPDF } from './DownloadPDF';
-import { Button } from '@/components/ui/button';
-import { FileDown } from 'lucide-react';
 
 interface FilterToolbarProps {
   selectedYear: string;
@@ -21,14 +18,6 @@ const FilterToolbar = ({ selectedYear, years, onYearChange }: FilterToolbarProps
             years={years}
             onValueChange={onYearChange}
           />
-        </div>
-        <div>
-          <DownloadPDF selectedYear={selectedYear}>
-            <Button variant="outline" className="flex items-center gap-2">
-              <FileDown className="h-4 w-4" />
-              <span className="hidden sm:inline">Descarregar PDF</span>
-            </Button>
-          </DownloadPDF>
         </div>
       </div>
     </div>
