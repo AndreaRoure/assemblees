@@ -32,32 +32,10 @@ const Index = () => {
     navigate('/auth');
   };
 
-  // Redirect to auth if not authenticated
+  // Setup realtime subscriptions - MUST be called before any conditional returns
   React.useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
+    if (!user) return; // Guard clause to avoid subscription when not authenticated
 
-  // Show loading while checking auth
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregant...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render if not authenticated
-  if (!user) {
-    return null;
-  }
-
-  // Setup realtime subscriptions
-  React.useEffect(() => {
     const assemblyChannel = supabase
       .channel('assemblies-changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'assemblies' }, () => {
@@ -89,36 +67,63 @@ const Index = () => {
       supabase.removeChannel(interventionsChannel);
       supabase.removeChannel(attendanceChannel);
     };
-  }, [queryClient, selectedAssembly]);
+  }, [queryClient, selectedAssembly, user]);
 
-  // Fetch data
+  // Fetch data - ALL hooks must be called before conditional returns
   const { data: assemblies = [], refetch: refetchAssemblies } = useQuery({
     queryKey: ['assemblies'],
-    queryFn: fetchAssemblies
+    queryFn: fetchAssemblies,
+    enabled: !!user
   });
 
   const { data: totalAssembliesCount } = useQuery({
     queryKey: ['totalAssembliesCount'],
-    queryFn: getTotalAssembliesCount
+    queryFn: getTotalAssembliesCount,
+    enabled: !!user
   });
 
   const { data: interventions = [] } = useQuery({
     queryKey: ['interventions', selectedAssembly],
     queryFn: () => selectedAssembly ? fetchAssemblyInterventions(selectedAssembly) : Promise.resolve([]),
-    enabled: !!selectedAssembly
+    enabled: !!selectedAssembly && !!user
   });
 
   const { data: stats } = useQuery({
     queryKey: ['assemblyStats', selectedAssembly],
     queryFn: () => selectedAssembly ? getAssemblyStats(selectedAssembly) : Promise.resolve(null),
-    enabled: !!selectedAssembly
+    enabled: !!selectedAssembly && !!user
   });
 
   const { data: attendance, refetch: refetchAttendance } = useQuery({
     queryKey: ['attendance', selectedAssembly],
     queryFn: () => selectedAssembly ? fetchAssemblyAttendance(selectedAssembly) : Promise.resolve(null),
-    enabled: !!selectedAssembly
+    enabled: !!selectedAssembly && !!user
   });
+
+  // Redirect to auth if not authenticated - AFTER all hooks are called
+  React.useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  // NOW we can safely do conditional returns since ALL hooks have been called
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregant...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   const handleInterventionChange = () => {
     if (selectedAssembly) {
