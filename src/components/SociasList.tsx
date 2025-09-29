@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Users, Calendar, UserCheck, FileText } from 'lucide-react';
 import { fetchSociasWithStats } from '@/lib/supabase-socias';
 import { SociaWithStats } from '@/types/socias';
@@ -140,53 +141,64 @@ export const SociasList: React.FC = () => {
         </Card>
       </div>
 
-      {/* Socias List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {socias.map((socia) => (
-          <Card key={socia.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg">{socia.nom} {socia.cognoms}</CardTitle>
-                  <Badge className={`mt-1 ${getGenderBadgeColor(socia.genere)}`}>
-                    {getGenderLabel(socia.genere)}
-                  </Badge>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Assisteix:</span>
-                  <span className="font-medium text-green-600">{socia.assemblies_attended}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">No assisteix:</span>
-                  <span className="font-medium text-red-600">{socia.assemblies_missed}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Modera:</span>
-                  <span className="font-medium text-blue-600">{socia.moderations}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Acta:</span>
-                  <span className="font-medium text-purple-600">{socia.secretary_records}</span>
-                </div>
-                {socia.total_assemblies > 0 && (
-                  <div className="pt-2 border-t">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Participació:</span>
-                      <span className="font-medium">
-                        {Math.round((socia.assemblies_attended / socia.total_assemblies) * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Socias Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Llista de Sòcies</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Cognoms</TableHead>
+                  <TableHead>Gènere</TableHead>
+                  <TableHead className="text-center">Assisteix</TableHead>
+                  <TableHead className="text-center">Falta</TableHead>
+                  <TableHead className="text-center">Modera</TableHead>
+                  <TableHead className="text-center">Acta</TableHead>
+                  <TableHead className="text-center">Participació</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {socias.map((socia) => (
+                  <TableRow key={socia.id} className="hover:bg-muted/50">
+                    <TableCell className="font-medium">{socia.nom}</TableCell>
+                    <TableCell>{socia.cognoms}</TableCell>
+                    <TableCell>
+                      <Badge className={`${getGenderBadgeColor(socia.genere)}`}>
+                        {getGenderLabel(socia.genere)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-green-600">{socia.assemblies_attended}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-red-600">{socia.assemblies_missed}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-blue-600">{socia.moderations}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-purple-600">{socia.secretary_records}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {socia.total_assemblies > 0 ? (
+                        <span className="font-medium">
+                          {Math.round((socia.assemblies_attended / socia.total_assemblies) * 100)}%
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       {socias.length === 0 && (
         <Card>
