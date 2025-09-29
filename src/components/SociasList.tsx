@@ -178,12 +178,12 @@ export const SociasList: React.FC = () => {
                   <TableHead>Nom</TableHead>
                   <TableHead>Cognoms</TableHead>
                   <TableHead>Gènere</TableHead>
+                  <TableHead>Comissions</TableHead>
                   <TableHead>Tipus</TableHead>
                   <TableHead className="text-center">Assisteix</TableHead>
                   <TableHead className="text-center">Falta</TableHead>
                   <TableHead className="text-center">Modera</TableHead>
                   <TableHead className="text-center">Acta</TableHead>
-                  <TableHead>Comissions</TableHead>
                   <TableHead className="text-center">Participació</TableHead>
                 </TableRow>
               </TableHeader>
@@ -196,23 +196,6 @@ export const SociasList: React.FC = () => {
                       <Badge className={`${getGenderBadgeColor(socia.genere)}`}>
                         {getGenderLabel(socia.genere)}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={`${getTipoBadgeColor(socia.tipo)}`}>
-                        {getTipoLabel(socia.tipo)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <span className="font-medium text-green-600">{socia.assemblies_attended}</span>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <span className="font-medium text-red-600">{socia.assemblies_missed}</span>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <span className="font-medium text-blue-600">{socia.moderations}</span>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <span className="font-medium text-purple-600">{socia.secretary_records}</span>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
@@ -230,6 +213,23 @@ export const SociasList: React.FC = () => {
                           <span className="text-muted-foreground text-xs">Cap comissió</span>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={`${getTipoBadgeColor(socia.tipo)}`}>
+                        {getTipoLabel(socia.tipo)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-green-600">{socia.assemblies_attended}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-red-600">{socia.assemblies_missed}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-blue-600">{socia.moderations}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium text-purple-600">{socia.secretary_records}</span>
                     </TableCell>
                     <TableCell className="text-center">
                       {socia.total_assemblies > 0 ? (
