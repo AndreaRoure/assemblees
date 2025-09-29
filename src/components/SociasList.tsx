@@ -69,13 +69,7 @@ export const SociasList: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Sòcies</h1>
-          <p className="text-muted-foreground">
-            Gestiona la base de dades de sòcies i la seva participació
-          </p>
-        </div>
+      <div className="flex justify-end items-center">
         <Button onClick={() => setShowNewDialog(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Nova Sòcia
@@ -144,7 +138,10 @@ export const SociasList: React.FC = () => {
       {/* Socias Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Llista de Sòcies</CardTitle>
+          <CardTitle className="text-3xl font-bold tracking-tight">Llista de Sòcies</CardTitle>
+          <p className="text-muted-foreground mt-2">
+            Gestiona la base de dades de sòcies i la seva participació
+          </p>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
