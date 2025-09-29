@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import AssemblyList from '@/components/AssemblyList';
 import RegistersList from '@/components/RegistersList';
+import { SociasList } from '@/components/SociasList';
 
 interface MainTabsProps {
   assemblies: Assembly[];
@@ -22,7 +23,7 @@ const MainTabs = ({
 }: MainTabsProps) => {
   return (
     <Tabs defaultValue="assemblies" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6">
+      <TabsList className="grid w-full grid-cols-3 mb-4 md:mb-6">
         <TabsTrigger value="assemblies">
           Assemblees
           {totalAssembliesCount !== undefined && (
@@ -31,6 +32,7 @@ const MainTabs = ({
             </Badge>
           )}
         </TabsTrigger>
+        <TabsTrigger value="socias">Sòcies</TabsTrigger>
         <TabsTrigger value="registers">Registres</TabsTrigger>
       </TabsList>
       
@@ -40,6 +42,12 @@ const MainTabs = ({
           onAssemblySelected={onAssemblySelected}
           onAssemblyEdited={onAssemblyEdited}
         />
+      </TabsContent>
+
+      <TabsContent value="socias" className="animate-fade-in">
+        <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
+          <SociasList />
+        </ScrollArea>
       </TabsContent>
 
       <TabsContent value="registers" className="animate-fade-in">

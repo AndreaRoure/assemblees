@@ -7,6 +7,8 @@ export interface Assembly {
     name: string;
     gender: 'man' | 'woman' | 'non-binary';
   };
+  moderador_id?: string;
+  secretari_id?: string;
 }
 
 export interface Intervention {

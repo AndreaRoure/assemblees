@@ -19,24 +19,45 @@ export type Database = {
           date: string
           description: string | null
           id: string
+          moderador_id: string | null
           name: string
           register: Json
+          secretari_id: string | null
         }
         Insert: {
           date: string
           description?: string | null
           id?: string
+          moderador_id?: string | null
           name: string
           register?: Json
+          secretari_id?: string | null
         }
         Update: {
           date?: string
           description?: string | null
           id?: string
+          moderador_id?: string | null
           name?: string
           register?: Json
+          secretari_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "assemblies_moderador_id_fkey"
+            columns: ["moderador_id"]
+            isOneToOne: false
+            referencedRelation: "socias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assemblies_secretari_id_fkey"
+            columns: ["secretari_id"]
+            isOneToOne: false
+            referencedRelation: "socias"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       assembly_attendance: {
         Row: {
@@ -108,6 +129,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      socia_assemblies: {
+        Row: {
+          assembly_id: string
+          assisteix: boolean
+          created_at: string
+          id: string
+          socia_id: string
+        }
+        Insert: {
+          assembly_id: string
+          assisteix?: boolean
+          created_at?: string
+          id?: string
+          socia_id: string
+        }
+        Update: {
+          assembly_id?: string
+          assisteix?: boolean
+          created_at?: string
+          id?: string
+          socia_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "socia_assemblies_assembly_id_fkey"
+            columns: ["assembly_id"]
+            isOneToOne: false
+            referencedRelation: "assemblies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "socia_assemblies_socia_id_fkey"
+            columns: ["socia_id"]
+            isOneToOne: false
+            referencedRelation: "socias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      socias: {
+        Row: {
+          cognoms: string
+          created_at: string
+          genere: string
+          id: string
+          nom: string
+          updated_at: string
+        }
+        Insert: {
+          cognoms: string
+          created_at?: string
+          genere: string
+          id?: string
+          nom: string
+          updated_at?: string
+        }
+        Update: {
+          cognoms?: string
+          created_at?: string
+          genere?: string
+          id?: string
+          nom?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
