@@ -15,7 +15,7 @@ import {
   updateAssemblyAttendance 
 } from '@/lib/supabase';
 import { getAssemblyStats, getTotalAssembliesCount } from '@/data/assemblies';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import MainTabs from '@/components/MainTabs';
 import AssemblyDetails from '@/components/AssemblyDetails';
@@ -27,17 +27,17 @@ const Index = () => {
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
   // Redirect to auth if not authenticated
   React.useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/auth');
-  };
 
   // Show loading while checking auth
   if (loading) {
