@@ -4,6 +4,7 @@ export interface Socia {
   cognoms: string;
   genere: 'home' | 'dona' | 'no-binari';
   tipo: 'habitatge' | 'colaborador';
+  comissions: string[];
   created_at: string;
   updated_at: string;
 }

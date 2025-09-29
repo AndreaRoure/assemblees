@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useToast } from '@/components/ui/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
 import { addSocia } from '@/lib/supabase-socias';
 import { Plus } from 'lucide-react';
 
@@ -14,7 +15,18 @@ interface NewSociaFormData {
   cognoms: string;
   genere: 'home' | 'dona' | 'no-binari';
   tipo: 'habitatge' | 'colaborador';
+  comissions: string[];
 }
+
+const COMMISSION_OPTIONS = [
+  { value: 'economicas', label: 'Econòmiques' },
+  { value: 'intercooperacion', label: 'Intercooperació' },
+  { value: 'secretaria', label: 'Secretaria' },
+  { value: 'convivencia', label: 'Convivència' },
+  { value: 'subvenciones', label: 'Subvencions' },
+  { value: 'arquitectura', label: 'Arquitectura' },
+  { value: 'comunicacion', label: 'Comunicació' },
+];
 
 interface NewSociaDialogProps {
   open: boolean;
@@ -32,13 +44,15 @@ export const NewSociaDialog: React.FC<NewSociaDialogProps> = ({
       nom: '',
       cognoms: '',
       genere: 'dona',
-      tipo: 'habitatge'
+      tipo: 'habitatge',
+      comissions: []
     }
   });
   const { toast } = useToast();
 
   const selectedGender = watch('genere');
   const selectedTipo = watch('tipo');
+  const selectedComissions = watch('comissions');
 
   const onSubmit = async (data: NewSociaFormData) => {
     try {
@@ -57,6 +71,15 @@ export const NewSociaDialog: React.FC<NewSociaDialogProps> = ({
         description: "No s'ha pogut crear la sòcia",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleCommissionChange = (commissionValue: string, checked: boolean) => {
+    const currentComissions = selectedComissions || [];
+    if (checked) {
+      setValue('comissions', [...currentComissions, commissionValue]);
+    } else {
+      setValue('comissions', currentComissions.filter(c => c !== commissionValue));
     }
   };
 
@@ -131,6 +154,29 @@ export const NewSociaDialog: React.FC<NewSociaDialogProps> = ({
                 <Label htmlFor="colaborador">Colaborador/a</Label>
               </div>
             </RadioGroup>
+          </div>
+
+          <div className="space-y-3">
+            <Label>Comissions</Label>
+            <div className="grid grid-cols-2 gap-3">
+              {COMMISSION_OPTIONS.map((commission) => (
+                <div key={commission.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={commission.value}
+                    checked={selectedComissions?.includes(commission.value) || false}
+                    onCheckedChange={(checked) => 
+                      handleCommissionChange(commission.value, checked as boolean)
+                    }
+                  />
+                  <Label 
+                    htmlFor={commission.value}
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    {commission.label}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">

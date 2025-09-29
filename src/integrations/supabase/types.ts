@@ -172,6 +172,7 @@ export type Database = {
       socias: {
         Row: {
           cognoms: string
+          comissions: string[] | null
           created_at: string
           genere: string
           id: string
@@ -181,6 +182,7 @@ export type Database = {
         }
         Insert: {
           cognoms: string
+          comissions?: string[] | null
           created_at?: string
           genere: string
           id?: string
@@ -190,6 +192,7 @@ export type Database = {
         }
         Update: {
           cognoms?: string
+          comissions?: string[] | null
           created_at?: string
           genere?: string
           id?: string

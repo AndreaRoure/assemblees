@@ -70,6 +70,19 @@ export const SociasList: React.FC = () => {
     }
   };
 
+  const getCommissionLabel = (commission: string) => {
+    switch (commission) {
+      case 'economicas': return 'Econòmiques';
+      case 'intercooperacion': return 'Intercooperació';
+      case 'secretaria': return 'Secretaria';
+      case 'convivencia': return 'Convivència';
+      case 'subvenciones': return 'Subvencions';
+      case 'arquitectura': return 'Arquitectura';
+      case 'comunicacion': return 'Comunicació';
+      default: return commission;
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -166,6 +179,7 @@ export const SociasList: React.FC = () => {
                   <TableHead>Cognoms</TableHead>
                   <TableHead>Gènere</TableHead>
                   <TableHead>Tipus</TableHead>
+                  <TableHead>Comissions</TableHead>
                   <TableHead className="text-center">Assisteix</TableHead>
                   <TableHead className="text-center">Falta</TableHead>
                   <TableHead className="text-center">Modera</TableHead>
@@ -199,6 +213,23 @@ export const SociasList: React.FC = () => {
                     </TableCell>
                     <TableCell className="text-center">
                       <span className="font-medium text-purple-600">{socia.secretary_records}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {socia.comissions && socia.comissions.length > 0 ? (
+                          socia.comissions.map((commission) => (
+                            <Badge 
+                              key={commission} 
+                              variant="outline" 
+                              className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                            >
+                              {getCommissionLabel(commission)}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground text-xs">Cap comissió</span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-center">
                       {socia.total_assemblies > 0 ? (

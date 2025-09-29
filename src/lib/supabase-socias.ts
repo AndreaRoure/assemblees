@@ -48,6 +48,7 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
         ...socia,
         genere: socia.genere as 'home' | 'dona' | 'no-binari',
         tipo: socia.tipo as 'habitatge' | 'colaborador',
+        comissions: socia.comissions || [],
         assemblies_attended: attendedCount,
         assemblies_missed: missedCount,
         total_assemblies: attendance.length,
