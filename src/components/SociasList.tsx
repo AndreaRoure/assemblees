@@ -3,16 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Users, Calendar, UserCheck, FileText } from 'lucide-react';
+import { Plus, Users, Calendar, UserCheck, FileText, Pencil } from 'lucide-react';
 import { fetchSociasWithStats } from '@/lib/supabase-socias';
 import { SociaWithStats } from '@/types/socias';
 import { NewSociaDialog } from './NewSociaDialog';
-import { useToast } from '@/components/ui/use-toast';
+import { EditSociaDialog } from './EditSociaDialog';
+import { useToast } from '@/hooks/use-toast';
 
 export const SociasList: React.FC = () => {
   const [socias, setSocias] = useState<SociaWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNewDialog, setShowNewDialog] = useState(false);
+  const [editingSocia, setEditingSocia] = useState<SociaWithStats | null>(null);
   const { toast } = useToast();
 
   const loadSocias = async () => {
@@ -185,6 +187,7 @@ export const SociasList: React.FC = () => {
                   <TableHead className="text-center">Modera</TableHead>
                   <TableHead className="text-center">Acta</TableHead>
                   <TableHead className="text-center">Participació</TableHead>
+                  <TableHead className="text-center">Accions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -240,6 +243,16 @@ export const SociasList: React.FC = () => {
                         <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditingSocia(socia)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -268,6 +281,13 @@ export const SociasList: React.FC = () => {
         open={showNewDialog}
         onOpenChange={setShowNewDialog}
         onSociaCreated={loadSocias}
+      />
+
+      <EditSociaDialog
+        socia={editingSocia}
+        open={!!editingSocia}
+        onOpenChange={(open) => !open && setEditingSocia(null)}
+        onSociaUpdated={loadSocias}
       />
     </div>
   );
