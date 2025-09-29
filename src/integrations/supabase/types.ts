@@ -176,6 +176,7 @@ export type Database = {
           genere: string
           id: string
           nom: string
+          tipo: string
           updated_at: string
         }
         Insert: {
@@ -184,6 +185,7 @@ export type Database = {
           genere: string
           id?: string
           nom: string
+          tipo?: string
           updated_at?: string
         }
         Update: {
@@ -192,6 +194,7 @@ export type Database = {
           genere?: string
           id?: string
           nom?: string
+          tipo?: string
           updated_at?: string
         }
         Relationships: []

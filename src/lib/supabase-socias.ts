@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { Socia, SociaAssembly, SociaWithStats } from '@/types/socias';
 
 export const fetchSocias = async (): Promise<Socia[]> => {
@@ -46,6 +46,8 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
 
       return {
         ...socia,
+        genere: socia.genere as 'home' | 'dona' | 'no-binari',
+        tipo: socia.tipo as 'habitatge' | 'colaborador',
         assemblies_attended: attendedCount,
         assemblies_missed: missedCount,
         total_assemblies: attendance.length,

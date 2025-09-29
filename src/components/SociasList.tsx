@@ -40,7 +40,6 @@ export const SociasList: React.FC = () => {
     switch (genere) {
       case 'dona': return 'bg-pink-100 text-pink-800';
       case 'home': return 'bg-blue-100 text-blue-800';
-      case 'trans': return 'bg-purple-100 text-purple-800';
       case 'no-binari': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -50,9 +49,24 @@ export const SociasList: React.FC = () => {
     switch (genere) {
       case 'dona': return 'Dona';
       case 'home': return 'Home';
-      case 'trans': return 'Trans';
       case 'no-binari': return 'No binari';
       default: return genere;
+    }
+  };
+
+  const getTipoBadgeColor = (tipo: string) => {
+    switch (tipo) {
+      case 'habitatge': return 'bg-orange-100 text-orange-800';
+      case 'colaborador': return 'bg-teal-100 text-teal-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getTipoLabel = (tipo: string) => {
+    switch (tipo) {
+      case 'habitatge': return 'Habitatge';
+      case 'colaborador': return 'Colaborador/a';
+      default: return tipo;
     }
   };
 
@@ -151,6 +165,7 @@ export const SociasList: React.FC = () => {
                   <TableHead>Nom</TableHead>
                   <TableHead>Cognoms</TableHead>
                   <TableHead>Gènere</TableHead>
+                  <TableHead>Tipus</TableHead>
                   <TableHead className="text-center">Assisteix</TableHead>
                   <TableHead className="text-center">Falta</TableHead>
                   <TableHead className="text-center">Modera</TableHead>
@@ -166,6 +181,11 @@ export const SociasList: React.FC = () => {
                     <TableCell>
                       <Badge className={`${getGenderBadgeColor(socia.genere)}`}>
                         {getGenderLabel(socia.genere)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={`${getTipoBadgeColor(socia.tipo)}`}>
+                        {getTipoLabel(socia.tipo)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-center">

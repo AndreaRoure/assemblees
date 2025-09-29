@@ -2,7 +2,8 @@ export interface Socia {
   id: string;
   nom: string;
   cognoms: string;
-  genere: 'home' | 'dona' | 'trans' | 'no-binari';
+  genere: 'home' | 'dona' | 'no-binari';
+  tipo: 'habitatge' | 'colaborador';
   created_at: string;
   updated_at: string;
 }

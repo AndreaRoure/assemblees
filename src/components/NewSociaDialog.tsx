@@ -12,7 +12,8 @@ import { Plus } from 'lucide-react';
 interface NewSociaFormData {
   nom: string;
   cognoms: string;
-  genere: 'home' | 'dona' | 'trans' | 'no-binari';
+  genere: 'home' | 'dona' | 'no-binari';
+  tipo: 'habitatge' | 'colaborador';
 }
 
 interface NewSociaDialogProps {
@@ -30,12 +31,14 @@ export const NewSociaDialog: React.FC<NewSociaDialogProps> = ({
     defaultValues: {
       nom: '',
       cognoms: '',
-      genere: 'dona'
+      genere: 'dona',
+      tipo: 'habitatge'
     }
   });
   const { toast } = useToast();
 
   const selectedGender = watch('genere');
+  const selectedTipo = watch('tipo');
 
   const onSubmit = async (data: NewSociaFormData) => {
     try {
@@ -106,12 +109,26 @@ export const NewSociaDialog: React.FC<NewSociaDialogProps> = ({
                 <Label htmlFor="home">Home</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="trans" id="trans" />
-                <Label htmlFor="trans">Trans</Label>
-              </div>
-              <div className="flex items-center space-x-2">
                 <RadioGroupItem value="no-binari" id="no-binari" />
                 <Label htmlFor="no-binari">No binari</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="space-y-3">
+            <Label>Tipus de Sòcia *</Label>
+            <RadioGroup
+              value={selectedTipo}
+              onValueChange={(value) => setValue('tipo', value as any)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="habitatge" id="habitatge" />
+                <Label htmlFor="habitatge">Habitatge</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="colaborador" id="colaborador" />
+                <Label htmlFor="colaborador">Colaborador/a</Label>
               </div>
             </RadioGroup>
           </div>
