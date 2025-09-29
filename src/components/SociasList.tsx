@@ -179,11 +179,11 @@ export const SociasList: React.FC = () => {
                   <TableHead>Cognoms</TableHead>
                   <TableHead>Gènere</TableHead>
                   <TableHead>Tipus</TableHead>
-                  <TableHead>Comissions</TableHead>
                   <TableHead className="text-center">Assisteix</TableHead>
                   <TableHead className="text-center">Falta</TableHead>
                   <TableHead className="text-center">Modera</TableHead>
                   <TableHead className="text-center">Acta</TableHead>
+                  <TableHead>Comissions</TableHead>
                   <TableHead className="text-center">Participació</TableHead>
                 </TableRow>
               </TableHeader>
