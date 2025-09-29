@@ -1,6 +1,10 @@
 
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
 import Logo from '@/components/Logo';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -18,8 +22,39 @@ import AssemblyDetails from '@/components/AssemblyDetails';
 
 const Index = () => {
   const [selectedAssembly, setSelectedAssembly] = React.useState<string | null>(null);
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
+
+  // Redirect to auth if not authenticated
+  React.useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregant...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null;
+  }
 
   // Setup realtime subscriptions
   React.useEffect(() => {
@@ -132,7 +167,18 @@ const Index = () => {
   return (
     <div className="container p-4 md:py-6 mx-auto">
       <div className="space-y-4 md:space-y-6">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center relative">
+          <div className="absolute top-0 right-0">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleSignOut}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Sortir
+            </Button>
+          </div>
           <Logo />
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
             Observació d&apos;Assemblees
