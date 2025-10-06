@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      asistencias: {
+        Row: {
+          asistio: boolean
+          assembly_id: string
+          created_at: string
+          id: string
+          socia_id: string
+          updated_at: string
+        }
+        Insert: {
+          asistio?: boolean
+          assembly_id: string
+          created_at?: string
+          id?: string
+          socia_id: string
+          updated_at?: string
+        }
+        Update: {
+          asistio?: boolean
+          assembly_id?: string
+          created_at?: string
+          id?: string
+          socia_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asistencias_assembly_id_fkey"
+            columns: ["assembly_id"]
+            isOneToOne: false
+            referencedRelation: "assemblies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asistencias_socia_id_fkey"
+            columns: ["socia_id"]
+            isOneToOne: false
+            referencedRelation: "socias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assemblies: {
         Row: {
           date: string

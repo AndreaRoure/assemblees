@@ -120,6 +120,30 @@ export const fetchAssemblyAttendance = async (assemblyId: string) => {
   return data as AssemblyAttendance;
 };
 
+export const updateAssemblyModerator = async (
+  assemblyId: string,
+  moderadorId: string | null
+): Promise<void> => {
+  const { error } = await supabase
+    .from('assemblies')
+    .update({ moderador_id: moderadorId })
+    .eq('id', assemblyId);
+
+  if (error) throw error;
+};
+
+export const updateAssemblySecretary = async (
+  assemblyId: string,
+  secretariId: string | null
+): Promise<void> => {
+  const { error } = await supabase
+    .from('assemblies')
+    .update({ secretari_id: secretariId })
+    .eq('id', assemblyId);
+
+  if (error) throw error;
+};
+
 export const updateAssemblyAttendance = async (assemblyId: string, attendance: Partial<AssemblyAttendance>) => {
   // Check if a record already exists
   const { data: existingRecord } = await supabase

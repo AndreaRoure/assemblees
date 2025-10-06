@@ -4,7 +4,7 @@ import { AssemblyStats, AssemblyAttendance } from '@/types';
 import QuickIntervention from '@/components/QuickIntervention';
 import ResponsiveAssemblyStats from '@/components/ResponsiveAssemblyStats';
 import InterventionStats from '@/components/InterventionStats';
-import AttendanceCounter from '@/components/AttendanceCounter';
+import AttendanceManager from '@/components/AttendanceManager';
 
 interface AssemblyDetailsProps {
   assemblyId: string;
@@ -35,26 +35,7 @@ const AssemblyDetails = ({
         ← Tornar a la llista
       </button>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <AttendanceCounter
-          label="Dones assistents"
-          count={attendance?.female_count || 0}
-          onIncrement={() => onAttendanceUpdate('female_count', true)}
-          onDecrement={() => onAttendanceUpdate('female_count', false)}
-        />
-        <AttendanceCounter
-          label="Homes assistents"
-          count={attendance?.male_count || 0}
-          onIncrement={() => onAttendanceUpdate('male_count', true)}
-          onDecrement={() => onAttendanceUpdate('male_count', false)}
-        />
-        <AttendanceCounter
-          label="No binàries assistents"
-          count={attendance?.non_binary_count || 0}
-          onIncrement={() => onAttendanceUpdate('non_binary_count', true)}
-          onDecrement={() => onAttendanceUpdate('non_binary_count', false)}
-        />
-      </div>
+      <AttendanceManager assemblyId={assemblyId} />
 
       <QuickIntervention
         assemblyId={assemblyId}
