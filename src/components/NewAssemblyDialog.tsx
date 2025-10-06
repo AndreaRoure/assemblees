@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { addAssembly } from '@/lib/supabase';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -20,6 +19,8 @@ interface RegisterFormData {
 }
 
 interface NewAssemblyDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onAssemblyCreated: () => void;
 }
 
@@ -29,8 +30,7 @@ const genderOptions = [
   { value: 'non-binary', label: 'No binari' }
 ];
 
-const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
-  const [open, setOpen] = React.useState(false);
+const NewAssemblyDialog = ({ open, onOpenChange, onAssemblyCreated }: NewAssemblyDialogProps) => {
   const form = useForm<RegisterFormData>({
     defaultValues: {
       gender: 'man'
@@ -49,7 +49,7 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
         },
       });
       
-      setOpen(false);
+      onOpenChange(false);
       form.reset();
       onAssemblyCreated();
       toast.success("Assemblea creada correctament");
@@ -60,7 +60,7 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
   };
 
   const handleOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
+    onOpenChange(isOpen);
     if (!isOpen) {
       form.reset();
     }
@@ -68,12 +68,6 @@ const NewAssemblyDialog = ({ onAssemblyCreated }: NewAssemblyDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="w-full md:w-auto" size="lg">
-          <Plus className="mr-2 h-4 w-4" />
-          Nova Assemblea
-        </Button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] md:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Nova Assemblea</DialogTitle>

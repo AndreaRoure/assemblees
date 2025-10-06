@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import NewAssemblyDialog from '@/components/NewAssemblyDialog';
 import Logo from '@/components/Logo';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { 
@@ -188,7 +187,6 @@ const Index = () => {
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
             Observació d&apos;Assemblees
           </h1>
-          <NewAssemblyDialog onAssemblyCreated={refetchAssemblies} />
         </div>
 
         {selectedAssembly ? (
@@ -206,6 +204,7 @@ const Index = () => {
             totalAssembliesCount={totalAssembliesCount}
             onAssemblySelected={setSelectedAssembly}
             onAssemblyEdited={refetchAssemblies}
+            onAssemblyCreated={refetchAssemblies}
           />
         )}
       </div>

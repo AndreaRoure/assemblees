@@ -13,13 +13,15 @@ interface MainTabsProps {
   totalAssembliesCount?: number;
   onAssemblySelected: (assemblyId: string) => void;
   onAssemblyEdited: () => void;
+  onAssemblyCreated: () => void;
 }
 
 const MainTabs = ({ 
   assemblies, 
   totalAssembliesCount, 
   onAssemblySelected, 
-  onAssemblyEdited 
+  onAssemblyEdited,
+  onAssemblyCreated 
 }: MainTabsProps) => {
   return (
     <Tabs defaultValue="assemblies" className="w-full">
@@ -41,6 +43,7 @@ const MainTabs = ({
           assemblies={assemblies}
           onAssemblySelected={onAssemblySelected}
           onAssemblyEdited={onAssemblyEdited}
+          onAssemblyCreated={onAssemblyCreated}
         />
       </TabsContent>
 
