@@ -11,6 +11,15 @@ export const fetchSocias = async (): Promise<Socia[]> => {
   return data as Socia[];
 };
 
+export const getTotalSociasCount = async (): Promise<number> => {
+  const { count, error } = await supabase
+    .from('socias')
+    .select('*', { count: 'exact', head: true });
+  
+  if (error) throw error;
+  return count || 0;
+};
+
 export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
   try {
     // Get all socias

@@ -11,6 +11,7 @@ import { SociasList } from '@/components/SociasList';
 interface MainTabsProps {
   assemblies: Assembly[];
   totalAssembliesCount?: number;
+  totalSociasCount?: number;
   onAssemblySelected: (assemblyId: string) => void;
   onAssemblyEdited: () => void;
   onAssemblyCreated: () => void;
@@ -18,7 +19,8 @@ interface MainTabsProps {
 
 const MainTabs = ({ 
   assemblies, 
-  totalAssembliesCount, 
+  totalAssembliesCount,
+  totalSociasCount, 
   onAssemblySelected, 
   onAssemblyEdited,
   onAssemblyCreated 
@@ -34,7 +36,14 @@ const MainTabs = ({
             </Badge>
           )}
         </TabsTrigger>
-        <TabsTrigger value="socias">Sòcies</TabsTrigger>
+        <TabsTrigger value="socias">
+          Sòcies
+          {totalSociasCount !== undefined && (
+            <Badge variant="secondary" className="ml-2 bg-purple-100 text-purple-700">
+              {totalSociasCount}
+            </Badge>
+          )}
+        </TabsTrigger>
         <TabsTrigger value="registers">Registres</TabsTrigger>
       </TabsList>
       

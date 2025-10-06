@@ -14,6 +14,7 @@ import {
   updateAssemblyAttendance 
 } from '@/lib/supabase';
 import { getAssemblyStats, getTotalAssembliesCount } from '@/data/assemblies';
+import { getTotalSociasCount } from '@/lib/supabase-socias';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import MainTabs from '@/components/MainTabs';
@@ -78,6 +79,12 @@ const Index = () => {
   const { data: totalAssembliesCount } = useQuery({
     queryKey: ['totalAssembliesCount'],
     queryFn: getTotalAssembliesCount,
+    enabled: !!user
+  });
+
+  const { data: totalSociasCount } = useQuery({
+    queryKey: ['totalSociasCount'],
+    queryFn: getTotalSociasCount,
     enabled: !!user
   });
 
@@ -202,6 +209,7 @@ const Index = () => {
           <MainTabs 
             assemblies={assemblies}
             totalAssembliesCount={totalAssembliesCount}
+            totalSociasCount={totalSociasCount}
             onAssemblySelected={setSelectedAssembly}
             onAssemblyEdited={refetchAssemblies}
             onAssemblyCreated={refetchAssemblies}
