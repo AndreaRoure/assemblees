@@ -98,35 +98,37 @@ export const SociasList: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-end items-center">
-        <Button onClick={() => setShowNewDialog(true)}>
+    <div className="space-y-4 md:space-y-6 p-4 md:p-0">
+      <div className="flex justify-between md:justify-end items-center">
+        <h2 className="text-2xl font-bold md:hidden">Sòcies</h2>
+        <Button onClick={() => setShowNewDialog(true)} className="shrink-0">
           <Plus className="mr-2 h-4 w-4" />
-          Nova Sòcia
+          <span className="hidden sm:inline">Nova Sòcia</span>
+          <span className="sm:hidden">Nova</span>
         </Button>
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 md:p-6">
             <div className="flex items-center">
-              <Users className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">Total Sòcies</p>
-                <p className="text-2xl font-bold">{socias.length}</p>
+              <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+              <div className="ml-2 md:ml-4">
+                <p className="text-xs md:text-sm font-medium text-muted-foreground">Total Sòcies</p>
+                <p className="text-xl md:text-2xl font-bold">{socias.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 md:p-6">
             <div className="flex items-center">
-              <Calendar className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">Participació Mitjana</p>
-                <p className="text-2xl font-bold">
+              <Calendar className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+              <div className="ml-2 md:ml-4">
+                <p className="text-xs md:text-sm font-medium text-muted-foreground">Participació</p>
+                <p className="text-xl md:text-2xl font-bold">
                   {socias.length > 0 
                     ? Math.round((socias.reduce((acc, s) => acc + s.assemblies_attended, 0) / socias.reduce((acc, s) => acc + s.total_assemblies, 0)) * 100) || 0
                     : 0}%
@@ -137,12 +139,12 @@ export const SociasList: React.FC = () => {
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 md:p-6">
             <div className="flex items-center">
-              <UserCheck className="h-8 w-8 text-purple-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">Moderadores</p>
-                <p className="text-2xl font-bold">
+              <UserCheck className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
+              <div className="ml-2 md:ml-4">
+                <p className="text-xs md:text-sm font-medium text-muted-foreground">Moderadores</p>
+                <p className="text-xl md:text-2xl font-bold">
                   {socias.filter(s => s.moderations > 0).length}
                 </p>
               </div>
@@ -151,12 +153,12 @@ export const SociasList: React.FC = () => {
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 md:p-6">
             <div className="flex items-center">
-              <FileText className="h-8 w-8 text-orange-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-muted-foreground">Secretàries</p>
-                <p className="text-2xl font-bold">
+              <FileText className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
+              <div className="ml-2 md:ml-4">
+                <p className="text-xs md:text-sm font-medium text-muted-foreground">Secretàries</p>
+                <p className="text-xl md:text-2xl font-bold">
                   {socias.filter(s => s.secretary_records > 0).length}
                 </p>
               </div>
@@ -165,8 +167,87 @@ export const SociasList: React.FC = () => {
         </Card>
       </div>
 
-      {/* Socias Table */}
-      <Card>
+      {/* Mobile Cards View */}
+      <div className="md:hidden space-y-4">
+        {socias.map((socia) => (
+          <Card key={socia.id} className="relative">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg">{socia.nom} {socia.cognoms}</h3>
+                  <div className="flex gap-2 mt-2 flex-wrap">
+                    <Badge className={`${getGenderBadgeColor(socia.genere)}`}>
+                      {getGenderLabel(socia.genere)}
+                    </Badge>
+                    <Badge className={`${getTipoBadgeColor(socia.tipo)}`}>
+                      {getTipoLabel(socia.tipo)}
+                    </Badge>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setEditingSocia(socia)}
+                  className="h-8 w-8 p-0"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Comissions */}
+              {socia.comissions && socia.comissions.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-xs text-muted-foreground mb-1">Comissions:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {socia.comissions.map((commission) => (
+                      <Badge 
+                        key={commission} 
+                        variant="outline" 
+                        className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                      >
+                        {getCommissionLabel(commission)}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t">
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground">Assisteix</p>
+                  <p className="text-lg font-semibold text-green-600">{socia.assemblies_attended}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground">Falta</p>
+                  <p className="text-lg font-semibold text-red-600">{socia.assemblies_missed}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground">Modera</p>
+                  <p className="text-lg font-semibold text-blue-600">{socia.moderations}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground">Acta</p>
+                  <p className="text-lg font-semibold text-purple-600">{socia.secretary_records}</p>
+                </div>
+              </div>
+
+              {/* Participation */}
+              <div className="mt-3 pt-3 border-t text-center">
+                <p className="text-xs text-muted-foreground">Participació</p>
+                <p className="text-xl font-bold">
+                  {socia.total_assemblies > 0 
+                    ? `${Math.round((socia.assemblies_attended / socia.total_assemblies) * 100)}%`
+                    : '-'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Desktop Table View */}
+      <Card className="hidden md:block">
         <CardHeader>
           <CardTitle className="text-3xl font-bold tracking-tight">Llista de Sòcies</CardTitle>
           <p className="text-muted-foreground mt-2">
