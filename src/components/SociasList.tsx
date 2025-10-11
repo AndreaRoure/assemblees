@@ -137,7 +137,7 @@ export const SociasList: React.FC = () => {
                       const habitatgeSocias = socias.filter(s => s.tipo === 'habitatge');
                       const totalAssemblies = habitatgeSocias.reduce((acc, s) => acc + s.total_assemblies, 0);
                       const attended = habitatgeSocias.reduce((acc, s) => acc + s.assemblies_attended, 0);
-                      return totalAssemblies > 0 ? `${Math.round((attended / totalAssemblies) * 100)}%` : '0%';
+                      return totalAssemblies > 0 ? `${Math.round((attended / totalAssemblies) * 100)}% participació` : '0% participació';
                     })()}
                   </p>
                 </div>
@@ -161,7 +161,7 @@ export const SociasList: React.FC = () => {
                       const colaboradorSocias = socias.filter(s => s.tipo === 'colaborador');
                       const totalAssemblies = colaboradorSocias.reduce((acc, s) => acc + s.total_assemblies, 0);
                       const attended = colaboradorSocias.reduce((acc, s) => acc + s.assemblies_attended, 0);
-                      return totalAssemblies > 0 ? `${Math.round((attended / totalAssemblies) * 100)}%` : '0%';
+                      return totalAssemblies > 0 ? `${Math.round((attended / totalAssemblies) * 100)}% participació` : '0% participació';
                     })()}
                   </p>
                 </div>
