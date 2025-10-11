@@ -2,7 +2,6 @@ import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Users, UserCheck, X, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -90,7 +89,7 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
 
   const handleAddSocia = async (sociaId: string) => {
     try {
-      await upsertAsistencia(sociaId, assemblyId, false);
+      await upsertAsistencia(sociaId, assemblyId, true);
       await refetchAsistencias();
       setIsModalOpen(false);
       setSearchQuery('');
@@ -102,16 +101,6 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
     }
   };
 
-  const handleToggleAttendance = async (sociaId: string, currentStatus: boolean) => {
-    try {
-      await upsertAsistencia(sociaId, assemblyId, !currentStatus);
-      await refetchAsistencias();
-      queryClient.invalidateQueries({ queryKey: ['assemblyStats', assemblyId] });
-    } catch (error) {
-      console.error('Error updating attendance:', error);
-      toast.error('Error actualitzant assistència');
-    }
-  };
 
   const handleRemoveSocia = async (sociaId: string) => {
     try {
@@ -297,27 +286,21 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
                         key={asistencia.id}
                         className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
                       >
-                        <div className="flex items-center gap-3 flex-1">
-                          <Checkbox
-                            checked={asistencia.asistio}
-                            onCheckedChange={() => handleToggleAttendance(socia.id, asistencia.asistio)}
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium">
-                              {socia.nom} {socia.cognoms}
-                            </p>
-                            <div className="flex gap-2 mt-1">
-                              {isModerator && (
-                                <Badge variant="outline" className="text-xs">
-                                  Modera
-                                </Badge>
-                              )}
-                              {isSecretary && (
-                                <Badge variant="outline" className="text-xs">
-                                  Acta
-                                </Badge>
-                              )}
-                            </div>
+                        <div className="flex-1">
+                          <p className="font-medium">
+                            {socia.nom} {socia.cognoms}
+                          </p>
+                          <div className="flex gap-2 mt-1">
+                            {isModerator && (
+                              <Badge variant="outline" className="text-xs">
+                                Modera
+                              </Badge>
+                            )}
+                            {isSecretary && (
+                              <Badge variant="outline" className="text-xs">
+                                Acta
+                              </Badge>
+                            )}
                           </div>
                         </div>
 
