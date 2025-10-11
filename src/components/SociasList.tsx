@@ -109,7 +109,7 @@ export const SociasList: React.FC = () => {
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
         <Card>
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center">
@@ -127,12 +127,20 @@ export const SociasList: React.FC = () => {
             <div className="flex items-center">
               <Calendar className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
               <div className="ml-2 md:ml-4">
-                <p className="text-xs md:text-sm font-medium text-muted-foreground">Participació</p>
-                <p className="text-xl md:text-2xl font-bold">
-                  {socias.length > 0 
-                    ? Math.round((socias.reduce((acc, s) => acc + s.assemblies_attended, 0) / socias.reduce((acc, s) => acc + s.total_assemblies, 0)) * 100) || 0
-                    : 0}%
-                </p>
+                <p className="text-xs md:text-sm font-medium text-muted-foreground">Sòcies Habitatge</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-xl md:text-2xl font-bold">
+                    {socias.filter(s => s.tipo === 'habitatge').length}
+                  </p>
+                  <p className="text-sm md:text-base text-muted-foreground">
+                    {(() => {
+                      const habitatgeSocias = socias.filter(s => s.tipo === 'habitatge');
+                      const totalAssemblies = habitatgeSocias.reduce((acc, s) => acc + s.total_assemblies, 0);
+                      const attended = habitatgeSocias.reduce((acc, s) => acc + s.assemblies_attended, 0);
+                      return totalAssemblies > 0 ? `${Math.round((attended / totalAssemblies) * 100)}%` : '0%';
+                    })()}
+                  </p>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -143,24 +151,20 @@ export const SociasList: React.FC = () => {
             <div className="flex items-center">
               <UserCheck className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
               <div className="ml-2 md:ml-4">
-                <p className="text-xs md:text-sm font-medium text-muted-foreground">Moderadores</p>
-                <p className="text-xl md:text-2xl font-bold">
-                  {socias.filter(s => s.moderations > 0).length}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-center">
-              <FileText className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
-              <div className="ml-2 md:ml-4">
-                <p className="text-xs md:text-sm font-medium text-muted-foreground">Secretàries</p>
-                <p className="text-xl md:text-2xl font-bold">
-                  {socias.filter(s => s.secretary_records > 0).length}
-                </p>
+                <p className="text-xs md:text-sm font-medium text-muted-foreground">Sòcies Colaborador/a</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-xl md:text-2xl font-bold">
+                    {socias.filter(s => s.tipo === 'colaborador').length}
+                  </p>
+                  <p className="text-sm md:text-base text-muted-foreground">
+                    {(() => {
+                      const colaboradorSocias = socias.filter(s => s.tipo === 'colaborador');
+                      const totalAssemblies = colaboradorSocias.reduce((acc, s) => acc + s.total_assemblies, 0);
+                      const attended = colaboradorSocias.reduce((acc, s) => acc + s.assemblies_attended, 0);
+                      return totalAssemblies > 0 ? `${Math.round((attended / totalAssemblies) * 100)}%` : '0%';
+                    })()}
+                  </p>
+                </div>
               </div>
             </div>
           </CardContent>
