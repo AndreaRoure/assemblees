@@ -91,6 +91,8 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
     try {
       await upsertAsistencia(sociaId, assemblyId, true);
       await refetchAsistencias();
+      queryClient.invalidateQueries({ queryKey: ['sociasWithStats'] });
+      queryClient.invalidateQueries({ queryKey: ['socias'] });
       setIsModalOpen(false);
       setSearchQuery('');
       setSelectedGender(null);
@@ -106,6 +108,8 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
     try {
       await deleteAsistencia(sociaId, assemblyId);
       await refetchAsistencias();
+      queryClient.invalidateQueries({ queryKey: ['sociasWithStats'] });
+      queryClient.invalidateQueries({ queryKey: ['socias'] });
       toast.success('Sòcia eliminada');
     } catch (error) {
       console.error('Error removing socia:', error);
