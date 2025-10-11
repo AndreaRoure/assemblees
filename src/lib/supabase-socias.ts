@@ -37,18 +37,18 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
 
     if (assembliesError) throw assembliesError;
 
-    // Get all socia assemblies
-    const { data: sociaAssemblies, error: sociaAssembliesError } = await supabase
-      .from('socia_assemblies')
+    // Get all asistencias (attendance records)
+    const { data: asistencias, error: asistenciasError } = await supabase
+      .from('asistencias')
       .select('*');
 
-    if (sociaAssembliesError) throw sociaAssembliesError;
+    if (asistenciasError) throw asistenciasError;
 
     // Calculate stats for each socia
     const sociasWithStats: SociaWithStats[] = socias.map(socia => {
-      const attendance = sociaAssemblies.filter(sa => sa.socia_id === socia.id);
-      const attendedCount = attendance.filter(sa => sa.assisteix).length;
-      const missedCount = attendance.filter(sa => !sa.assisteix).length;
+      const attendance = asistencias.filter(a => a.socia_id === socia.id);
+      const attendedCount = attendance.filter(a => a.asistio).length;
+      const missedCount = attendance.filter(a => !a.asistio).length;
       
       const moderations = assemblies.filter(a => a.moderador_id === socia.id).length;
       const secretaryRecords = assemblies.filter(a => a.secretari_id === socia.id).length;
@@ -105,35 +105,22 @@ export const deleteSocia = async (id: string) => {
   if (error) throw error;
 };
 
-export const updateSociaAttendance = async (sociaId: string, assemblyId: string, assisteix: boolean) => {
-  // Check if record exists
-  const { data: existing } = await supabase
-    .from('socia_assemblies')
-    .select('id')
-    .eq('socia_id', sociaId)
-    .eq('assembly_id', assemblyId)
-    .maybeSingle();
-
-  if (existing) {
-    // Update existing record
-    const { error } = await supabase
-      .from('socia_assemblies')
-      .update({ assisteix })
-      .eq('id', existing.id);
-    
-    if (error) throw error;
-  } else {
-    // Insert new record
-    const { error } = await supabase
-      .from('socia_assemblies')
-      .insert([{ 
-        socia_id: sociaId, 
-        assembly_id: assemblyId, 
-        assisteix 
-      }]);
-    
-    if (error) throw error;
-  }
+export const updateSociaAttendance = async (sociaId: string, assemblyId: string, asistio: boolean) => {
+  // Use upsert for simpler logic with asistencias table
+  const { error } = await supabase
+    .from('asistencias')
+    .upsert(
+      {
+        socia_id: sociaId,
+        assembly_id: assemblyId,
+        asistio,
+      },
+      {
+        onConflict: 'socia_id,assembly_id',
+      }
+    );
+  
+  if (error) throw error;
 };
 
 export const updateAssemblyModerator = async (assemblyId: string, moderadorId: string | null) => {
