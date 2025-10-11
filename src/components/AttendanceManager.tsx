@@ -3,15 +3,17 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Users, UserCheck, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Users, UserCheck, X, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { fetchSocias } from '@/lib/supabase-socias';
 import { 
   fetchAssemblyAsistencias, 
@@ -33,7 +35,10 @@ interface AttendanceManagerProps {
 
 const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
   const queryClient = useQueryClient();
-  const [selectedSociaId, setSelectedSociaId] = React.useState<string>('');
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isListOpen, setIsListOpen] = React.useState(true);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [selectedGender, setSelectedGender] = React.useState<string | null>(null);
 
   const { data: socias = [] } = useQuery({
     queryKey: ['socias'],
@@ -69,16 +74,27 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
     [asistencias]
   );
 
-  // Filter available socias (not yet added)
-  const availableSocias = socias.filter(s => !addedSociaIds.has(s.id));
+  // Filter available socias (not yet added) with search and gender filter
+  const availableSocias = React.useMemo(() => {
+    return socias.filter(s => {
+      if (addedSociaIds.has(s.id)) return false;
+      
+      const matchesSearch = searchQuery === '' || 
+        `${s.nom} ${s.cognoms}`.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesGender = selectedGender === null || s.genere === selectedGender;
+      
+      return matchesSearch && matchesGender;
+    });
+  }, [socias, addedSociaIds, searchQuery, selectedGender]);
 
-  const handleAddSocia = async () => {
-    if (!selectedSociaId) return;
-
+  const handleAddSocia = async (sociaId: string) => {
     try {
-      await upsertAsistencia(selectedSociaId, assemblyId, false);
+      await upsertAsistencia(sociaId, assemblyId, false);
       await refetchAsistencias();
-      setSelectedSociaId('');
+      setIsModalOpen(false);
+      setSearchQuery('');
+      setSelectedGender(null);
       toast.success('Sòcia afegida');
     } catch (error) {
       console.error('Error adding socia:', error);
@@ -133,162 +149,212 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Gender counters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">Dones</span>
-              </div>
-              <Badge variant="secondary" className="text-lg px-3 py-1">
-                {genderCounts.dona}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">Homes</span>
-              </div>
-              <Badge variant="secondary" className="text-lg px-3 py-1">
-                {genderCounts.home}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">No binàries</span>
-              </div>
-              <Badge variant="secondary" className="text-lg px-3 py-1">
-                {genderCounts['no-binari']}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Add socia selector */}
+    <div className="space-y-4">
+      {/* Compact gender counters with Add button */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <UserCheck className="h-5 w-5" />
-            Afegir Sòcia
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-2">
-            <Select value={selectedSociaId} onValueChange={setSelectedSociaId}>
-              <SelectTrigger className="flex-1">
-                <SelectValue placeholder="Selecciona una sòcia..." />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-50">
-                {availableSocias.map((socia) => (
-                  <SelectItem key={socia.id} value={socia.id}>
-                    {socia.nom} {socia.cognoms}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button 
-              onClick={handleAddSocia} 
-              disabled={!selectedSociaId}
-            >
-              Afegir
-            </Button>
+        <CardContent className="pt-4">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Participants:</span>
+              </div>
+              <Badge variant="secondary" className="gap-1">
+                <span className="text-xs">Dones:</span> {genderCounts.dona}
+              </Badge>
+              <Badge variant="secondary" className="gap-1">
+                <span className="text-xs">Homes:</span> {genderCounts.home}
+              </Badge>
+              <Badge variant="secondary" className="gap-1">
+                <span className="text-xs">No binàries:</span> {genderCounts['no-binari']}
+              </Badge>
+            </div>
+            
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-2">
+                  <UserCheck className="h-4 w-4" />
+                  Afegir Sòcia
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Afegir assistent</DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-4 py-4">
+                  {/* Search input */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar o afegir nom"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
+                  {/* Gender filter buttons */}
+                  <div className="flex gap-2">
+                    <Button
+                      variant={selectedGender === 'dona' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSelectedGender(selectedGender === 'dona' ? null : 'dona')}
+                      className="gap-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      Dona
+                    </Button>
+                    <Button
+                      variant={selectedGender === 'home' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSelectedGender(selectedGender === 'home' ? null : 'home')}
+                      className="gap-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      Home
+                    </Button>
+                    <Button
+                      variant={selectedGender === 'no-binari' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSelectedGender(selectedGender === 'no-binari' ? null : 'no-binari')}
+                      className="gap-2"
+                    >
+                      <Users className="h-4 w-4" />
+                      No binàries
+                    </Button>
+                  </div>
+
+                  {/* Available socias list */}
+                  <div className="max-h-[400px] overflow-y-auto border rounded-md">
+                    {availableSocias.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-8">
+                        No hi ha sòcies disponibles
+                      </p>
+                    ) : (
+                      <div className="divide-y">
+                        {availableSocias.map((socia) => (
+                          <div
+                            key={socia.id}
+                            className="flex items-center justify-between p-3 hover:bg-accent cursor-pointer transition-colors"
+                            onClick={() => handleAddSocia(socia.id)}
+                          >
+                            <div>
+                              <p className="font-medium">
+                                {socia.nom} {socia.cognoms}
+                              </p>
+                              <p className="text-xs text-muted-foreground capitalize">
+                                {socia.genere === 'no-binari' ? 'No binàries' : socia.genere}
+                              </p>
+                            </div>
+                            <Button size="sm" variant="ghost">
+                              Afegir
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardContent>
       </Card>
 
-      {/* Attendance list */}
+      {/* Collapsible Attendance list */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Llistat d'Assistència</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {asistencias.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No hi ha sòcies afegides encara
-              </p>
-            ) : (
-              asistencias.map((asistencia) => {
-                const socia = asistencia.socia;
-                const isModerator = currentAssembly?.moderador_id === socia.id;
-                const isSecretary = currentAssembly?.secretari_id === socia.id;
+        <Collapsible open={isListOpen} onOpenChange={setIsListOpen}>
+          <CardHeader className="pb-3">
+            <CollapsibleTrigger className="flex items-center justify-between w-full hover:opacity-70 transition-opacity">
+              <CardTitle className="text-lg flex items-center gap-2">
+                Llistat d'Assistència
+                <Badge variant="secondary">{asistencias.length}</Badge>
+              </CardTitle>
+              {isListOpen ? (
+                <ChevronUp className="h-5 w-5" />
+              ) : (
+                <ChevronDown className="h-5 w-5" />
+              )}
+            </CollapsibleTrigger>
+          </CardHeader>
+          
+          <CollapsibleContent>
+            <CardContent>
+              <div className="space-y-2">
+                {asistencias.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No hi ha sòcies afegides encara
+                  </p>
+                ) : (
+                  asistencias.map((asistencia) => {
+                    const socia = asistencia.socia;
+                    const isModerator = currentAssembly?.moderador_id === socia.id;
+                    const isSecretary = currentAssembly?.secretari_id === socia.id;
 
-                return (
-                  <div
-                    key={asistencia.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 flex-1">
-                      <Checkbox
-                        checked={asistencia.asistio}
-                        onCheckedChange={() => handleToggleAttendance(socia.id, asistencia.asistio)}
-                      />
-                      <div className="flex-1">
-                        <p className="font-medium">
-                          {socia.nom} {socia.cognoms}
-                        </p>
-                        <div className="flex gap-2 mt-1">
-                          {isModerator && (
-                            <Badge variant="outline" className="text-xs">
-                              Modera
-                            </Badge>
-                          )}
-                          {isSecretary && (
-                            <Badge variant="outline" className="text-xs">
-                              Acta
-                            </Badge>
-                          )}
+                    return (
+                      <div
+                        key={asistencia.id}
+                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-3 flex-1">
+                          <Checkbox
+                            checked={asistencia.asistio}
+                            onCheckedChange={() => handleToggleAttendance(socia.id, asistencia.asistio)}
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium">
+                              {socia.nom} {socia.cognoms}
+                            </p>
+                            <div className="flex gap-2 mt-1">
+                              {isModerator && (
+                                <Badge variant="outline" className="text-xs">
+                                  Modera
+                                </Badge>
+                              )}
+                              {isSecretary && (
+                                <Badge variant="outline" className="text-xs">
+                                  Acta
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant={isModerator ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleSetModerator(socia.id)}
+                            title="Assignar com a moderador/a"
+                          >
+                            Modera
+                          </Button>
+                          <Button
+                            variant={isSecretary ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleSetSecretary(socia.id)}
+                            title="Assignar com a secretari/ària"
+                          >
+                            Acta
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveSocia(socia.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant={isModerator ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handleSetModerator(socia.id)}
-                        title="Assignar com a moderador/a"
-                      >
-                        Modera
-                      </Button>
-                      <Button
-                        variant={isSecretary ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handleSetSecretary(socia.id)}
-                        title="Assignar com a secretari/ària"
-                      >
-                        Acta
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveSocia(socia.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </CardContent>
+                    );
+                  })
+                )}
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
       </Card>
     </div>
   );
