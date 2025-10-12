@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Users, Calendar, UserCheck, FileText } from 'lucide-react';
+import { Plus, Users, Calendar, UserCheck, FileText, Download, Upload } from 'lucide-react';
 import { Pencil } from 'lucide-react';
-import { fetchSociasWithStats } from '@/lib/supabase-socias';
+import { fetchSociasWithStats, addSocia } from '@/lib/supabase-socias';
 import { SociaWithStats } from '@/types/socias';
 import { NewSociaDialog } from './NewSociaDialog';
 import { EditSociaDialog } from './EditSociaDialog';
@@ -17,6 +17,7 @@ export const SociasList: React.FC = () => {
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [editingSocia, setEditingSocia] = useState<SociaWithStats | null>(null);
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadSocias = async () => {
     try {
@@ -73,6 +74,117 @@ export const SociasList: React.FC = () => {
     }
   };
 
+  const handleExport = () => {
+    const headers = ['nom', 'cognoms', 'genere', 'tipo', 'comissions'];
+    const csvContent = [
+      headers.join(','),
+      ...socias.map(socia => [
+        `"${socia.nom}"`,
+        `"${socia.cognoms}"`,
+        socia.genere,
+        socia.tipo,
+        socia.comissions ? `"${socia.comissions.join(';')}"` : ''
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `socias_${new Date().toISOString().split('T')[0]}.csv`);
+    link.click();
+    URL.revokeObjectURL(url);
+    toast({
+      title: "Exportació completada",
+      description: "Les dades s'han exportat correctament",
+    });
+  };
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const lines = text.split('\n').filter(line => line.trim());
+      
+      if (lines.length < 2) {
+        toast({
+          title: "Error",
+          description: "El fitxer CSV està buit",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const headers = lines[0].split(',').map(h => h.trim());
+      
+      if (!headers.includes('nom') || !headers.includes('cognoms') || !headers.includes('genere') || !headers.includes('tipo')) {
+        toast({
+          title: "Error",
+          description: "Format CSV incorrecte. Camps requerits: nom, cognoms, genere, tipo",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const rows = lines.slice(1);
+      let imported = 0;
+      let errors = 0;
+      
+      for (const row of rows) {
+        try {
+          const values = row.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/^"|"$/g, '').trim()) || [];
+          const sociaData: any = {};
+          
+          headers.forEach((header, index) => {
+            sociaData[header] = values[index] || '';
+          });
+
+          if (sociaData.comissions && typeof sociaData.comissions === 'string') {
+            sociaData.comissions = sociaData.comissions.split(';').filter((c: string) => c.trim()).map((c: string) => c.trim());
+          } else {
+            sociaData.comissions = [];
+          }
+
+          if (sociaData.nom && sociaData.cognoms && sociaData.genere && sociaData.tipo) {
+            await addSocia({
+              nom: sociaData.nom,
+              cognoms: sociaData.cognoms,
+              genere: sociaData.genere,
+              tipo: sociaData.tipo,
+              comissions: sociaData.comissions
+            });
+            imported++;
+          } else {
+            errors++;
+          }
+        } catch (err) {
+          console.error('Error importing row:', err);
+          errors++;
+        }
+      }
+
+      loadSocias();
+      
+      toast({
+        title: "Importació completada",
+        description: `${imported} sòcies importades correctament${errors > 0 ? `. ${errors} errors.` : ''}`,
+      });
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      console.error('Error importing:', error);
+      toast({
+        title: "Error",
+        description: "Error en importar les dades",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getCommissionLabel = (commission: string) => {
     switch (commission) {
       case 'economicas': return 'Econòmiques';
@@ -99,13 +211,30 @@ export const SociasList: React.FC = () => {
 
   return (
     <div className="space-y-4 md:space-y-6 p-4 md:p-0">
-      <div className="flex justify-between md:justify-end items-center">
+      <div className="flex justify-between md:justify-end items-center gap-2">
         <h2 className="text-2xl font-bold md:hidden">Sòcies</h2>
-        <Button onClick={() => setShowNewDialog(true)} className="shrink-0">
-          <Plus className="mr-2 h-4 w-4" />
-          <span className="hidden sm:inline">Nova Sòcia</span>
-          <span className="sm:hidden">Nova</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleExport} variant="outline" size="sm" className="shrink-0">
+            <Download className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Exportar</span>
+          </Button>
+          <Button onClick={() => fileInputRef.current?.click()} variant="outline" size="sm" className="shrink-0">
+            <Upload className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Importar</span>
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleImport}
+            className="hidden"
+          />
+          <Button onClick={() => setShowNewDialog(true)} className="shrink-0">
+            <Plus className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Nova Sòcia</span>
+            <span className="sm:hidden">Nova</span>
+          </Button>
+        </div>
       </div>
 
       {/* Summary Stats */}
