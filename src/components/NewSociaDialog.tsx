@@ -19,13 +19,13 @@ interface NewSociaFormData {
 }
 
 const COMMISSION_OPTIONS = [
-  { value: 'economicas', label: 'Econòmiques' },
-  { value: 'intercooperacion', label: 'Intercooperació' },
+  { value: 'economiques', label: 'Econòmiques' },
+  { value: 'intercooperacio', label: 'Intercooperació' },
   { value: 'secretaria', label: 'Secretaria' },
   { value: 'convivencia', label: 'Convivència' },
-  { value: 'subvenciones', label: 'Subvencions' },
+  { value: 'subvencions', label: 'Subvencions' },
   { value: 'arquitectura', label: 'Arquitectura' },
-  { value: 'comunicacion', label: 'Comunicació' },
+  { value: 'comunicacio', label: 'Comunicació' },
 ];
 
 interface NewSociaDialogProps {

@@ -187,14 +187,14 @@ export const SociasList: React.FC = () => {
               .split(',')
               .map((c: string) => {
                 const normalized = c.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                // Map CSV commission names to database values
-                if (normalized.includes('econom')) return 'economicas';
-                if (normalized.includes('intercoop')) return 'intercooperacion';
+                // Map CSV commission names to database values (in Catalan)
+                if (normalized.includes('econom')) return 'economiques';
+                if (normalized.includes('intercoop')) return 'intercooperacio';
                 if (normalized.includes('secret')) return 'secretaria';
                 if (normalized.includes('conviv')) return 'convivencia';
-                if (normalized.includes('subven')) return 'subvenciones';
+                if (normalized.includes('subven')) return 'subvencions';
                 if (normalized.includes('arquit')) return 'arquitectura';
-                if (normalized.includes('comun')) return 'comunicacion';
+                if (normalized.includes('comun')) return 'comunicacio';
                 return null;
               })
               .filter((c: string | null) => c !== null) as string[];
@@ -242,13 +242,13 @@ export const SociasList: React.FC = () => {
 
   const getCommissionLabel = (commission: string) => {
     switch (commission) {
-      case 'economicas': return 'Econòmiques';
-      case 'intercooperacion': return 'Intercooperació';
+      case 'economiques': return 'Econòmiques';
+      case 'intercooperacio': return 'Intercooperació';
       case 'secretaria': return 'Secretaria';
       case 'convivencia': return 'Convivència';
-      case 'subvenciones': return 'Subvencions';
+      case 'subvencions': return 'Subvencions';
       case 'arquitectura': return 'Arquitectura';
-      case 'comunicacion': return 'Comunicació';
+      case 'comunicacio': return 'Comunicació';
       default: return commission;
     }
   };
