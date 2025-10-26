@@ -1,14 +1,17 @@
 
 import React from 'react';
 import YearSelect from './YearSelect';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 
 interface FilterToolbarProps {
   selectedYear: string;
   years: number[];
   onYearChange: (year: string) => void;
+  onDownloadPdf: () => void;
 }
 
-const FilterToolbar = ({ selectedYear, years, onYearChange }: FilterToolbarProps) => {
+const FilterToolbar = ({ selectedYear, years, onYearChange, onDownloadPdf }: FilterToolbarProps) => {
   return (
     <div className="p-3 md:p-6 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 shadow-sm">
       {/* Mobile: horizontal scrollable chips */}
@@ -49,6 +52,18 @@ const FilterToolbar = ({ selectedYear, years, onYearChange }: FilterToolbarProps
             onValueChange={onYearChange}
           />
         </div>
+        <Button onClick={onDownloadPdf} variant="outline" className="gap-2">
+          <Download className="h-4 w-4" />
+          Descarregar PDF
+        </Button>
+      </div>
+
+      {/* Mobile: download button */}
+      <div className="md:hidden mt-3">
+        <Button onClick={onDownloadPdf} variant="outline" className="w-full gap-2">
+          <Download className="h-4 w-4" />
+          Descarregar PDF
+        </Button>
       </div>
     </div>
   );

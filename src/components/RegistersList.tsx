@@ -8,6 +8,8 @@ import FilterToolbar from './registers/FilterToolbar';
 import TotalAssembliesCard from './registers/TotalAssembliesCard';
 import GenderDistributionChart from './registers/GenderDistributionChart';
 import YearlyEvolutionChart from './registers/YearlyEvolutionChart';
+import jsPDF from 'jspdf';
+import { useToast } from '@/hooks/use-toast';
 
 interface YearlyData {
   year: string;
@@ -20,6 +22,7 @@ interface YearlyData {
 const RegistersList = () => {
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   useEffect(() => {
     const channel = supabase
@@ -166,6 +169,100 @@ const RegistersList = () => {
     return Object.values(yearData).sort((a, b) => parseInt(a.year) - parseInt(b.year));
   }, [interventions, years]);
 
+  const handleDownloadPdf = () => {
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let yPosition = 20;
+
+      // Title
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Observatori d\'Assamblees - Registres', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 15;
+
+      // Filter info
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      const filterText = selectedYear === 'all' ? 'Tots els anys' : `Any: ${selectedYear}`;
+      doc.text(filterText, 20, yPosition);
+      yPosition += 10;
+
+      // Total assemblies
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Total Assemblees: ${attendanceSummary.assemblyCount}`, 20, yPosition);
+      yPosition += 10;
+
+      // Total interventions
+      doc.text(`Total Intervencions: ${attendanceSummary.totalInterventions}`, 20, yPosition);
+      yPosition += 15;
+
+      // Gender distribution
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Distribució per Gènere:', 20, yPosition);
+      yPosition += 8;
+      
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Homes: ${attendanceSummary.interventionsByGender.man} (${attendanceSummary.percentageByGender.man.toFixed(1)}%)`, 30, yPosition);
+      yPosition += 7;
+      doc.text(`Dones: ${attendanceSummary.interventionsByGender.woman} (${attendanceSummary.percentageByGender.woman.toFixed(1)}%)`, 30, yPosition);
+      yPosition += 7;
+      doc.text(`No binàries: ${attendanceSummary.interventionsByGender['non-binary']} (${attendanceSummary.percentageByGender['non-binary'].toFixed(1)}%)`, 30, yPosition);
+      yPosition += 15;
+
+      // Intervention types by gender
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Tipus d\'Intervencions per Gènere:', 20, yPosition);
+      yPosition += 10;
+
+      const types = [
+        { key: 'intervencio', label: 'Intervenció' },
+        { key: 'dinamitza', label: 'Dinamitza' },
+        { key: 'interrupcio', label: 'Interrupció' },
+        { key: 'llarga', label: 'Llarga' },
+        { key: 'ofensiva', label: 'Ofensiva' },
+        { key: 'explica', label: 'Explica' }
+      ];
+
+      genderTotals.forEach((genderData, index) => {
+        if (yPosition > 250) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${genderData.gender}:`, 25, yPosition);
+        yPosition += 7;
+        
+        doc.setFont('helvetica', 'normal');
+        types.forEach(type => {
+          doc.text(`  ${type.label}: ${genderData[type.key as keyof typeof genderData]}`, 30, yPosition);
+          yPosition += 6;
+        });
+        yPosition += 5;
+      });
+
+      // Save the PDF
+      const fileName = `registres_${selectedYear === 'all' ? 'tots' : selectedYear}_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+
+      toast({
+        title: "PDF generat",
+        description: "El fitxer s'ha descarregat correctament",
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Error",
+        description: "No s'ha pogut generar el PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoadingInterventions || isLoadingAssemblies) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -180,6 +277,7 @@ const RegistersList = () => {
         selectedYear={selectedYear}
         years={years}
         onYearChange={setSelectedYear}
+        onDownloadPdf={handleDownloadPdf}
       />
 
       <TotalAssembliesCard count={attendanceSummary.assemblyCount} />
