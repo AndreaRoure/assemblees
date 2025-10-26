@@ -2,12 +2,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchInterventions, fetchAssemblies, supabase } from '@/lib/supabase';
-import InterventionStats from './InterventionStats';
 import GenderChart from './registers/GenderChart';
 import FilterToolbar from './registers/FilterToolbar';
-import TotalAssembliesCard from './registers/TotalAssembliesCard';
 import GenderDistributionChart from './registers/GenderDistributionChart';
 import YearlyEvolutionChart from './registers/YearlyEvolutionChart';
+import SummaryStats from './registers/SummaryStats';
 import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
 
@@ -52,6 +51,18 @@ const RegistersList = () => {
   const { data: assemblies = [], isLoading: isLoadingAssemblies } = useQuery({
     queryKey: ['assemblies'],
     queryFn: fetchAssemblies
+  });
+
+  const { data: attendanceData = [] } = useQuery({
+    queryKey: ['assembly-attendance'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('assembly_attendance')
+        .select('*');
+      
+      if (error) throw error;
+      return data || [];
+    }
   });
 
   const years = useMemo(() => {
@@ -141,6 +152,56 @@ const RegistersList = () => {
     };
   }, [assemblies.length, interventions]);
 
+  // Calculate hours and attendance statistics
+  const summaryStats = useMemo(() => {
+    let totalHours = 0;
+    let assemblyCountWithHours = 0;
+    
+    assemblies.forEach(assembly => {
+      if (assembly.start_time && assembly.end_time) {
+        const start = new Date(assembly.start_time);
+        const end = new Date(assembly.end_time);
+        const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+        totalHours += hours;
+        assemblyCountWithHours++;
+      }
+    });
+
+    const averageHoursPerAssembly = assemblyCountWithHours > 0 
+      ? totalHours / assemblyCountWithHours 
+      : 0;
+
+    // Calculate attendance statistics
+    let totalFemale = 0;
+    let totalMale = 0;
+    let totalNonBinary = 0;
+    let totalAttendees = 0;
+
+    attendanceData.forEach(attendance => {
+      totalFemale += attendance.female_count || 0;
+      totalMale += attendance.male_count || 0;
+      totalNonBinary += attendance.non_binary_count || 0;
+    });
+
+    totalAttendees = totalFemale + totalMale + totalNonBinary;
+    const averageAttendeesPerAssembly = attendanceData.length > 0 
+      ? totalAttendees / attendanceData.length 
+      : 0;
+
+    const averageAttendeesByGender = {
+      female: attendanceData.length > 0 ? totalFemale / attendanceData.length : 0,
+      male: attendanceData.length > 0 ? totalMale / attendanceData.length : 0,
+      nonBinary: attendanceData.length > 0 ? totalNonBinary / attendanceData.length : 0,
+    };
+
+    return {
+      totalHours,
+      averageHoursPerAssembly,
+      averageAttendeesPerAssembly,
+      averageAttendeesByGender,
+    };
+  }, [assemblies, attendanceData]);
+
   // Generate data for the yearly evolution chart
   const yearlyEvolutionData = useMemo(() => {
     const yearData: Record<string, YearlyData> = {};
@@ -194,7 +255,34 @@ const RegistersList = () => {
       doc.text(`Total Assemblees: ${attendanceSummary.assemblyCount}`, 20, yPosition);
       yPosition += 10;
 
+      // Total hours
+      doc.text(`Total Hores: ${summaryStats.totalHours.toFixed(1)}`, 20, yPosition);
+      yPosition += 10;
+
+      // Average hours per assembly
+      doc.text(`Promig Hores/Assemblea: ${summaryStats.averageHoursPerAssembly.toFixed(1)}`, 20, yPosition);
+      yPosition += 10;
+
+      // Average attendees per assembly
+      doc.text(`Promig Assistents/Assemblea: ${summaryStats.averageAttendeesPerAssembly.toFixed(1)}`, 20, yPosition);
+      yPosition += 15;
+
+      // Average attendees by gender
+      doc.setFontSize(12);
+      doc.text('Promig Assistents per Gènere:', 20, yPosition);
+      yPosition += 8;
+      
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Dones: ${summaryStats.averageAttendeesByGender.female.toFixed(1)}`, 30, yPosition);
+      yPosition += 7;
+      doc.text(`Homes: ${summaryStats.averageAttendeesByGender.male.toFixed(1)}`, 30, yPosition);
+      yPosition += 7;
+      doc.text(`No binàries: ${summaryStats.averageAttendeesByGender.nonBinary.toFixed(1)}`, 30, yPosition);
+      yPosition += 15;
+
       // Total interventions
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
       doc.text(`Total Intervencions: ${attendanceSummary.totalInterventions}`, 20, yPosition);
       yPosition += 15;
 
@@ -280,9 +368,15 @@ const RegistersList = () => {
         onDownloadPdf={handleDownloadPdf}
       />
 
-      <TotalAssembliesCard count={attendanceSummary.assemblyCount} />
+      <SummaryStats 
+        totalAssemblies={attendanceSummary.assemblyCount}
+        totalHours={summaryStats.totalHours}
+        averageHoursPerAssembly={summaryStats.averageHoursPerAssembly}
+        averageAttendeesPerAssembly={summaryStats.averageAttendeesPerAssembly}
+        averageAttendeesByGender={summaryStats.averageAttendeesByGender}
+      />
 
-      <GenderDistributionChart 
+      <GenderDistributionChart
         data={attendanceSummary.pieChartData}
         interventionsByGender={attendanceSummary.interventionsByGender}
         percentageByGender={attendanceSummary.percentageByGender}
@@ -290,24 +384,6 @@ const RegistersList = () => {
       />
 
       <div className="grid gap-8">
-        <div className="transform hover:scale-[1.01] transition-transform duration-200">
-          <InterventionStats 
-            stats={{
-              byGender: {
-                man: { intervencio: genderTotals[0].intervencio, dinamitza: genderTotals[0].dinamitza, interrupcio: genderTotals[0].interrupcio, llarga: genderTotals[0].llarga, ofensiva: genderTotals[0].ofensiva, explica: genderTotals[0].explica },
-                woman: { intervencio: genderTotals[1].intervencio, dinamitza: genderTotals[1].dinamitza, interrupcio: genderTotals[1].interrupcio, llarga: genderTotals[1].llarga, ofensiva: genderTotals[1].ofensiva, explica: genderTotals[1].explica },
-                'non-binary': { intervencio: genderTotals[2].intervencio, dinamitza: genderTotals[2].dinamitza, interrupcio: genderTotals[2].interrupcio, llarga: genderTotals[2].llarga, ofensiva: genderTotals[2].ofensiva, explica: genderTotals[2].explica },
-              },
-              totalInterventions: attendanceSummary.totalInterventions
-            }}
-            attendance={{
-              female_count: 10,
-              male_count: 10,
-              non_binary_count: 5
-            }}
-          />
-        </div>
-
         <div className="transform hover:scale-[1.01] transition-transform duration-200">
           <GenderChart data={genderTotals} />
         </div>
