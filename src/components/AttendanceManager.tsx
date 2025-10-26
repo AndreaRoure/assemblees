@@ -3,9 +3,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Users, UserCheck, X, ChevronDown, ChevronUp, Search, Minus, Plus } from 'lucide-react';
+import { Users, UserCheck, X, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import {
   Dialog,
   DialogContent,
@@ -138,270 +137,87 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
     }
   };
 
-  // Get socias by gender for the steppers
-  const sociasByGender = React.useMemo(() => {
-    return asistencias.filter(a => a.asistio).reduce((acc, asistencia) => {
-      if (asistencia.socia) {
-        const gender = asistencia.socia.genere;
-        if (!acc[gender]) acc[gender] = [];
-        acc[gender].push(asistencia);
-      }
-      return acc;
-    }, {} as Record<string, AsistenciaWithSocia[]>);
-  }, [asistencias]);
-
   return (
     <div className="space-y-4">
-      {/* iOS-style Gender Steppers */}
+      {/* Compact gender counters with Add button */}
       <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Quota de Gènere
-            </CardTitle>
-            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-2">
-                <UserCheck className="h-4 w-4" />
-                Afegir Sòcia
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
-              <DialogHeader>
-                <DialogTitle>Afegir assistent</DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-4 py-4">
-                {/* Search input */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar o afegir nom"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-
-                {/* Available socias list */}
-                <div className="max-h-[400px] overflow-y-auto border rounded-md">
-                  {availableSocias.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      No hi ha sòcies disponibles
-                    </p>
-                  ) : (
-                    <div className="divide-y">
-                      {availableSocias.map((socia) => (
-                        <div
-                          key={socia.id}
-                          className="flex items-center justify-between p-3 hover:bg-accent cursor-pointer transition-colors"
-                          onClick={() => handleAddSocia(socia.id)}
-                        >
-                          <div>
-                            <p className="font-medium">
-                              {socia.nom} {socia.cognoms}
-                            </p>
-                            <p className="text-xs text-muted-foreground capitalize">
-                              {socia.genere === 'no-binari' ? 'No binàries' : socia.genere}
-                            </p>
-                          </div>
-                          <Button size="sm" variant="ghost">
-                            Afegir
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+        <CardContent className="pt-4">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Assistents:</span>
               </div>
-            </DialogContent>
-          </Dialog>
+              <Badge variant="secondary" className="gap-1">
+                <span className="text-xs">Dones:</span> {genderCounts.dona}
+              </Badge>
+              <Badge variant="secondary" className="gap-1">
+                <span className="text-xs">Homes:</span> {genderCounts.home}
+              </Badge>
+              <Badge variant="secondary" className="gap-1">
+                <span className="text-xs">No binàries:</span> {genderCounts['no-binari']}
+              </Badge>
+            </div>
+            
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-2">
+                  <UserCheck className="h-4 w-4" />
+                  Afegir Sòcia
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Afegir assistent</DialogTitle>
+                </DialogHeader>
+                
+                <div className="space-y-4 py-4">
+                  {/* Search input */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar o afegir nom"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
+
+                  {/* Available socias list */}
+                  <div className="max-h-[400px] overflow-y-auto border rounded-md">
+                    {availableSocias.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-8">
+                        No hi ha sòcies disponibles
+                      </p>
+                    ) : (
+                      <div className="divide-y">
+                        {availableSocias.map((socia) => (
+                          <div
+                            key={socia.id}
+                            className="flex items-center justify-between p-3 hover:bg-accent cursor-pointer transition-colors"
+                            onClick={() => handleAddSocia(socia.id)}
+                          >
+                            <div>
+                              <p className="font-medium">
+                                {socia.nom} {socia.cognoms}
+                              </p>
+                              <p className="text-xs text-muted-foreground capitalize">
+                                {socia.genere === 'no-binari' ? 'No binàries' : socia.genere}
+                              </p>
+                            </div>
+                            <Button size="sm" variant="ghost">
+                              Afegir
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
-        </CardHeader>
-
-        <CardContent>
-          <Accordion type="single" collapsible className="w-full">
-            {/* Dones */}
-            <AccordionItem value="dona" className="border-none">
-              <AccordionTrigger className="hover:no-underline py-3">
-                <div className="flex items-center justify-between w-full pr-4">
-                  <span className="font-medium">Dones</span>
-                  <Badge variant="secondary">{genderCounts.dona}</Badge>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="py-4 space-y-4">
-                  {/* iOS Stepper */}
-                  <div className="flex items-center justify-center gap-6">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const lastSocia = sociasByGender.dona?.[sociasByGender.dona.length - 1];
-                        if (lastSocia) handleRemoveSocia(lastSocia.socia_id);
-                      }}
-                      disabled={genderCounts.dona === 0}
-                      className="h-14 w-14 rounded-full"
-                    >
-                      <Minus className="h-6 w-6" />
-                    </Button>
-                    <span className="text-4xl font-semibold w-20 text-center">{genderCounts.dona}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setIsModalOpen(true)}
-                      className="h-14 w-14 rounded-full"
-                    >
-                      <Plus className="h-6 w-6" />
-                    </Button>
-                  </div>
-
-                  {/* List of socias */}
-                  {sociasByGender.dona && sociasByGender.dona.length > 0 && (
-                    <div className="space-y-2 pt-2">
-                      {sociasByGender.dona.map((asistencia) => (
-                        <div
-                          key={asistencia.id}
-                          className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-sm"
-                        >
-                          <span>{asistencia.socia.nom} {asistencia.socia.cognoms}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveSocia(asistencia.socia_id)}
-                            className="h-7 w-7 p-0"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Homes */}
-            <AccordionItem value="home" className="border-none">
-              <AccordionTrigger className="hover:no-underline py-3">
-                <div className="flex items-center justify-between w-full pr-4">
-                  <span className="font-medium">Homes</span>
-                  <Badge variant="secondary">{genderCounts.home}</Badge>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="py-4 space-y-4">
-                  {/* iOS Stepper */}
-                  <div className="flex items-center justify-center gap-6">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const lastSocia = sociasByGender.home?.[sociasByGender.home.length - 1];
-                        if (lastSocia) handleRemoveSocia(lastSocia.socia_id);
-                      }}
-                      disabled={genderCounts.home === 0}
-                      className="h-14 w-14 rounded-full"
-                    >
-                      <Minus className="h-6 w-6" />
-                    </Button>
-                    <span className="text-4xl font-semibold w-20 text-center">{genderCounts.home}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setIsModalOpen(true)}
-                      className="h-14 w-14 rounded-full"
-                    >
-                      <Plus className="h-6 w-6" />
-                    </Button>
-                  </div>
-
-                  {/* List of socias */}
-                  {sociasByGender.home && sociasByGender.home.length > 0 && (
-                    <div className="space-y-2 pt-2">
-                      {sociasByGender.home.map((asistencia) => (
-                        <div
-                          key={asistencia.id}
-                          className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-sm"
-                        >
-                          <span>{asistencia.socia.nom} {asistencia.socia.cognoms}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveSocia(asistencia.socia_id)}
-                            className="h-7 w-7 p-0"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* No binàries */}
-            <AccordionItem value="no-binari" className="border-none">
-              <AccordionTrigger className="hover:no-underline py-3">
-                <div className="flex items-center justify-between w-full pr-4">
-                  <span className="font-medium">No binàries</span>
-                  <Badge variant="secondary">{genderCounts['no-binari']}</Badge>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="py-4 space-y-4">
-                  {/* iOS Stepper */}
-                  <div className="flex items-center justify-center gap-6">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const lastSocia = sociasByGender['no-binari']?.[sociasByGender['no-binari'].length - 1];
-                        if (lastSocia) handleRemoveSocia(lastSocia.socia_id);
-                      }}
-                      disabled={genderCounts['no-binari'] === 0}
-                      className="h-14 w-14 rounded-full"
-                    >
-                      <Minus className="h-6 w-6" />
-                    </Button>
-                    <span className="text-4xl font-semibold w-20 text-center">{genderCounts['no-binari']}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setIsModalOpen(true)}
-                      className="h-14 w-14 rounded-full"
-                    >
-                      <Plus className="h-6 w-6" />
-                    </Button>
-                  </div>
-
-                  {/* List of socias */}
-                  {sociasByGender['no-binari'] && sociasByGender['no-binari'].length > 0 && (
-                    <div className="space-y-2 pt-2">
-                      {sociasByGender['no-binari'].map((asistencia) => (
-                        <div
-                          key={asistencia.id}
-                          className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-sm"
-                        >
-                          <span>{asistencia.socia.nom} {asistencia.socia.cognoms}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveSocia(asistencia.socia_id)}
-                            className="h-7 w-7 p-0"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
         </CardContent>
       </Card>
 
