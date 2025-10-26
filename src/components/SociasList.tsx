@@ -122,7 +122,7 @@ export const SociasList: React.FC = () => {
       const rawHeaders = lines[0].split(separator).map(h => h.trim());
       
       // Map headers to expected field names (case-insensitive)
-      const headerMap: { [key: string]: string } = {};
+      const headerMap: { [key: number]: string } = {};
       rawHeaders.forEach((header, index) => {
         const normalized = header.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         if (normalized === 'nom') headerMap[index] = 'nom';
@@ -132,10 +132,15 @@ export const SociasList: React.FC = () => {
         else if (normalized === 'comissions') headerMap[index] = 'comissions';
       });
       
-      if (!headerMap['nom'] && !headerMap['cognoms'] && !headerMap['genere'] && !headerMap['tipo']) {
+      // Check if required fields are present
+      const hasNom = Object.values(headerMap).includes('nom');
+      const hasGenere = Object.values(headerMap).includes('genere');
+      const hasTipo = Object.values(headerMap).includes('tipo');
+      
+      if (!hasNom || !hasGenere || !hasTipo) {
         toast({
           title: "Error",
-          description: "Format CSV incorrecte. Camps requerits: Nom, Cognoms, Gènere, Tipus",
+          description: "Format CSV incorrecte. Camps requerits: Nom, Gènere, Tipus",
           variant: "destructive",
         });
         return;
