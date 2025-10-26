@@ -130,7 +130,7 @@ export const SociasList: React.FC = () => {
         console.log(`Header ${index}: "${header}" -> normalized: "${normalized}"`);
         if (normalized === 'nom') headerMap[index] = 'nom';
         else if (normalized === 'cognoms') headerMap[index] = 'cognoms';
-        else if (normalized === 'genere' || normalized === 'genre') headerMap[index] = 'genere';
+        else if (normalized.includes('nere') || normalized === 'genere' || normalized === 'genre') headerMap[index] = 'genere';
         else if (normalized === 'tipus' || normalized === 'tipo') headerMap[index] = 'tipo';
         else if (normalized === 'comissions') headerMap[index] = 'comissions';
       });
