@@ -105,7 +105,16 @@ export const SociasList: React.FC = () => {
     if (!file) return;
 
     try {
-      const text = await file.text();
+      // Read file with proper encoding detection
+      const arrayBuffer = await file.arrayBuffer();
+      const decoder = new TextDecoder('utf-8');
+      let text = decoder.decode(arrayBuffer);
+      
+      // If still has issues, try windows-1252
+      if (text.includes('�')) {
+        const decoder1252 = new TextDecoder('windows-1252');
+        text = decoder1252.decode(arrayBuffer);
+      }
       const lines = text.split('\n').filter(line => line.trim());
       
       if (lines.length < 2) {
@@ -121,21 +130,16 @@ export const SociasList: React.FC = () => {
       const separator = lines[0].includes(';') ? ';' : ',';
       const rawHeaders = lines[0].split(separator).map(h => h.trim());
       
-      console.log('Raw headers:', rawHeaders);
-      
       // Map headers to expected field names (case-insensitive)
       const headerMap: { [key: number]: string } = {};
       rawHeaders.forEach((header, index) => {
         const normalized = header.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        console.log(`Header ${index}: "${header}" -> normalized: "${normalized}"`);
         if (normalized === 'nom') headerMap[index] = 'nom';
         else if (normalized === 'cognoms') headerMap[index] = 'cognoms';
         else if (normalized.includes('nere') || normalized === 'genere' || normalized === 'genre') headerMap[index] = 'genere';
         else if (normalized === 'tipus' || normalized === 'tipo') headerMap[index] = 'tipo';
         else if (normalized === 'comissions') headerMap[index] = 'comissions';
       });
-      
-      console.log('Header map:', headerMap);
       
       // Check if required fields are present
       const hasNom = Object.values(headerMap).includes('nom');
@@ -177,12 +181,23 @@ export const SociasList: React.FC = () => {
           if (tipoNormalized === 'habitatge') sociaData.tipo = 'habitatge';
           else if (tipoNormalized.includes('colaborad')) sociaData.tipo = 'colaborador';
 
-          // Handle commissions
+          // Handle and normalize commissions
           if (sociaData.comissions && typeof sociaData.comissions === 'string') {
             sociaData.comissions = sociaData.comissions
               .split(',')
-              .map((c: string) => c.trim())
-              .filter((c: string) => c);
+              .map((c: string) => {
+                const normalized = c.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                // Map CSV commission names to database values
+                if (normalized.includes('econom')) return 'economicas';
+                if (normalized.includes('intercoop')) return 'intercooperacion';
+                if (normalized.includes('secret')) return 'secretaria';
+                if (normalized.includes('conviv')) return 'convivencia';
+                if (normalized.includes('subven')) return 'subvenciones';
+                if (normalized.includes('arquit')) return 'arquitectura';
+                if (normalized.includes('comun')) return 'comunicacion';
+                return null;
+              })
+              .filter((c: string | null) => c !== null) as string[];
           } else {
             sociaData.comissions = [];
           }
