@@ -4,6 +4,8 @@ import { Plus, Minus } from 'lucide-react';
 import { addIntervention, removeIntervention, fetchAssemblyInterventions } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
 
 interface CounterProps {
   value: number;
@@ -13,26 +15,26 @@ interface CounterProps {
 }
 
 const Counter = ({ value, onIncrement, onDecrement, label }: CounterProps) => (
-  <div className="flex items-center justify-between w-full">
-    <span className="text-sm text-muted-foreground flex-1">{label}</span>
-    <div className="flex items-center h-8 rounded-md border border-input bg-transparent">
+  <div className="flex items-center justify-between w-full py-2">
+    <span className="text-sm text-foreground flex-1">{label}</span>
+    <div className="flex items-center gap-4">
       <Button
-        variant="ghost"
-        size="sm"
+        variant="outline"
+        size="icon"
         onClick={onDecrement}
-        className="h-full px-2 rounded-none border-r hover:bg-red-50 transition-colors"
         disabled={value === 0}
+        className="h-14 w-14 rounded-full"
       >
-        <Minus className="h-3 w-3" />
+        <Minus className="h-5 w-5" />
       </Button>
-      <span className="px-3 text-sm tabular-nums font-medium">{value}</span>
+      <span className="text-2xl font-semibold w-12 text-center tabular-nums">{value}</span>
       <Button
-        variant="ghost"
-        size="sm"
+        variant="outline"
+        size="icon"
         onClick={onIncrement}
-        className="h-full px-2 rounded-none border-l hover:bg-green-50 transition-colors"
+        className="h-14 w-14 rounded-full"
       >
-        <Plus className="h-3 w-3" />
+        <Plus className="h-5 w-5" />
       </Button>
     </div>
   </div>
@@ -84,7 +86,7 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: { assemblyId: st
   };
 
   const renderInterventionCounters = (gender: 'man' | 'woman' | 'non-binary') => (
-    <div className="space-y-2">
+    <div className="space-y-1 divide-y">
       {[
         'Dinamitza',
         'Explica',
@@ -114,23 +116,66 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: { assemblyId: st
     </div>
   );
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
-        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">Dona</h3>
-        {renderInterventionCounters('woman')}
-      </Card>
-      
-      <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
-        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">Home</h3>
-        {renderInterventionCounters('man')}
-      </Card>
+  // Calculate total interventions per gender
+  const getTotalByGender = (gender: 'man' | 'woman' | 'non-binary') => {
+    return Object.values(counts[gender]).reduce((sum, count) => sum + count, 0);
+  };
 
-      <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
-        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">No binari</h3>
-        {renderInterventionCounters('non-binary')}
-      </Card>
-    </div>
+  return (
+    <Card className="animate-fade-in">
+      <Accordion type="single" collapsible className="w-full">
+        {/* Dona */}
+        <AccordionItem value="woman" className="border-none">
+          <AccordionTrigger className="hover:no-underline px-6 py-4">
+            <div className="flex items-center justify-between w-full pr-4">
+              <span className="font-medium text-lg">Dona</span>
+              <Badge variant="secondary" className="text-base px-3 py-1">
+                {getTotalByGender('woman')}
+              </Badge>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="px-6 pb-4">
+              {renderInterventionCounters('woman')}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Home */}
+        <AccordionItem value="man" className="border-none">
+          <AccordionTrigger className="hover:no-underline px-6 py-4">
+            <div className="flex items-center justify-between w-full pr-4">
+              <span className="font-medium text-lg">Home</span>
+              <Badge variant="secondary" className="text-base px-3 py-1">
+                {getTotalByGender('man')}
+              </Badge>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="px-6 pb-4">
+              {renderInterventionCounters('man')}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* No binari */}
+        <AccordionItem value="non-binary" className="border-none">
+          <AccordionTrigger className="hover:no-underline px-6 py-4">
+            <div className="flex items-center justify-between w-full pr-4">
+              <span className="font-medium text-lg">No binari</span>
+              <Badge variant="secondary" className="text-base px-3 py-1">
+                {getTotalByGender('non-binary')}
+              </Badge>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="px-6 pb-4">
+              {renderInterventionCounters('non-binary')}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </Card>
   );
 };
 
