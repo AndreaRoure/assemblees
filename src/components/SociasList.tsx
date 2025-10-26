@@ -105,16 +105,10 @@ export const SociasList: React.FC = () => {
     if (!file) return;
 
     try {
-      // Read file with proper encoding detection
+      // Read file with proper encoding detection - try windows-1252 first (common for Excel exports)
       const arrayBuffer = await file.arrayBuffer();
-      const decoder = new TextDecoder('utf-8');
-      let text = decoder.decode(arrayBuffer);
-      
-      // If still has issues, try windows-1252
-      if (text.includes('�')) {
-        const decoder1252 = new TextDecoder('windows-1252');
-        text = decoder1252.decode(arrayBuffer);
-      }
+      const decoder = new TextDecoder('windows-1252');
+      const text = decoder.decode(arrayBuffer);
       const lines = text.split('\n').filter(line => line.trim());
       
       if (lines.length < 2) {
@@ -181,12 +175,12 @@ export const SociasList: React.FC = () => {
           if (tipoNormalized === 'habitatge') sociaData.tipo = 'habitatge';
           else if (tipoNormalized.includes('colaborad')) sociaData.tipo = 'colaborador';
 
-          // Handle and normalize commissions
+          // Handle and normalize commissions (don't filter out unmatched, just skip them)
           if (sociaData.comissions && typeof sociaData.comissions === 'string') {
-            sociaData.comissions = sociaData.comissions
-              .split(',')
+            const rawCommissions = sociaData.comissions.split(',').map((c: string) => c.trim()).filter((c: string) => c);
+            sociaData.comissions = rawCommissions
               .map((c: string) => {
-                const normalized = c.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                const normalized = c.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
                 // Map CSV commission names to database values (in Catalan)
                 if (normalized.includes('econom')) return 'economiques';
                 if (normalized.includes('intercoop')) return 'intercooperacio';
@@ -195,6 +189,8 @@ export const SociasList: React.FC = () => {
                 if (normalized.includes('subven')) return 'subvencions';
                 if (normalized.includes('arquit')) return 'arquitectura';
                 if (normalized.includes('comun')) return 'comunicacio';
+                // If not recognized, return null but don't fail the import
+                console.warn(`Commission not recognized: "${c}"`);
                 return null;
               })
               .filter((c: string | null) => c !== null) as string[];
@@ -202,16 +198,23 @@ export const SociasList: React.FC = () => {
             sociaData.comissions = [];
           }
 
+          // Import even if some fields are empty (only nom, genere, tipo are required)
           if (sociaData.nom && sociaData.genere && sociaData.tipo) {
-            await addSocia({
-              nom: sociaData.nom,
-              cognoms: sociaData.cognoms || '',
-              genere: sociaData.genere,
-              tipo: sociaData.tipo,
-              comissions: sociaData.comissions
-            });
-            imported++;
+            try {
+              await addSocia({
+                nom: sociaData.nom,
+                cognoms: sociaData.cognoms || '',
+                genere: sociaData.genere,
+                tipo: sociaData.tipo,
+                comissions: sociaData.comissions
+              });
+              imported++;
+            } catch (err) {
+              console.error('Error importing socia:', sociaData.nom, err);
+              errors++;
+            }
           } else {
+            console.warn('Skipping row - missing required fields:', sociaData);
             errors++;
           }
         } catch (err) {
