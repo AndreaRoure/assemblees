@@ -117,12 +117,25 @@ export const SociasList: React.FC = () => {
         return;
       }
 
-      const headers = lines[0].split(',').map(h => h.trim());
+      // Detect separator (semicolon or comma)
+      const separator = lines[0].includes(';') ? ';' : ',';
+      const rawHeaders = lines[0].split(separator).map(h => h.trim());
       
-      if (!headers.includes('nom') || !headers.includes('cognoms') || !headers.includes('genere') || !headers.includes('tipo')) {
+      // Map headers to expected field names (case-insensitive)
+      const headerMap: { [key: string]: string } = {};
+      rawHeaders.forEach((header, index) => {
+        const normalized = header.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (normalized === 'nom') headerMap[index] = 'nom';
+        else if (normalized === 'cognoms') headerMap[index] = 'cognoms';
+        else if (normalized === 'genere' || normalized === 'genre') headerMap[index] = 'genere';
+        else if (normalized === 'tipus' || normalized === 'tipo') headerMap[index] = 'tipo';
+        else if (normalized === 'comissions') headerMap[index] = 'comissions';
+      });
+      
+      if (!headerMap['nom'] && !headerMap['cognoms'] && !headerMap['genere'] && !headerMap['tipo']) {
         toast({
           title: "Error",
-          description: "Format CSV incorrecte. Camps requerits: nom, cognoms, genere, tipo",
+          description: "Format CSV incorrecte. Camps requerits: Nom, Cognoms, Gènere, Tipus",
           variant: "destructive",
         });
         return;
@@ -134,23 +147,40 @@ export const SociasList: React.FC = () => {
       
       for (const row of rows) {
         try {
-          const values = row.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/^"|"$/g, '').trim()) || [];
+          const values = row.split(separator).map(v => v.trim());
           const sociaData: any = {};
           
-          headers.forEach((header, index) => {
-            sociaData[header] = values[index] || '';
+          // Map values using the header mapping
+          Object.keys(headerMap).forEach((index) => {
+            const field = headerMap[index];
+            sociaData[field] = values[parseInt(index)] || '';
           });
 
+          // Normalize gender values
+          const genereNormalized = sociaData.genere?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          if (genereNormalized === 'home') sociaData.genere = 'home';
+          else if (genereNormalized === 'dona') sociaData.genere = 'dona';
+          else if (genereNormalized.includes('no') || genereNormalized.includes('binari')) sociaData.genere = 'no-binari';
+
+          // Normalize tipo values
+          const tipoNormalized = sociaData.tipo?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          if (tipoNormalized === 'habitatge') sociaData.tipo = 'habitatge';
+          else if (tipoNormalized.includes('colaborad')) sociaData.tipo = 'colaborador';
+
+          // Handle commissions
           if (sociaData.comissions && typeof sociaData.comissions === 'string') {
-            sociaData.comissions = sociaData.comissions.split(';').filter((c: string) => c.trim()).map((c: string) => c.trim());
+            sociaData.comissions = sociaData.comissions
+              .split(',')
+              .map((c: string) => c.trim())
+              .filter((c: string) => c);
           } else {
             sociaData.comissions = [];
           }
 
-          if (sociaData.nom && sociaData.cognoms && sociaData.genere && sociaData.tipo) {
+          if (sociaData.nom && sociaData.genere && sociaData.tipo) {
             await addSocia({
               nom: sociaData.nom,
-              cognoms: sociaData.cognoms,
+              cognoms: sociaData.cognoms || '',
               genere: sociaData.genere,
               tipo: sociaData.tipo,
               comissions: sociaData.comissions
