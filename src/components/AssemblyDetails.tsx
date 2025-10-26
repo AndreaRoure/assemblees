@@ -2,7 +2,6 @@
 import React from 'react';
 import { AssemblyStats, AssemblyAttendance } from '@/types';
 import QuickIntervention from '@/components/QuickIntervention';
-import ResponsiveAssemblyStats from '@/components/ResponsiveAssemblyStats';
 import InterventionStats from '@/components/InterventionStats';
 import AttendanceManager from '@/components/AttendanceManager';
 
@@ -41,8 +40,6 @@ const AssemblyDetails = ({
         assemblyId={assemblyId}
         onInterventionAdded={onInterventionChange}
       />
-      
-      {stats && <ResponsiveAssemblyStats stats={stats} />}
 
       {stats && attendance && (
         <InterventionStats stats={stats} attendance={attendance} />
