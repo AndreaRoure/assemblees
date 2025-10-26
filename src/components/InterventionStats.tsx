@@ -75,62 +75,7 @@ const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
     return interventions / attendees;
   };
 
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatsCard
-          type="Intervencions de dones"
-          count={womenInterventions}
-          totalAttendees={safeAttendance.female_count}
-          percentage={calculatePercentage(womenInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(womenInterventions, safeAttendance.female_count)}
-        />
-        <StatsCard
-          type="Intervencions d'homes"
-          count={menInterventions}
-          totalAttendees={safeAttendance.male_count}
-          percentage={calculatePercentage(menInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(menInterventions, safeAttendance.male_count)}
-        />
-        <StatsCard
-          type="Intervencions no binàries"
-          count={nonBinaryInterventions}
-          totalAttendees={safeAttendance.non_binary_count}
-          percentage={calculatePercentage(nonBinaryInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(nonBinaryInterventions, safeAttendance.non_binary_count)}
-        />
-      </div>
-      
-      {totalInterventions > 0 && totalAttendees > 0 && (
-        <Card className="p-4 mt-4">
-          <div className="flex flex-col gap-2">
-            <div className="text-sm font-medium text-gray-600">Resum global</div>
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="text-2xl font-bold text-gray-900">{totalInterventions}</div>
-                <div className="text-sm text-gray-500">Total d'intervencions</div>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900">{totalAttendees}</div>
-                <div className="text-sm text-gray-500">Total d'assistents</div>
-              </div>
-            </div>
-            <div className="mt-2">
-              <div className="flex justify-between text-xs text-gray-500 mb-1">
-                <span>Mitjana d'intervencions per assistent</span>
-                <span>{(totalInterventions / totalAttendees).toFixed(1)}</span>
-              </div>
-              <Progress 
-                value={totalInterventions / totalAttendees * 10} 
-                max={10} 
-                className="h-2" 
-              />
-            </div>
-          </div>
-        </Card>
-      )}
-    </div>
-  );
+  return null;
 };
 
 export default InterventionStats;
