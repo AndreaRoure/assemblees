@@ -10,7 +10,7 @@ const Logo = () => {
       muted
       playsInline
       className="h-16 md:h-20 mb-4"
-      aria-label="Observatori d'Assamblees"
+      aria-label="Observatori d'Assemblees"
     />
   );
 };

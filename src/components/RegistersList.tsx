@@ -239,7 +239,7 @@ const RegistersList = () => {
       // Title
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
-      doc.text('Observatori d\'Assamblees - Registres', pageWidth / 2, yPosition, { align: 'center' });
+      doc.text('Observatori d\'Assemblees - Registres', pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 15;
 
       // Filter info
