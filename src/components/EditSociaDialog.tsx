@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { updateSocia } from '@/lib/supabase-socias';
+import { updateSocia, deleteSocia } from '@/lib/supabase-socias';
 import { SociaWithStats } from '@/types/socias';
+import { Trash2 } from 'lucide-react';
 
 interface EditSociaFormData {
   nom: string;
@@ -51,6 +53,7 @@ export const EditSociaDialog: React.FC<EditSociaDialogProps> = ({
     }
   });
   const { toast } = useToast();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const selectedGender = watch('genere');
   const selectedTipo = watch('tipo');
@@ -98,6 +101,28 @@ export const EditSociaDialog: React.FC<EditSociaDialogProps> = ({
     }
   };
 
+  const handleDelete = async () => {
+    if (!socia) return;
+    
+    try {
+      await deleteSocia(socia.id);
+      toast({
+        title: "Sòcia eliminada",
+        description: `${socia.nom} ${socia.cognoms} s'ha eliminat correctament`,
+      });
+      setShowDeleteConfirm(false);
+      onOpenChange(false);
+      onSociaUpdated();
+    } catch (error) {
+      console.error('Error deleting socia:', error);
+      toast({
+        title: "Error",
+        description: "No s'ha pogut eliminar la sòcia",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       reset();
@@ -108,13 +133,14 @@ export const EditSociaDialog: React.FC<EditSociaDialogProps> = ({
   if (!socia) return null;
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Editar Sòcia</DialogTitle>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Editar Sòcia</DialogTitle>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="nom">Nom *</Label>
             <Input
@@ -196,16 +222,47 @@ export const EditSociaDialog: React.FC<EditSociaDialogProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
-              Cancel·lar
+          <div className="flex justify-between items-center space-x-2 pt-4">
+            <Button 
+              type="button" 
+              variant="destructive" 
+              onClick={() => setShowDeleteConfirm(true)}
+              className="mr-auto"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Eliminar
             </Button>
-            <Button type="submit">
-              Actualitzar Sòcia
-            </Button>
+            <div className="flex space-x-2">
+              <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+                Cancel·lar
+              </Button>
+              <Button type="submit">
+                Actualitzar Sòcia
+              </Button>
+            </div>
           </div>
         </form>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Estàs segur/a?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Aquesta acció no es pot desfer. S'eliminarà permanentment la sòcia{' '}
+            <span className="font-semibold">{socia.nom} {socia.cognoms}</span>{' '}
+            i totes les seves dades associades.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel·lar</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Eliminar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 };
