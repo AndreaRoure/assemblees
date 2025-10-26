@@ -85,9 +85,6 @@ const AssemblyStats = ({ stats }: AssemblyStatsProps) => {
 
   return (
     <Card className="p-3 md:p-6 bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-all duration-200 animate-fade-in">
-      <h3 className="text-sm md:text-lg font-semibold mb-4 md:mb-6 text-foreground">
-        Estadístiques per Gènere i Tipus
-      </h3>
       <div className="h-[400px] md:h-[400px] -mx-2 md:mx-0">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
