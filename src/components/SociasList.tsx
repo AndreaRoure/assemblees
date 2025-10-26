@@ -538,13 +538,7 @@ export const SociasList: React.FC = () => {
 
           {/* Desktop Table View */}
           <Card className="hidden md:block">
-            <CardHeader>
-              <CardTitle className="text-3xl font-bold tracking-tight">Llista de Sòcies</CardTitle>
-              <p className="text-muted-foreground mt-2">
-                Gestiona la participació de sòcies d&apos;habitatge i colaboradores
-              </p>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
