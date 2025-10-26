@@ -37,7 +37,6 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isListOpen, setIsListOpen] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [selectedGender, setSelectedGender] = React.useState<string | null>(null);
 
   const { data: socias = [] } = useQuery({
     queryKey: ['socias'],
@@ -73,7 +72,7 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
     [asistencias]
   );
 
-  // Filter available socias (not yet added) with search and gender filter
+  // Filter available socias (not yet added) with search
   const availableSocias = React.useMemo(() => {
     return socias.filter(s => {
       if (addedSociaIds.has(s.id)) return false;
@@ -81,11 +80,9 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
       const matchesSearch = searchQuery === '' || 
         `${s.nom} ${s.cognoms}`.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesGender = selectedGender === null || s.genere === selectedGender;
-      
-      return matchesSearch && matchesGender;
+      return matchesSearch;
     });
-  }, [socias, addedSociaIds, searchQuery, selectedGender]);
+  }, [socias, addedSociaIds, searchQuery]);
 
   const handleAddSocia = async (sociaId: string) => {
     try {
@@ -95,7 +92,6 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
       queryClient.invalidateQueries({ queryKey: ['socias'] });
       setIsModalOpen(false);
       setSearchQuery('');
-      setSelectedGender(null);
       toast.success('Sòcia afegida');
     } catch (error) {
       console.error('Error adding socia:', error);
@@ -150,7 +146,7 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Participants:</span>
+                <span className="text-sm text-muted-foreground">Assistents:</span>
               </div>
               <Badge variant="secondary" className="gap-1">
                 <span className="text-xs">Dones:</span> {genderCounts.dona}
@@ -187,36 +183,6 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
                     />
                   </div>
 
-                  {/* Gender filter buttons */}
-                  <div className="flex gap-2">
-                    <Button
-                      variant={selectedGender === 'dona' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setSelectedGender(selectedGender === 'dona' ? null : 'dona')}
-                      className="gap-2"
-                    >
-                      <Users className="h-4 w-4" />
-                      Dona
-                    </Button>
-                    <Button
-                      variant={selectedGender === 'home' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setSelectedGender(selectedGender === 'home' ? null : 'home')}
-                      className="gap-2"
-                    >
-                      <Users className="h-4 w-4" />
-                      Home
-                    </Button>
-                    <Button
-                      variant={selectedGender === 'no-binari' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setSelectedGender(selectedGender === 'no-binari' ? null : 'no-binari')}
-                      className="gap-2"
-                    >
-                      <Users className="h-4 w-4" />
-                      No binàries
-                    </Button>
-                  </div>
 
                   {/* Available socias list */}
                   <div className="max-h-[400px] overflow-y-auto border rounded-md">
