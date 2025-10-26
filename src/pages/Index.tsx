@@ -192,7 +192,7 @@ const Index = () => {
           </div>
           <Logo />
           <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
-            Observació d&apos;Assemblees
+            Observatori d&apos;Assamblees
           </h1>
         </div>
 
