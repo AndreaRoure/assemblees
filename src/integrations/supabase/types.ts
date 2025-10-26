@@ -60,29 +60,35 @@ export type Database = {
         Row: {
           date: string
           description: string | null
+          end_time: string | null
           id: string
           moderador_id: string | null
           name: string
           register: Json
           secretari_id: string | null
+          start_time: string | null
         }
         Insert: {
           date: string
           description?: string | null
+          end_time?: string | null
           id?: string
           moderador_id?: string | null
           name: string
           register?: Json
           secretari_id?: string | null
+          start_time?: string | null
         }
         Update: {
           date?: string
           description?: string | null
+          end_time?: string | null
           id?: string
           moderador_id?: string | null
           name?: string
           register?: Json
           secretari_id?: string | null
+          start_time?: string | null
         }
         Relationships: [
           {

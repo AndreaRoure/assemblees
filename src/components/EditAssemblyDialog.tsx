@@ -17,6 +17,8 @@ interface EditFormData {
   assemblyName: string;
   date: string;
   description?: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 interface EditAssemblyDialogProps {
@@ -29,6 +31,12 @@ interface EditAssemblyDialogProps {
 const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: EditAssemblyDialogProps) => {
   const [selectedGender, setSelectedGender] = React.useState<'man' | 'woman' | 'non-binary'>(assembly.register.gender);
 
+  const getTimeFromISO = (isoString?: string) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    return date.toTimeString().slice(0, 5);
+  };
+
   const form = useForm<EditFormData>({
     defaultValues: {
       name: assembly.register.name,
@@ -36,6 +44,8 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
       assemblyName: assembly.name,
       date: assembly.date,
       description: assembly.description || '',
+      startTime: getTimeFromISO(assembly.start_time),
+      endTime: getTimeFromISO(assembly.end_time),
     },
   });
 
@@ -46,17 +56,27 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
         gender: selectedGender,
       });
 
+      const updateData: any = {
+        name: data.assemblyName,
+        date: data.date,
+        description: data.description,
+        register: {
+          name: data.name,
+          gender: selectedGender,
+        },
+      };
+
+      if (data.startTime) {
+        updateData.start_time = new Date(`${data.date}T${data.startTime}`).toISOString();
+      }
+
+      if (data.endTime) {
+        updateData.end_time = new Date(`${data.date}T${data.endTime}`).toISOString();
+      }
+
       const { error } = await supabase
         .from('assemblies')
-        .update({
-          name: data.assemblyName,
-          date: data.date,
-          description: data.description,
-          register: {
-            name: data.name,
-            gender: selectedGender,
-          },
-        })
+        .update(updateData)
         .eq('id', assembly.id);
 
       if (error) {
@@ -147,6 +167,25 @@ const EditAssemblyDialog = ({ assembly, open, onOpenChange, onAssemblyEdited }: 
               placeholder="Descripció breu..."
               className="w-full"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Hora de començament</Label>
+              <Input
+                {...form.register('startTime')}
+                type="time"
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Hora de finalització</Label>
+              <Input
+                {...form.register('endTime')}
+                type="time"
+                className="w-full"
+              />
+            </div>
           </div>
 
           <Button type="submit" className="w-full">Actualitzar</Button>

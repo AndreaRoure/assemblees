@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Assembly } from '@/types';
 import { Card } from '@/components/ui/card';
-import { format, isPast, parseISO } from 'date-fns';
+import { format, isPast, parseISO, differenceInMinutes } from 'date-fns';
 import { ca } from 'date-fns/locale';
-import { UserCircle2, Pencil, Trash2, Calendar, MessageCircle, Users } from 'lucide-react';
+import { UserCircle2, Pencil, Trash2, Calendar, MessageCircle, Users, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { deleteAssembly } from '@/lib/supabase';
 import EditAssemblyDialog from './EditAssemblyDialog';
@@ -25,6 +25,27 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
   const [attendeesCount, setAttendeesCount] = useState<number>(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const isPastAssembly = isPast(parseISO(assembly.date));
+
+  const calculateDuration = () => {
+    if (!assembly.start_time || !assembly.end_time) return null;
+    
+    const start = new Date(assembly.start_time);
+    const end = new Date(assembly.end_time);
+    const minutes = differenceInMinutes(end, start);
+    
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    
+    if (hours > 0 && mins > 0) {
+      return `${hours}h ${mins}m`;
+    } else if (hours > 0) {
+      return `${hours}h`;
+    } else {
+      return `${mins}m`;
+    }
+  };
+
+  const duration = calculateDuration();
 
   useEffect(() => {
     const loadData = async () => {
@@ -119,7 +140,7 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
             </p>
           )}
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
               <Users className="h-4 w-4" />
               <span>{attendeesCount} assistents</span>
@@ -128,6 +149,12 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
               <MessageCircle className="h-4 w-4" />
               <span>{totalInterventions} intervencions</span>
             </div>
+            {duration && (
+              <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
+                <Clock className="h-4 w-4" />
+                <span>{duration}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0 pt-3 border-t border-gray-100">

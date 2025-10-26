@@ -9,6 +9,8 @@ export interface Assembly {
   };
   moderador_id?: string;
   secretari_id?: string;
+  start_time?: string;
+  end_time?: string;
 }
 
 export interface Intervention {

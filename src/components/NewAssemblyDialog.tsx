@@ -16,6 +16,8 @@ interface RegisterFormData {
   assemblyName: string;
   date: string;
   description?: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 interface NewAssemblyDialogProps {
@@ -39,7 +41,7 @@ const NewAssemblyDialog = ({ open, onOpenChange, onAssemblyCreated }: NewAssembl
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      await addAssembly({
+      const assemblyData: any = {
         name: data.assemblyName,
         date: data.date,
         description: data.description,
@@ -47,7 +49,17 @@ const NewAssemblyDialog = ({ open, onOpenChange, onAssemblyCreated }: NewAssembl
           name: data.name,
           gender: data.gender,
         },
-      });
+      };
+      
+      if (data.startTime) {
+        assemblyData.start_time = new Date(`${data.date}T${data.startTime}`).toISOString();
+      }
+      
+      if (data.endTime) {
+        assemblyData.end_time = new Date(`${data.date}T${data.endTime}`).toISOString();
+      }
+      
+      await addAssembly(assemblyData);
       
       onOpenChange(false);
       form.reset();
@@ -126,6 +138,25 @@ const NewAssemblyDialog = ({ open, onOpenChange, onAssemblyCreated }: NewAssembl
               placeholder="Descripció breu..."
               className="w-full"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Hora de començament</Label>
+              <Input
+                {...form.register('startTime')}
+                type="time"
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Hora de finalització</Label>
+              <Input
+                {...form.register('endTime')}
+                type="time"
+                className="w-full"
+              />
+            </div>
           </div>
 
           <Button type="submit" className="w-full">Crear</Button>
