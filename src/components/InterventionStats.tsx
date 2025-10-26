@@ -77,9 +77,6 @@ const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">
-        Resum d'intervencions per gènere
-      </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatsCard
           type="Intervencions de dones"
