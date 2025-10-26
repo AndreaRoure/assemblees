@@ -121,16 +121,21 @@ export const SociasList: React.FC = () => {
       const separator = lines[0].includes(';') ? ';' : ',';
       const rawHeaders = lines[0].split(separator).map(h => h.trim());
       
+      console.log('Raw headers:', rawHeaders);
+      
       // Map headers to expected field names (case-insensitive)
       const headerMap: { [key: number]: string } = {};
       rawHeaders.forEach((header, index) => {
         const normalized = header.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        console.log(`Header ${index}: "${header}" -> normalized: "${normalized}"`);
         if (normalized === 'nom') headerMap[index] = 'nom';
         else if (normalized === 'cognoms') headerMap[index] = 'cognoms';
         else if (normalized === 'genere' || normalized === 'genre') headerMap[index] = 'genere';
         else if (normalized === 'tipus' || normalized === 'tipo') headerMap[index] = 'tipo';
         else if (normalized === 'comissions') headerMap[index] = 'comissions';
       });
+      
+      console.log('Header map:', headerMap);
       
       // Check if required fields are present
       const hasNom = Object.values(headerMap).includes('nom');
