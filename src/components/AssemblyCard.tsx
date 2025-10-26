@@ -4,12 +4,14 @@ import { Assembly } from '@/types';
 import { Card } from '@/components/ui/card';
 import { format, isPast, parseISO } from 'date-fns';
 import { ca } from 'date-fns/locale';
-import { UserCircle2, Pencil, Trash2, Calendar, MessageCircle } from 'lucide-react';
+import { UserCircle2, Pencil, Trash2, Calendar, MessageCircle, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { deleteAssembly } from '@/lib/supabase';
 import EditAssemblyDialog from './EditAssemblyDialog';
 import { Badge } from '@/components/ui/badge';
 import { fetchAssemblyInterventions } from '@/lib/supabase';
+import { fetchAssemblyAttendeesCount } from '@/lib/supabase-asistencias';
+import { useSwipeable } from 'react-swipeable';
 
 interface AssemblyCardProps {
   assembly: Assembly;
@@ -20,19 +22,25 @@ interface AssemblyCardProps {
 const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [totalInterventions, setTotalInterventions] = useState<number>(0);
+  const [attendeesCount, setAttendeesCount] = useState<number>(0);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   const isPastAssembly = isPast(parseISO(assembly.date));
 
   useEffect(() => {
-    const loadInterventions = async () => {
+    const loadData = async () => {
       try {
-        const interventions = await fetchAssemblyInterventions(assembly.id);
+        const [interventions, attendees] = await Promise.all([
+          fetchAssemblyInterventions(assembly.id),
+          fetchAssemblyAttendeesCount(assembly.id)
+        ]);
         setTotalInterventions(interventions.length);
+        setAttendeesCount(attendees);
       } catch (error) {
-        console.error('Error loading interventions:', error);
+        console.error('Error loading data:', error);
       }
     };
 
-    loadInterventions();
+    loadData();
   }, [assembly.id]);
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -48,12 +56,43 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
     setShowEditDialog(true);
   };
 
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: (e) => {
+      e.event.stopPropagation();
+      setShowEditDialog(true);
+    },
+    onSwipedRight: (e) => {
+      e.event.stopPropagation();
+      onClick();
+    },
+    onSwiping: (e) => {
+      setSwipeOffset(e.deltaX);
+    },
+    onSwiped: () => {
+      setSwipeOffset(0);
+    },
+    trackMouse: false,
+    preventScrollOnSwipe: true,
+  });
+
   return (
     <>
-      <Card
-        className="group relative p-4 md:p-6 rounded-xl bg-white shadow-sm hover:shadow-md hover:bg-gradient-to-br hover:from-white hover:to-purple-50/30 transition-all duration-300 ease-in-out transform hover:scale-[1.02] cursor-pointer border border-gray-100/50 hover:border-purple-100"
-        onClick={onClick}
-      >
+      <div className="relative" {...swipeHandlers}>
+        {swipeOffset < -50 && (
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-primary/10 flex items-center justify-center rounded-r-xl">
+            <Pencil className="h-5 w-5 text-primary" />
+          </div>
+        )}
+        {swipeOffset > 50 && (
+          <div className="absolute left-0 top-0 bottom-0 w-16 bg-blue-500/10 flex items-center justify-center rounded-l-xl">
+            <Users className="h-5 w-5 text-blue-600" />
+          </div>
+        )}
+        <Card
+          className="group relative p-4 md:p-6 rounded-xl bg-white shadow-sm hover:shadow-md hover:bg-gradient-to-br hover:from-white hover:to-purple-50/30 transition-all duration-300 ease-in-out transform hover:scale-[1.02] cursor-pointer border border-gray-100/50 hover:border-purple-100"
+          onClick={onClick}
+          style={{ transform: `translateX(${Math.max(-80, Math.min(80, swipeOffset))}px)` }}
+        >
         <div className="space-y-3">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
@@ -80,9 +119,15 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
             </p>
           )}
 
-          <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
-            <MessageCircle className="h-4 w-4" />
-            <span>{totalInterventions} intervencions</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
+              <Users className="h-4 w-4" />
+              <span>{attendeesCount} assistents</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-600">
+              <MessageCircle className="h-4 w-4" />
+              <span>{totalInterventions} intervencions</span>
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-0 pt-3 border-t border-gray-100">
@@ -110,7 +155,8 @@ const AssemblyCard = ({ assembly, onClick, onEdited }: AssemblyCardProps) => {
             </div>
           </div>
         </div>
-      </Card>
+        </Card>
+      </div>
 
       <EditAssemblyDialog
         assembly={assembly}

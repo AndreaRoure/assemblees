@@ -64,3 +64,14 @@ export const deleteAsistencia = async (
 
   if (error) throw error;
 };
+
+export const fetchAssemblyAttendeesCount = async (assemblyId: string): Promise<number> => {
+  const { count, error } = await supabase
+    .from('asistencias')
+    .select('*', { count: 'exact', head: true })
+    .eq('assembly_id', assemblyId)
+    .eq('asistio', true);
+
+  if (error) throw error;
+  return count || 0;
+};
