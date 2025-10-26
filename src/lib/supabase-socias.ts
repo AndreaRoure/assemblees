@@ -5,7 +5,7 @@ export const fetchSocias = async (): Promise<Socia[]> => {
   const { data, error } = await supabase
     .from('socias')
     .select('*')
-    .order('cognoms', { ascending: true });
+    .order('nom', { ascending: true });
   
   if (error) throw error;
   return data as Socia[];
@@ -26,7 +26,7 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
     const { data: socias, error: sociasError } = await supabase
       .from('socias')
       .select('*')
-      .order('cognoms', { ascending: true });
+      .order('nom', { ascending: true });
 
     if (sociasError) throw sociasError;
 
