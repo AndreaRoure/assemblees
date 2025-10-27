@@ -334,7 +334,22 @@ const RegistersList = () => {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in bg-[hsl(var(--lavender-bg))] p-6 rounded-lg">
+    <div className="space-y-0 pb-20 md:pb-0">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-10 bg-[hsl(var(--lavender-bg))]/95 backdrop-blur-sm border-b transition-all duration-300 shadow-sm">
+        <div className="p-4 space-y-3">
+          {/* Title Row */}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold">
+                Registre
+              </h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-8 animate-fade-in p-6">
       <FilterToolbar 
         selectedYear={selectedYear}
         years={years}
@@ -364,6 +379,7 @@ const RegistersList = () => {
 
         <YearlyEvolutionChart data={yearlyEvolutionData} />
       </div>
+    </div>
     </div>
   );
 };

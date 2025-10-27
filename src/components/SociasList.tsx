@@ -306,7 +306,7 @@ export const SociasList: React.FC = () => {
     <div className="space-y-0 pb-20 md:pb-0">
       {/* Sticky Header */}
       <div className={cn(
-        "sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b transition-all duration-300",
+        "sticky top-0 z-10 bg-[hsl(var(--lavender-bg))]/95 backdrop-blur-sm border-b transition-all duration-300",
         isScrolled ? "shadow-sm" : ""
       )}>
         <div className="p-4 space-y-3">

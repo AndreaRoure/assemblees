@@ -13,7 +13,7 @@ interface FilterToolbarProps {
 
 const FilterToolbar = ({ selectedYear, years, onYearChange, onDownloadPdf }: FilterToolbarProps) => {
   return (
-    <div className="p-3 md:p-6 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 shadow-sm">
+    <div className="p-3 md:p-6 rounded-lg shadow-sm border bg-card">
       {/* Mobile: horizontal scrollable chips */}
       <div className="md:hidden overflow-x-auto scrollbar-hide">
         <div className="flex gap-2 pb-1">
