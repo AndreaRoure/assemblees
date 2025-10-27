@@ -9,9 +9,7 @@ import Logo from '@/components/Logo';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   fetchAssemblies, 
-  fetchAssemblyInterventions, 
-  fetchAssemblyAttendance,
-  updateAssemblyAttendance 
+  fetchAssemblyInterventions
 } from '@/lib/supabase';
 import { getAssemblyStats, getTotalAssembliesCount } from '@/data/assemblies';
 import { getTotalSociasCount } from '@/lib/supabase-socias';
@@ -53,19 +51,18 @@ const Index = () => {
       })
       .subscribe();
 
-    const attendanceChannel = supabase
-      .channel('attendance-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'assembly_attendance' }, () => {
-        if (selectedAssembly) {
-          queryClient.invalidateQueries({ queryKey: ['attendance', selectedAssembly] });
-        }
+    const asistenciasChannel = supabase
+      .channel('asistencias-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'asistencias' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['asistencias', selectedAssembly] });
+        queryClient.invalidateQueries({ queryKey: ['sociasWithStats'] });
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(assemblyChannel);
       supabase.removeChannel(interventionsChannel);
-      supabase.removeChannel(attendanceChannel);
+      supabase.removeChannel(asistenciasChannel);
     };
   }, [queryClient, selectedAssembly, user]);
 
@@ -100,11 +97,6 @@ const Index = () => {
     enabled: !!selectedAssembly && !!user
   });
 
-  const { data: attendance, refetch: refetchAttendance } = useQuery({
-    queryKey: ['attendance', selectedAssembly],
-    queryFn: () => selectedAssembly ? fetchAssemblyAttendance(selectedAssembly) : Promise.resolve(null),
-    enabled: !!selectedAssembly && !!user
-  });
 
   // Redirect to auth if not authenticated - AFTER all hooks are called
   React.useEffect(() => {
@@ -138,42 +130,6 @@ const Index = () => {
     }
   };
 
-  const handleUpdateAttendance = async (
-    type: 'female_count' | 'male_count' | 'non_binary_count',
-    increment: boolean
-  ) => {
-    if (!selectedAssembly || !attendance) return;
-
-    try {
-      const newCount = increment 
-        ? (attendance[type] || 0) + 1 
-        : Math.max(0, (attendance[type] || 0) - 1);
-      
-      const updatedAttendance = {
-        ...attendance,
-        [type]: newCount
-      };
-
-      // Update local state immediately for responsive UI
-      queryClient.setQueryData(['attendance', selectedAssembly], updatedAttendance);
-      
-      // Send update to database
-      await updateAssemblyAttendance(selectedAssembly, {
-        [type]: newCount
-      });
-      
-      // Refetch to ensure data consistency
-      refetchAttendance();
-      
-      console.log(`Updated ${type} to ${newCount}`);
-    } catch (error) {
-      console.error('Error updating attendance:', error);
-      toast.error('No s\'ha pogut actualitzar l\'assistència. Intenta-ho de nou.');
-      
-      // Revert optimistic update on error
-      refetchAttendance();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[hsl(var(--lavender-bg))]">
@@ -201,9 +157,7 @@ const Index = () => {
           <AssemblyDetails 
             assemblyId={selectedAssembly}
             stats={stats}
-            attendance={attendance}
             onInterventionChange={handleInterventionChange}
-            onAttendanceUpdate={handleUpdateAttendance}
             onBackClick={() => setSelectedAssembly(null)}
           />
         ) : (

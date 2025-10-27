@@ -1,7 +1,9 @@
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { fetchAssemblyAsistencias } from '@/lib/supabase-asistencias';
 
 interface StatsCardProps {
   type: string;
@@ -38,25 +40,36 @@ interface InterventionStatsProps {
     };
     totalInterventions: number;
   };
-  attendance: {
-    female_count: number;
-    male_count: number;
-  };
+  assemblyId: string;
 }
 
-const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
+const InterventionStats = ({ stats, assemblyId }: InterventionStatsProps) => {
+  const { data: asistencias = [] } = useQuery({
+    queryKey: ['asistencias', assemblyId],
+    queryFn: () => fetchAssemblyAsistencias(assemblyId),
+  });
+
   const getTotalInterventions = (gender: 'man' | 'woman') => {
     const genderStats = stats.byGender[gender];
     return Object.values(genderStats).reduce((sum, count) => sum + count, 0);
   };
 
-  // Ensure we have valid attendance counts
-  const safeAttendance = {
-    female_count: Math.max(0, attendance?.female_count || 0),
-    male_count: Math.max(0, attendance?.male_count || 0),
-  };
+  // Calculate attendance counts from asistencias
+  const attendanceCounts = React.useMemo(() => {
+    const counts = { female_count: 0, male_count: 0 };
+    asistencias.forEach((asistencia) => {
+      if (asistencia.asistio && asistencia.socia) {
+        if (asistencia.socia.genere === 'dona') {
+          counts.female_count++;
+        } else if (asistencia.socia.genere === 'home') {
+          counts.male_count++;
+        }
+      }
+    });
+    return counts;
+  }, [asistencias]);
 
-  const totalAttendees = safeAttendance.female_count + safeAttendance.male_count;
+  const totalAttendees = attendanceCounts.female_count + attendanceCounts.male_count;
   const menInterventions = getTotalInterventions('man');
   const womenInterventions = getTotalInterventions('woman');
   const totalInterventions = menInterventions + womenInterventions;
@@ -77,16 +90,16 @@ const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
         <StatsCard
           type="Intervencions de dones"
           count={womenInterventions}
-          totalAttendees={safeAttendance.female_count}
+          totalAttendees={attendanceCounts.female_count}
           percentage={calculatePercentage(womenInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(womenInterventions, safeAttendance.female_count)}
+          interventionsPerAttendee={calculateInterventionsPerAttendee(womenInterventions, attendanceCounts.female_count)}
         />
         <StatsCard
           type="Intervencions d'homes"
           count={menInterventions}
-          totalAttendees={safeAttendance.male_count}
+          totalAttendees={attendanceCounts.male_count}
           percentage={calculatePercentage(menInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(menInterventions, safeAttendance.male_count)}
+          interventionsPerAttendee={calculateInterventionsPerAttendee(menInterventions, attendanceCounts.male_count)}
         />
       </div>
       

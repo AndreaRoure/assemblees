@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { AssemblyStats, AssemblyAttendance } from '@/types';
+import { AssemblyStats } from '@/types';
 import QuickIntervention from '@/components/QuickIntervention';
 import InterventionStats from '@/components/InterventionStats';
 import AttendanceManager from '@/components/AttendanceManager';
@@ -8,21 +7,14 @@ import AttendanceManager from '@/components/AttendanceManager';
 interface AssemblyDetailsProps {
   assemblyId: string;
   stats: AssemblyStats | null | undefined;
-  attendance: AssemblyAttendance | null | undefined;
   onInterventionChange: () => void;
-  onAttendanceUpdate: (
-    type: 'female_count' | 'male_count' | 'non_binary_count',
-    increment: boolean
-  ) => void;
   onBackClick: () => void;
 }
 
 const AssemblyDetails = ({
   assemblyId,
   stats,
-  attendance,
   onInterventionChange,
-  onAttendanceUpdate,
   onBackClick,
 }: AssemblyDetailsProps) => {
   return (
@@ -41,8 +33,8 @@ const AssemblyDetails = ({
         onInterventionAdded={onInterventionChange}
       />
 
-      {stats && attendance && (
-        <InterventionStats stats={stats} attendance={attendance} />
+      {stats && (
+        <InterventionStats stats={stats} assemblyId={assemblyId} />
       )}
     </div>
   );

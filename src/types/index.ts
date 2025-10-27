@@ -45,11 +45,3 @@ export interface AssemblyStats {
     explica: number;
   };
 }
-
-export interface AssemblyAttendance {
-  id: string;
-  assembly_id: string;
-  female_count: number;
-  male_count: number;
-  non_binary_count: number;
-}
