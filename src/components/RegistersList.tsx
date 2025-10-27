@@ -8,6 +8,7 @@ import FilterToolbar from './registers/FilterToolbar';
 import TotalAssembliesCard from './registers/TotalAssembliesCard';
 import GenderDistributionChart from './registers/GenderDistributionChart';
 import YearlyEvolutionChart from './registers/YearlyEvolutionChart';
+import AveragesSection from './registers/AveragesSection';
 import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
 
@@ -52,6 +53,17 @@ const RegistersList = () => {
   const { data: assemblies = [], isLoading: isLoadingAssemblies } = useQuery({
     queryKey: ['assemblies'],
     queryFn: fetchAssemblies
+  });
+
+  const { data: asistencias = [], isLoading: isLoadingAsistencias } = useQuery({
+    queryKey: ['asistencias'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('asistencias')
+        .select('*');
+      if (error) throw error;
+      return data;
+    }
   });
 
   const years = useMemo(() => {
@@ -169,6 +181,57 @@ const RegistersList = () => {
     return Object.values(yearData).sort((a, b) => parseInt(a.year) - parseInt(b.year));
   }, [interventions, years]);
 
+  // Calculate averages for the new section
+  const averages = useMemo(() => {
+    // Calculate average assembly time
+    const assembliesWithTime = assemblies.filter(a => a.start_time && a.end_time);
+    let totalMinutes = 0;
+    assembliesWithTime.forEach(a => {
+      const start = new Date(a.start_time!);
+      const end = new Date(a.end_time!);
+      const diffMs = end.getTime() - start.getTime();
+      totalMinutes += diffMs / (1000 * 60);
+    });
+    const avgMinutes = assembliesWithTime.length > 0 ? totalMinutes / assembliesWithTime.length : 0;
+    const hours = Math.floor(avgMinutes / 60);
+    const minutes = Math.round(avgMinutes % 60);
+    const averageTime = `${hours}h ${minutes}m`;
+
+    // Calculate average male/female participation based on interventions
+    const totalInterventions = interventions.length;
+    const maleInterventions = interventions.filter(i => i.gender === 'man').length;
+    const femaleInterventions = interventions.filter(i => i.gender === 'woman').length;
+    const avgMaleParticipation = totalInterventions > 0 ? (maleInterventions / totalInterventions) * 100 : 0;
+    const avgFemaleParticipation = totalInterventions > 0 ? (femaleInterventions / totalInterventions) * 100 : 0;
+
+    // Calculate average attendance and absences per assembly
+    const attendanceByAssembly: Record<string, { attended: number; absent: number }> = {};
+    asistencias.forEach(a => {
+      if (!attendanceByAssembly[a.assembly_id]) {
+        attendanceByAssembly[a.assembly_id] = { attended: 0, absent: 0 };
+      }
+      if (a.asistio) {
+        attendanceByAssembly[a.assembly_id].attended++;
+      } else {
+        attendanceByAssembly[a.assembly_id].absent++;
+      }
+    });
+
+    const assemblyIds = Object.keys(attendanceByAssembly);
+    const totalAttended = assemblyIds.reduce((sum, id) => sum + attendanceByAssembly[id].attended, 0);
+    const totalAbsent = assemblyIds.reduce((sum, id) => sum + attendanceByAssembly[id].absent, 0);
+    const avgAttendance = assemblyIds.length > 0 ? totalAttended / assemblyIds.length : 0;
+    const avgAbsences = assemblyIds.length > 0 ? totalAbsent / assemblyIds.length : 0;
+
+    return {
+      averageTime,
+      averageMaleParticipation: avgMaleParticipation,
+      averageFemaleParticipation: avgFemaleParticipation,
+      averageAttendance: avgAttendance,
+      averageAbsences: avgAbsences,
+    };
+  }, [assemblies, interventions, asistencias]);
+
   const handleDownloadPdf = () => {
     try {
       const doc = new jsPDF();
@@ -263,7 +326,7 @@ const RegistersList = () => {
     }
   };
 
-  if (isLoadingInterventions || isLoadingAssemblies) {
+  if (isLoadingInterventions || isLoadingAssemblies || isLoadingAsistencias) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-primary animate-pulse text-lg">Carregant...</div>
@@ -278,6 +341,14 @@ const RegistersList = () => {
         years={years}
         onYearChange={setSelectedYear}
         onDownloadPdf={handleDownloadPdf}
+      />
+
+      <AveragesSection 
+        averageTime={averages.averageTime}
+        averageMaleParticipation={averages.averageMaleParticipation}
+        averageFemaleParticipation={averages.averageFemaleParticipation}
+        averageAttendance={averages.averageAttendance}
+        averageAbsences={averages.averageAbsences}
       />
 
       <TotalAssembliesCard count={attendanceSummary.assemblyCount} />
