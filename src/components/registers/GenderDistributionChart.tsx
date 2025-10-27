@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
+import { Card, CardContent } from '@/components/ui/card';
+import { Users } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 interface GenderDistributionChartProps {
   data: Array<{
@@ -28,78 +28,74 @@ interface GenderDistributionChartProps {
 }
 
 const GenderDistributionChart = ({ data, interventionsByGender, percentageByGender, attendanceByGender, totalInterventions }: GenderDistributionChartProps) => {
-  // Inclusive color palette - Swapped colors between man and woman
-  const COLORS = ['#0EA5E9', '#8B5CF6', '#D946EF'];
+  const genderData = [
+    {
+      key: 'man',
+      label: 'Homes',
+      interventions: interventionsByGender.man,
+      interventionPercentage: percentageByGender.man,
+      attendancePercentage: attendanceByGender.man,
+      color: 'bg-sky-500',
+      emoji: '👨'
+    },
+    {
+      key: 'woman',
+      label: 'Dones',
+      interventions: interventionsByGender.woman,
+      interventionPercentage: percentageByGender.woman,
+      attendancePercentage: attendanceByGender.woman,
+      color: 'bg-purple-500',
+      emoji: '👩'
+    },
+    {
+      key: 'non-binary',
+      label: 'No binàries',
+      interventions: interventionsByGender["non-binary"],
+      interventionPercentage: percentageByGender["non-binary"],
+      attendancePercentage: attendanceByGender["non-binary"],
+      color: 'bg-fuchsia-500',
+      emoji: '🧑'
+    }
+  ];
 
   return (
-    <Card className="p-4 md:p-6">
-      <h3 className="text-lg font-semibold mb-4">Distribució per Gènere</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="h-[250px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) => {
-                  // Ensure percent is a number before performing arithmetic
-                  const numericPercent = typeof percent === 'number' ? percent : 0;
-                  return `${name}: ${(numericPercent * 100).toFixed(1)}%`;
-                }}
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <RechartsTooltip formatter={(value, name) => {
-                // Ensure value is a number
-                const numericValue = typeof value === 'number' ? value : 0;
-                const percentage = totalInterventions > 0 ? ((numericValue / totalInterventions) * 100).toFixed(1) : '0.0';
-                return [`${numericValue} (${percentage}%)`, name];
-              }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        
-        <div className="self-center">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Gènere</TableHead>
-                <TableHead className="text-right">Total Intervencions</TableHead>
-                <TableHead className="text-right">% Intervencions</TableHead>
-                <TableHead className="text-right">% Assistència</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>Homes</TableCell>
-                <TableCell className="text-right">{interventionsByGender.man}</TableCell>
-                <TableCell className="text-right">{percentageByGender.man.toFixed(1)}%</TableCell>
-                <TableCell className="text-right">{attendanceByGender.man.toFixed(1)}%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Dones</TableCell>
-                <TableCell className="text-right">{interventionsByGender.woman}</TableCell>
-                <TableCell className="text-right">{percentageByGender.woman.toFixed(1)}%</TableCell>
-                <TableCell className="text-right">{attendanceByGender.woman.toFixed(1)}%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>No binàries</TableCell>
-                <TableCell className="text-right">{interventionsByGender["non-binary"]}</TableCell>
-                <TableCell className="text-right">{percentageByGender["non-binary"].toFixed(1)}%</TableCell>
-                <TableCell className="text-right">{attendanceByGender["non-binary"].toFixed(1)}%</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold px-2">Distribució per Gènere</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {genderData.map((gender) => (
+          <Card key={gender.key} className="overflow-hidden">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{gender.emoji}</span>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-sm">{gender.label}</h4>
+                  <p className="text-2xl font-bold">{gender.interventions}</p>
+                  <p className="text-xs text-muted-foreground">intervencions</p>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Intervencions</span>
+                    <span className="font-medium">{gender.interventionPercentage.toFixed(1)}%</span>
+                  </div>
+                  <Progress value={gender.interventionPercentage} className="h-2" />
+                </div>
+                
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Assistència</span>
+                    <span className="font-medium">{gender.attendancePercentage.toFixed(1)}%</span>
+                  </div>
+                  <Progress value={gender.attendancePercentage} className="h-2" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-    </Card>
+    </div>
   );
 };
 
