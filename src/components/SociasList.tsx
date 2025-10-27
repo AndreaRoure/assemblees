@@ -390,19 +390,7 @@ export const SociasList: React.FC = () => {
       <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-280px)] md:h-[calc(100vh-330px)]">
         <div className="p-4 space-y-4">
           {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-            <Card>
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-center">
-                  <Users className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
-                  <div className="ml-2 md:ml-4">
-                    <p className="text-xs md:text-sm font-medium text-muted-foreground">Total Sòcies</p>
-                    <p className="text-xl md:text-2xl font-bold">{socias.length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <Card>
               <CardContent className="p-4 md:p-6">
                 <div className="flex items-center">
