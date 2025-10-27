@@ -342,6 +342,8 @@ const RegistersList = () => {
         onDownloadPdf={handleDownloadPdf}
       />
 
+      <TotalAssembliesCard count={attendanceSummary.assemblyCount} />
+
       <AveragesSection 
         averageTime={averages.averageTime}
         averageMaleParticipation={averages.averageMaleParticipation}
@@ -349,8 +351,6 @@ const RegistersList = () => {
         averageAttendance={averages.averageAttendance}
         averageAbsences={averages.averageAbsences}
       />
-
-      <TotalAssembliesCard count={attendanceSummary.assemblyCount} />
 
       <GenderDistributionChart 
         data={attendanceSummary.pieChartData}
