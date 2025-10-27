@@ -573,7 +573,7 @@ export const SociasList: React.FC = () => {
                             <Badge 
                               key={commission} 
                               variant="outline" 
-                              className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                              className="text-xs bg-green-50 text-green-700 border-green-200"
                             >
                               {getCommissionLabel(commission)}
                             </Badge>
