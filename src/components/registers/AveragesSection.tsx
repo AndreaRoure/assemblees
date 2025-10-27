@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock, Users, UserCheck, UserX } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Clock, UserCheck, UserX } from 'lucide-react';
 
 interface AveragesSectionProps {
   averageTime: string;
@@ -14,42 +14,46 @@ const AveragesSection: React.FC<AveragesSectionProps> = ({
   averageAbsences,
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground border-0 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            Temps Mitjà d'Assemblea
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold">{averageTime}</div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+      <Card>
+        <CardContent className="p-4 md:p-6">
+          <div className="flex items-center">
+            <Clock className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+            <div className="ml-2 md:ml-4">
+              <p className="text-xs md:text-sm font-medium text-muted-foreground">Temps Mitjà d'Assemblea</p>
+              <p className="text-xl md:text-2xl font-bold">{averageTime}</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-accent to-accent/80 border-0 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <UserCheck className="h-4 w-4" />
-            Assistència Mitjana
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold">{averageAttendance.toFixed(1)}</div>
-          <p className="text-xs mt-1 opacity-80">persones per assemblea</p>
+      <Card>
+        <CardContent className="p-4 md:p-6">
+          <div className="flex items-center">
+            <UserCheck className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+            <div className="ml-2 md:ml-4">
+              <p className="text-xs md:text-sm font-medium text-muted-foreground">Assistència Mitjana</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-xl md:text-2xl font-bold">{averageAttendance.toFixed(1)}</p>
+                <p className="text-sm md:text-base text-muted-foreground">persones</p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-destructive/80 to-destructive/60 text-destructive-foreground border-0 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <UserX className="h-4 w-4" />
-            Faltes Mitjanes
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold">{averageAbsences.toFixed(1)}</div>
-          <p className="text-xs mt-1 opacity-80">persones per assemblea</p>
+      <Card>
+        <CardContent className="p-4 md:p-6">
+          <div className="flex items-center">
+            <UserX className="h-6 w-6 md:h-8 md:w-8 text-red-600" />
+            <div className="ml-2 md:ml-4">
+              <p className="text-xs md:text-sm font-medium text-muted-foreground">Faltes Mitjanes</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-xl md:text-2xl font-bold">{averageAbsences.toFixed(1)}</p>
+                <p className="text-sm md:text-base text-muted-foreground">persones</p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

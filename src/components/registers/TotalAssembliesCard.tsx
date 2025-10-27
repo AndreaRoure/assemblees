@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { FileText } from 'lucide-react';
 
 interface TotalAssembliesCardProps {
   count: number;
@@ -8,9 +9,16 @@ interface TotalAssembliesCardProps {
 
 const TotalAssembliesCard = ({ count }: TotalAssembliesCardProps) => {
   return (
-    <Card className="p-4 hover:shadow-md transition-all bg-primary text-white">
-      <h3 className="text-lg font-semibold">Assemblees Totals</h3>
-      <p className="text-3xl font-bold">{count}</p>
+    <Card>
+      <CardContent className="p-4 md:p-6">
+        <div className="flex items-center">
+          <FileText className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
+          <div className="ml-2 md:ml-4">
+            <p className="text-xs md:text-sm font-medium text-muted-foreground">Assemblees Totals</p>
+            <p className="text-xl md:text-2xl font-bold">{count}</p>
+          </div>
+        </div>
+      </CardContent>
     </Card>
   );
 };
