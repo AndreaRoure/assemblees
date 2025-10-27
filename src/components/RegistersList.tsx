@@ -8,6 +8,9 @@ import TotalAssembliesCard from './registers/TotalAssembliesCard';
 import GenderDistributionChart from './registers/GenderDistributionChart';
 import YearlyEvolutionChart from './registers/YearlyEvolutionChart';
 import AveragesSection from './registers/AveragesSection';
+import YearSelect from './registers/YearSelect';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
 
@@ -346,17 +349,60 @@ const RegistersList = () => {
               </h2>
             </div>
           </div>
+          
+          {/* Filter Toolbar */}
+          <div className="flex flex-wrap gap-4 justify-between items-center w-full">
+            <div className="md:hidden overflow-x-auto scrollbar-hide w-full">
+              <div className="flex gap-2 pb-1">
+                <button
+                  onClick={() => setSelectedYear('all')}
+                  className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${
+                    selectedYear === 'all'
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'bg-background text-foreground hover:bg-muted'
+                  }`}
+                >
+                  Tots els anys
+                </button>
+                {years.map((year) => (
+                  <button
+                    key={year}
+                    onClick={() => setSelectedYear(year.toString())}
+                    className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${
+                      selectedYear === year.toString()
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'bg-background text-foreground hover:bg-muted'
+                    }`}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="hidden md:flex gap-4 items-center w-full justify-between">
+              <YearSelect 
+                value={selectedYear}
+                years={years}
+                onValueChange={setSelectedYear}
+              />
+              <Button onClick={handleDownloadPdf} variant="outline" className="gap-2 shrink-0">
+                <Download className="h-4 w-4" />
+                Descarregar PDF
+              </Button>
+            </div>
+
+            <div className="md:hidden w-full">
+              <Button onClick={handleDownloadPdf} variant="outline" className="w-full gap-2">
+                <Download className="h-4 w-4" />
+                Descarregar PDF
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="space-y-8 animate-fade-in p-6">
-      <FilterToolbar 
-        selectedYear={selectedYear}
-        years={years}
-        onYearChange={setSelectedYear}
-        onDownloadPdf={handleDownloadPdf}
-      />
-
       <TotalAssembliesCard count={attendanceSummary.assemblyCount} />
 
       <AveragesSection 
