@@ -345,7 +345,7 @@ const RegistersList = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-bold">
-                Registre
+                Registres
               </h2>
             </div>
           </div>
