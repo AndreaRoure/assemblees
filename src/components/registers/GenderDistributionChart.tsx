@@ -19,10 +19,15 @@ interface GenderDistributionChartProps {
     woman: number;
     'non-binary': number;
   };
+  attendanceByGender: {
+    man: number;
+    woman: number;
+    'non-binary': number;
+  };
   totalInterventions: number;
 }
 
-const GenderDistributionChart = ({ data, interventionsByGender, percentageByGender, totalInterventions }: GenderDistributionChartProps) => {
+const GenderDistributionChart = ({ data, interventionsByGender, percentageByGender, attendanceByGender, totalInterventions }: GenderDistributionChartProps) => {
   // Inclusive color palette - Swapped colors between man and woman
   const COLORS = ['#0EA5E9', '#8B5CF6', '#D946EF'];
 
@@ -67,7 +72,8 @@ const GenderDistributionChart = ({ data, interventionsByGender, percentageByGend
               <TableRow>
                 <TableHead>Gènere</TableHead>
                 <TableHead className="text-right">Total Intervencions</TableHead>
-                <TableHead className="text-right">Percentatge</TableHead>
+                <TableHead className="text-right">% Intervencions</TableHead>
+                <TableHead className="text-right">% Assistència</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -75,16 +81,19 @@ const GenderDistributionChart = ({ data, interventionsByGender, percentageByGend
                 <TableCell>Homes</TableCell>
                 <TableCell className="text-right">{interventionsByGender.man}</TableCell>
                 <TableCell className="text-right">{percentageByGender.man.toFixed(1)}%</TableCell>
+                <TableCell className="text-right">{attendanceByGender.man.toFixed(1)}%</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Dones</TableCell>
                 <TableCell className="text-right">{interventionsByGender.woman}</TableCell>
                 <TableCell className="text-right">{percentageByGender.woman.toFixed(1)}%</TableCell>
+                <TableCell className="text-right">{attendanceByGender.woman.toFixed(1)}%</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>No binàries</TableCell>
                 <TableCell className="text-right">{interventionsByGender["non-binary"]}</TableCell>
                 <TableCell className="text-right">{percentageByGender["non-binary"].toFixed(1)}%</TableCell>
+                <TableCell className="text-right">{attendanceByGender["non-binary"].toFixed(1)}%</TableCell>
               </TableRow>
             </TableBody>
           </Table>

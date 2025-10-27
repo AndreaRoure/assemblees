@@ -62,7 +62,21 @@ const RegistersList = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('asistencias')
-        .select('*');
+        .select(`
+          *,
+          socia:socias(genere)
+        `);
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: socias = [], isLoading: isLoadingSocias } = useQuery({
+    queryKey: ['socias'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('socias')
+        .select('id, genere');
       if (error) throw error;
       return data;
     }
@@ -139,6 +153,36 @@ const RegistersList = () => {
       'non-binary': totalInterventions > 0 ? (interventionsByGender["non-binary"] / totalInterventions) * 100 : 0,
     };
     
+    // Calculate attendance percentage by gender
+    const totalAssemblies = assemblies.length;
+    const attendanceByGender = {
+      man: 0,
+      woman: 0,
+      'non-binary': 0,
+    };
+    
+    // Count attended assemblies per gender
+    const attendedByGender = {
+      man: new Set(),
+      woman: new Set(),
+      'non-binary': new Set(),
+    };
+    
+    asistencias.forEach(asistencia => {
+      if (asistencia.asistio && asistencia.socia?.genere) {
+        const genderKey = asistencia.socia.genere === 'home' ? 'man' : 
+                         asistencia.socia.genere === 'dona' ? 'woman' : 'non-binary';
+        attendedByGender[genderKey].add(asistencia.assembly_id);
+      }
+    });
+    
+    // Calculate attendance percentage
+    if (totalAssemblies > 0) {
+      attendanceByGender.man = (attendedByGender.man.size / totalAssemblies) * 100;
+      attendanceByGender.woman = (attendedByGender.woman.size / totalAssemblies) * 100;
+      attendanceByGender['non-binary'] = (attendedByGender['non-binary'].size / totalAssemblies) * 100;
+    }
+    
     // Prepare data for pie chart
     const pieChartData = [
       { name: 'Homes', value: interventionsByGender.man },
@@ -151,9 +195,10 @@ const RegistersList = () => {
       totalInterventions,
       interventionsByGender,
       percentageByGender,
+      attendanceByGender,
       pieChartData
     };
-  }, [assemblies.length, interventions]);
+  }, [assemblies.length, interventions, asistencias]);
 
   // Generate data for the yearly evolution chart
   const yearlyEvolutionData = useMemo(() => {
@@ -328,7 +373,7 @@ const RegistersList = () => {
     }
   };
 
-  if (isLoadingInterventions || isLoadingAssemblies || isLoadingAsistencias) {
+  if (isLoadingInterventions || isLoadingAssemblies || isLoadingAsistencias || isLoadingSocias) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-primary animate-pulse text-lg">Carregant...</div>
@@ -415,6 +460,7 @@ const RegistersList = () => {
         data={attendanceSummary.pieChartData}
         interventionsByGender={attendanceSummary.interventionsByGender}
         percentageByGender={attendanceSummary.percentageByGender}
+        attendanceByGender={attendanceSummary.attendanceByGender}
         totalInterventions={attendanceSummary.totalInterventions}
       />
 
