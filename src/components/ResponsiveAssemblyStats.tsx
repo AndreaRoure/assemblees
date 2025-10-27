@@ -72,15 +72,6 @@ const ResponsiveAssemblyStats = ({ stats }: AssemblyStatsProps) => {
       'Ofensiva': stats.byGender.woman.ofensiva,
       'Explica': stats.byGender.woman.explica,
     },
-    {
-      name: 'No Binari',
-      'Intervenció curta': stats.byGender['non-binary'].intervencio,
-      'Dinamitza': stats.byGender['non-binary'].dinamitza,
-      'Interrupció': stats.byGender['non-binary'].interrupcio,
-      'Intervenció llarga': stats.byGender['non-binary'].llarga,
-      'Ofensiva': stats.byGender['non-binary'].ofensiva,
-      'Explica': stats.byGender['non-binary'].explica,
-    },
   ], [stats]);
 
   return (

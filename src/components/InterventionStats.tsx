@@ -35,19 +35,17 @@ interface InterventionStatsProps {
     byGender: {
       man: { intervencio: number; dinamitza: number; interrupcio: number; llarga: number; ofensiva: number; explica: number; };
       woman: { intervencio: number; dinamitza: number; interrupcio: number; llarga: number; ofensiva: number; explica: number; };
-      'non-binary': { intervencio: number; dinamitza: number; interrupcio: number; llarga: number; ofensiva: number; explica: number; };
     };
     totalInterventions: number;
   };
   attendance: {
     female_count: number;
     male_count: number;
-    non_binary_count: number;
   };
 }
 
 const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
-  const getTotalInterventions = (gender: 'man' | 'woman' | 'non-binary') => {
+  const getTotalInterventions = (gender: 'man' | 'woman') => {
     const genderStats = stats.byGender[gender];
     return Object.values(genderStats).reduce((sum, count) => sum + count, 0);
   };
@@ -56,14 +54,12 @@ const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
   const safeAttendance = {
     female_count: Math.max(0, attendance?.female_count || 0),
     male_count: Math.max(0, attendance?.male_count || 0),
-    non_binary_count: Math.max(0, attendance?.non_binary_count || 0),
   };
 
-  const totalAttendees = safeAttendance.female_count + safeAttendance.male_count + safeAttendance.non_binary_count;
+  const totalAttendees = safeAttendance.female_count + safeAttendance.male_count;
   const menInterventions = getTotalInterventions('man');
   const womenInterventions = getTotalInterventions('woman');
-  const nonBinaryInterventions = getTotalInterventions('non-binary');
-  const totalInterventions = menInterventions + womenInterventions + nonBinaryInterventions;
+  const totalInterventions = menInterventions + womenInterventions;
 
   const calculatePercentage = (interventions: number) => {
     if (totalInterventions === 0) return 0;
@@ -77,7 +73,7 @@ const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <StatsCard
           type="Intervencions de dones"
           count={womenInterventions}
@@ -91,13 +87,6 @@ const InterventionStats = ({ stats, attendance }: InterventionStatsProps) => {
           totalAttendees={safeAttendance.male_count}
           percentage={calculatePercentage(menInterventions)}
           interventionsPerAttendee={calculateInterventionsPerAttendee(menInterventions, safeAttendance.male_count)}
-        />
-        <StatsCard
-          type="Intervencions no binàries"
-          count={nonBinaryInterventions}
-          totalAttendees={safeAttendance.non_binary_count}
-          percentage={calculatePercentage(nonBinaryInterventions)}
-          interventionsPerAttendee={calculateInterventionsPerAttendee(nonBinaryInterventions, safeAttendance.non_binary_count)}
         />
       </div>
       

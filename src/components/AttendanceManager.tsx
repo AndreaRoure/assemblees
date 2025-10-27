@@ -57,10 +57,12 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
 
   // Calculate gender counts from actual attendees
   const genderCounts = React.useMemo(() => {
-    const counts = { dona: 0, home: 0, 'no-binari': 0 };
+    const counts = { dona: 0, home: 0 };
     asistencias.forEach((asistencia) => {
       if (asistencia.asistio && asistencia.socia) {
-        counts[asistencia.socia.genere]++;
+        if (asistencia.socia.genere === 'dona' || asistencia.socia.genere === 'home') {
+          counts[asistencia.socia.genere]++;
+        }
       }
     });
     return counts;
@@ -154,9 +156,6 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
               <Badge variant="secondary" className="gap-1">
                 <span className="text-xs">Homes:</span> {genderCounts.home}
               </Badge>
-              <Badge variant="secondary" className="gap-1">
-                <span className="text-xs">No binàries:</span> {genderCounts['no-binari']}
-              </Badge>
             </div>
             
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -203,7 +202,7 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
                                 {socia.nom} {socia.cognoms}
                               </p>
                               <p className="text-xs text-muted-foreground capitalize">
-                                {socia.genere === 'no-binari' ? 'No binàries' : socia.genere}
+                                {socia.genere}
                               </p>
                             </div>
                             <Button size="sm" variant="ghost">

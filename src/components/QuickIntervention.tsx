@@ -46,15 +46,13 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: { assemblyId: st
 
   const [counts, setCounts] = useState<Record<string, Record<string, number>>>({
     man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
-    woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
-    'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
+    woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
   });
 
   useEffect(() => {
     const newCounts = {
       man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
-      woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 },
-      'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
+      woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, explica: 0, ofensiva: 0 }
     };
 
     interventions.forEach(intervention => {
@@ -67,7 +65,7 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: { assemblyId: st
     setCounts(newCounts);
   }, [interventions]);
 
-  const handleIncrement = async (gender: 'man' | 'woman' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
+  const handleIncrement = async (gender: 'man' | 'woman', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     await addIntervention({
       assembly_id: assemblyId,
       gender,
@@ -76,14 +74,14 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: { assemblyId: st
     onInterventionAdded();
   };
 
-  const handleDecrement = async (gender: 'man' | 'woman' | 'non-binary', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
+  const handleDecrement = async (gender: 'man' | 'woman', type: 'intervencio' | 'dinamitza' | 'interrupcio' | 'llarga' | 'ofensiva' | 'explica') => {
     if (counts[gender][type] > 0) {
       await removeIntervention(assemblyId, type, gender);
       onInterventionAdded();
     }
   };
 
-  const renderInterventionCounters = (gender: 'man' | 'woman' | 'non-binary') => (
+  const renderInterventionCounters = (gender: 'man' | 'woman') => (
     <div className="space-y-2">
       {[
         'Dinamitza',
@@ -124,11 +122,6 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: { assemblyId: st
       <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
         <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">Home</h3>
         {renderInterventionCounters('man')}
-      </Card>
-
-      <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
-        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">No binari</h3>
-        {renderInterventionCounters('non-binary')}
       </Card>
     </div>
   );

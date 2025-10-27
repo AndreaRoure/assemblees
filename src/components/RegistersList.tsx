@@ -18,7 +18,6 @@ interface YearlyData {
   year: string;
   man: number;
   woman: number;
-  'non-binary': number;
   total: number;
 }
 
@@ -117,19 +116,18 @@ const RegistersList = () => {
   const genderTotals = useMemo(() => {
     const totals = {
       man: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0, total: 0 },
-      woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0, total: 0 },
-      'non-binary': { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0, total: 0 }
+      woman: { intervencio: 0, dinamitza: 0, interrupcio: 0, llarga: 0, ofensiva: 0, explica: 0, total: 0 }
     };
 
     interventions.forEach(i => {
-      totals[i.gender][i.type]++;
-      totals[i.gender].total++;
+      if (totals[i.gender]) {
+        totals[i.gender][i.type]++;
+        totals[i.gender].total++;
+      }
     });
 
     return Object.entries(totals).map(([gender, counts]) => ({
-      gender: gender === 'man' ? 'Homes' :
-             gender === 'woman' ? 'Dones' :
-             'No binàries',
+      gender: gender === 'man' ? 'Homes' : 'Dones',
       ...counts
     }));
   }, [interventions]);
@@ -142,7 +140,6 @@ const RegistersList = () => {
     const interventionsByGender = {
       man: interventions.filter(i => i.gender === 'man').length,
       woman: interventions.filter(i => i.gender === 'woman').length,
-      'non-binary': interventions.filter(i => i.gender === 'non-binary').length,
     };
     
     // Calculate percentages
@@ -150,7 +147,6 @@ const RegistersList = () => {
     const percentageByGender = {
       man: totalInterventions > 0 ? (interventionsByGender.man / totalInterventions) * 100 : 0,
       woman: totalInterventions > 0 ? (interventionsByGender.woman / totalInterventions) * 100 : 0,
-      'non-binary': totalInterventions > 0 ? (interventionsByGender["non-binary"] / totalInterventions) * 100 : 0,
     };
     
     // Calculate attendance percentage by gender
@@ -158,21 +154,21 @@ const RegistersList = () => {
     const attendanceByGender = {
       man: 0,
       woman: 0,
-      'non-binary': 0,
     };
     
     // Count attended assemblies per gender
     const attendedByGender = {
       man: new Set(),
       woman: new Set(),
-      'non-binary': new Set(),
     };
     
     asistencias.forEach(asistencia => {
       if (asistencia.asistio && asistencia.socia?.genere) {
         const genderKey = asistencia.socia.genere === 'home' ? 'man' : 
-                         asistencia.socia.genere === 'dona' ? 'woman' : 'non-binary';
-        attendedByGender[genderKey].add(asistencia.assembly_id);
+                         asistencia.socia.genere === 'dona' ? 'woman' : null;
+        if (genderKey) {
+          attendedByGender[genderKey].add(asistencia.assembly_id);
+        }
       }
     });
     
@@ -180,14 +176,12 @@ const RegistersList = () => {
     if (totalAssemblies > 0) {
       attendanceByGender.man = (attendedByGender.man.size / totalAssemblies) * 100;
       attendanceByGender.woman = (attendedByGender.woman.size / totalAssemblies) * 100;
-      attendanceByGender['non-binary'] = (attendedByGender['non-binary'].size / totalAssemblies) * 100;
     }
     
     // Prepare data for pie chart
     const pieChartData = [
       { name: 'Homes', value: interventionsByGender.man },
       { name: 'Dones', value: interventionsByGender.woman },
-      { name: 'No binàries', value: interventionsByGender["non-binary"] },
     ];
     
     return { 
@@ -210,7 +204,6 @@ const RegistersList = () => {
         year: year.toString(),
         man: 0,
         woman: 0,
-        'non-binary': 0,
         total: 0
       };
     });
@@ -218,7 +211,7 @@ const RegistersList = () => {
     // Count interventions by year and gender
     interventions.forEach(intervention => {
       const year = new Date(intervention.timestamp).getFullYear();
-      if (yearData[year]) {
+      if (yearData[year] && (intervention.gender === 'man' || intervention.gender === 'woman')) {
         yearData[year][intervention.gender]++;
         yearData[year].total++;
       }
@@ -318,8 +311,6 @@ const RegistersList = () => {
       doc.text(`Homes: ${attendanceSummary.interventionsByGender.man} (${attendanceSummary.percentageByGender.man.toFixed(1)}%)`, 30, yPosition);
       yPosition += 7;
       doc.text(`Dones: ${attendanceSummary.interventionsByGender.woman} (${attendanceSummary.percentageByGender.woman.toFixed(1)}%)`, 30, yPosition);
-      yPosition += 7;
-      doc.text(`No binàries: ${attendanceSummary.interventionsByGender['non-binary']} (${attendanceSummary.percentageByGender['non-binary'].toFixed(1)}%)`, 30, yPosition);
       yPosition += 15;
 
       // Intervention types by gender

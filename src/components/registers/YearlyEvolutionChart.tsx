@@ -7,7 +7,6 @@ interface YearlyData {
   year: string;
   man: number;
   woman: number;
-  'non-binary': number;
   total: number;
 }
 
@@ -69,16 +68,7 @@ const YearlyEvolutionChart = ({ data }: YearlyEvolutionChartProps) => {
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
             />
-            <Line 
-              type="monotone" 
-              dataKey="non-binary" 
-              name="No binàries" 
-              stroke="#D946EF" 
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-            <Line 
+            <Line
               type="monotone" 
               dataKey="total" 
               name="Total" 

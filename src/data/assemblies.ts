@@ -16,8 +16,6 @@ export const getAssemblyStats = async (assemblyId: string): Promise<AssemblyStat
   const genderStats = {
     man: createEmptyGenderStats(),
     woman: createEmptyGenderStats(),
-    trans: createEmptyGenderStats(),
-    'non-binary': createEmptyGenderStats(),
   };
 
   const typeStats = {

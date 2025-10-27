@@ -35,7 +35,6 @@ export interface AssemblyStats {
   byGender: {
     man: GenderStats;
     woman: GenderStats;
-    'non-binary': GenderStats;
   };
   byType: {
     intervencio: number;

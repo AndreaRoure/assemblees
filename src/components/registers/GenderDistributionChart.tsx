@@ -12,17 +12,14 @@ interface GenderDistributionChartProps {
   interventionsByGender: {
     man: number;
     woman: number;
-    'non-binary': number;
   };
   percentageByGender: {
     man: number;
     woman: number;
-    'non-binary': number;
   };
   attendanceByGender: {
     man: number;
     woman: number;
-    'non-binary': number;
   };
   totalInterventions: number;
 }
@@ -46,22 +43,13 @@ const GenderDistributionChart = ({ data, interventionsByGender, percentageByGend
       attendancePercentage: attendanceByGender.woman,
       color: 'bg-purple-500',
       emoji: '👩'
-    },
-    {
-      key: 'non-binary',
-      label: 'No binàries',
-      interventions: interventionsByGender["non-binary"],
-      interventionPercentage: percentageByGender["non-binary"],
-      attendancePercentage: attendanceByGender["non-binary"],
-      color: 'bg-fuchsia-500',
-      emoji: '🧑'
     }
   ];
 
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold px-2">Distribució per Gènere</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {genderData.map((gender) => (
           <Card key={gender.key} className="overflow-hidden">
             <CardContent className="p-4 space-y-3">
