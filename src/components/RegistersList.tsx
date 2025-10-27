@@ -2,7 +2,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchInterventions, fetchAssemblies, supabase } from '@/lib/supabase';
-import InterventionStats from './InterventionStats';
 import GenderChart from './registers/GenderChart';
 import FilterToolbar from './registers/FilterToolbar';
 import TotalAssembliesCard from './registers/TotalAssembliesCard';
@@ -361,24 +360,6 @@ const RegistersList = () => {
       />
 
       <div className="grid gap-8">
-        <div className="transform hover:scale-[1.01] transition-transform duration-200">
-          <InterventionStats 
-            stats={{
-              byGender: {
-                man: { intervencio: genderTotals[0].intervencio, dinamitza: genderTotals[0].dinamitza, interrupcio: genderTotals[0].interrupcio, llarga: genderTotals[0].llarga, ofensiva: genderTotals[0].ofensiva, explica: genderTotals[0].explica },
-                woman: { intervencio: genderTotals[1].intervencio, dinamitza: genderTotals[1].dinamitza, interrupcio: genderTotals[1].interrupcio, llarga: genderTotals[1].llarga, ofensiva: genderTotals[1].ofensiva, explica: genderTotals[1].explica },
-                'non-binary': { intervencio: genderTotals[2].intervencio, dinamitza: genderTotals[2].dinamitza, interrupcio: genderTotals[2].interrupcio, llarga: genderTotals[2].llarga, ofensiva: genderTotals[2].ofensiva, explica: genderTotals[2].explica },
-              },
-              totalInterventions: attendanceSummary.totalInterventions
-            }}
-            attendance={{
-              female_count: 10,
-              male_count: 10,
-              non_binary_count: 5
-            }}
-          />
-        </div>
-
         <div className="transform hover:scale-[1.01] transition-transform duration-200">
           <GenderChart data={genderTotals} />
         </div>
