@@ -176,7 +176,8 @@ const Index = () => {
   };
 
   return (
-    <div className="container p-4 md:py-6 mx-auto">
+    <div className="min-h-screen bg-[hsl(var(--lavender-bg))]">
+      <div className="container p-4 md:py-6 mx-auto">
       <div className="space-y-4 md:space-y-6">
         <div className="flex flex-col items-center relative">
           <div className="absolute top-0 right-0">
@@ -216,6 +217,7 @@ const Index = () => {
           />
         )}
       </div>
+    </div>
     </div>
   );
 };

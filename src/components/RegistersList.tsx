@@ -334,7 +334,7 @@ const RegistersList = () => {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in bg-[hsl(var(--lavender-bg))] p-6 rounded-lg">
       <FilterToolbar 
         selectedYear={selectedYear}
         years={years}
