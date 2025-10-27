@@ -33,7 +33,7 @@ const GenderDistributionChart = ({ data, interventionsByGender, percentageByGend
 
   return (
     <Card className="p-4 md:p-6">
-      <h3 className="text-lg font-semibold mb-4">Distribució d'Intervencions per Gènere</h3>
+      <h3 className="text-lg font-semibold mb-4">Distribució per Gènere</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="h-[250px]">
           <ResponsiveContainer width="100%" height="100%">
