@@ -346,8 +346,6 @@ const RegistersList = () => {
 
       <AveragesSection 
         averageTime={averages.averageTime}
-        averageMaleParticipation={averages.averageMaleParticipation}
-        averageFemaleParticipation={averages.averageFemaleParticipation}
         averageAttendance={averages.averageAttendance}
         averageAbsences={averages.averageAbsences}
       />
