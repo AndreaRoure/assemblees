@@ -26,7 +26,7 @@ const StatsCard = ({ type, count, totalAttendees, percentage, interventionsPerAt
           <span>{totalAttendees} assistents</span>
           <span>{interventionsPerAttendee.toFixed(1)} intervencions/persona</span>
         </div>
-        <Progress value={interventionsPerAttendee * 10} max={10} className="h-1.5" />
+        <Progress value={interventionsPerAttendee} max={10} className="h-1.5" />
       </div>
     </div>
   </Card>
@@ -123,7 +123,7 @@ const InterventionStats = ({ stats, assemblyId }: InterventionStatsProps) => {
                 <span>{(totalInterventions / totalAttendees).toFixed(1)}</span>
               </div>
               <Progress 
-                value={totalInterventions / totalAttendees * 10} 
+                value={totalInterventions / totalAttendees} 
                 max={10} 
                 className="h-2" 
               />
