@@ -68,20 +68,9 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
     return counts;
   }, [asistencias]);
 
-  // Get IDs of socias already added to this assembly (both present and absent)
+  // Get IDs of socias already added to this assembly
   const addedSociaIds = React.useMemo(() => 
     new Set(asistencias.map(a => a.socia_id)),
-    [asistencias]
-  );
-
-  // Separate attendees by status
-  const presentAttendees = React.useMemo(() => 
-    asistencias.filter(a => a.asistio === true),
-    [asistencias]
-  );
-
-  const absentAttendees = React.useMemo(() => 
-    asistencias.filter(a => a.asistio === false),
     [asistencias]
   );
 
@@ -115,43 +104,14 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
 
   const handleRemoveSocia = async (sociaId: string) => {
     try {
-      // Instead of deleting, mark as absent (asistio = false)
-      await upsertAsistencia(sociaId, assemblyId, false);
-      await refetchAsistencias();
-      queryClient.invalidateQueries({ queryKey: ['sociasWithStats'] });
-      queryClient.invalidateQueries({ queryKey: ['socias'] });
-      toast.success('Marcada com a falta');
-    } catch (error) {
-      console.error('Error marking absence:', error);
-      toast.error('Error marcant falta');
-    }
-  };
-
-  const handleToggleAttendance = async (sociaId: string, currentStatus: boolean) => {
-    try {
-      // Toggle between present and absent
-      await upsertAsistencia(sociaId, assemblyId, !currentStatus);
-      await refetchAsistencias();
-      queryClient.invalidateQueries({ queryKey: ['sociasWithStats'] });
-      queryClient.invalidateQueries({ queryKey: ['socias'] });
-      toast.success(!currentStatus ? 'Marcada com a present' : 'Marcada com a falta');
-    } catch (error) {
-      console.error('Error toggling attendance:', error);
-      toast.error('Error canviant estat');
-    }
-  };
-
-  const handleDeleteAttendance = async (sociaId: string) => {
-    try {
-      // Completely remove the attendance record
       await deleteAsistencia(sociaId, assemblyId);
       await refetchAsistencias();
       queryClient.invalidateQueries({ queryKey: ['sociasWithStats'] });
       queryClient.invalidateQueries({ queryKey: ['socias'] });
-      toast.success('Eliminada de la llista');
+      toast.success('Sòcia eliminada');
     } catch (error) {
-      console.error('Error deleting attendance:', error);
-      toast.error('Error eliminant');
+      console.error('Error removing socia:', error);
+      toast.error('Error eliminant sòcia');
     }
   };
 
@@ -279,135 +239,69 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
           
           <CollapsibleContent>
             <CardContent>
-              <div className="space-y-4">
-                {/* Present attendees section */}
-                {presentAttendees.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-semibold text-green-600 flex items-center gap-2">
-                      <UserCheck className="h-4 w-4" />
-                      Presents ({presentAttendees.length})
-                    </h3>
-                    {presentAttendees.map((asistencia) => {
-                      const socia = asistencia.socia;
-                      const isModerator = currentAssembly?.moderador_id === socia.id;
-                      const isSecretary = currentAssembly?.secretari_id === socia.id;
-
-                      return (
-                        <div
-                          key={asistencia.id}
-                          className="flex items-center justify-between p-3 border rounded-lg bg-green-50 hover:bg-green-100 transition-colors"
-                        >
-                          <div className="flex-1">
-                            <p className="font-medium">
-                              {socia.nom} {socia.cognoms}
-                            </p>
-                            <div className="flex gap-2 mt-1">
-                              {isModerator && (
-                                <Badge variant="outline" className="text-xs">
-                                  Modera
-                                </Badge>
-                              )}
-                              {isSecretary && (
-                                <Badge variant="outline" className="text-xs">
-                                  Acta
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant={isModerator ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => handleSetModerator(socia.id)}
-                              title="Assignar com a moderador/a"
-                            >
-                              Modera
-                            </Button>
-                            <Button
-                              variant={isSecretary ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => handleSetSecretary(socia.id)}
-                              title="Assignar com a secretari/ària"
-                            >
-                              Acta
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleToggleAttendance(socia.id, true)}
-                              title="Marcar com a falta"
-                              className="text-amber-600 hover:text-amber-700"
-                            >
-                              Falta
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteAttendance(socia.id)}
-                              className="text-destructive hover:text-destructive"
-                              title="Eliminar de la llista"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Absent attendees section */}
-                {absentAttendees.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-semibold text-amber-600 flex items-center gap-2">
-                      <X className="h-4 w-4" />
-                      Faltes ({absentAttendees.length})
-                    </h3>
-                    {absentAttendees.map((asistencia) => {
-                      const socia = asistencia.socia;
-
-                      return (
-                        <div
-                          key={asistencia.id}
-                          className="flex items-center justify-between p-3 border rounded-lg bg-amber-50 hover:bg-amber-100 transition-colors"
-                        >
-                          <div className="flex-1">
-                            <p className="font-medium text-muted-foreground">
-                              {socia.nom} {socia.cognoms}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleToggleAttendance(socia.id, false)}
-                              title="Marcar com a present"
-                              className="text-green-600 hover:text-green-700"
-                            >
-                              Present
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteAttendance(socia.id)}
-                              className="text-destructive hover:text-destructive"
-                              title="Eliminar de la llista"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {asistencias.length === 0 && (
+              <div className="space-y-2">
+                {asistencias.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-4">
                     No hi ha sòcies afegides encara
                   </p>
+                ) : (
+                  asistencias.map((asistencia) => {
+                    const socia = asistencia.socia;
+                    const isModerator = currentAssembly?.moderador_id === socia.id;
+                    const isSecretary = currentAssembly?.secretari_id === socia.id;
+
+                    return (
+                      <div
+                        key={asistencia.id}
+                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium">
+                            {socia.nom} {socia.cognoms}
+                          </p>
+                          <div className="flex gap-2 mt-1">
+                            {isModerator && (
+                              <Badge variant="outline" className="text-xs">
+                                Modera
+                              </Badge>
+                            )}
+                            {isSecretary && (
+                              <Badge variant="outline" className="text-xs">
+                                Acta
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant={isModerator ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleSetModerator(socia.id)}
+                            title="Assignar com a moderador/a"
+                          >
+                            Modera
+                          </Button>
+                          <Button
+                            variant={isSecretary ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleSetSecretary(socia.id)}
+                            title="Assignar com a secretari/ària"
+                          >
+                            Acta
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveSocia(socia.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </CardContent>
