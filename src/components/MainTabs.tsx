@@ -57,15 +57,11 @@ const MainTabs = ({
       </TabsContent>
 
       <TabsContent value="socias" className="animate-fade-in">
-        <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
-          <SociasList />
-        </ScrollArea>
+        <SociasList />
       </TabsContent>
 
       <TabsContent value="registers" className="animate-fade-in">
-        <ScrollArea className="h-[calc(100vh-200px)] md:h-[calc(100vh-250px)]">
-          <RegistersList />
-        </ScrollArea>
+        <RegistersList />
       </TabsContent>
     </Tabs>
   );

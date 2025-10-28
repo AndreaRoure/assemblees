@@ -133,22 +133,22 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[hsl(var(--lavender-bg))]">
-      <div className="container p-4 md:py-6 mx-auto">
-      <div className="space-y-4 md:space-y-6">
-        <div className="flex flex-col items-center relative">
-          <div className="absolute top-0 right-0">
+      <div className="container px-0 md:px-4 py-2 md:py-6 mx-auto">
+      <div className="space-y-3 md:space-y-6">
+        <div className="flex flex-col items-center relative px-4">
+          <div className="absolute top-0 right-2 md:right-0">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={handleSignOut}
               className="flex items-center gap-2"
             >
-              <LogOut className="h-4 w-4" />
-              Sortir
+              <LogOut className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden md:inline">Sortir</span>
             </Button>
           </div>
           <Logo />
-          <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+          <h1 className="text-lg md:text-2xl font-bold mb-3 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
             Observatori d&apos;Assemblees
           </h1>
         </div>

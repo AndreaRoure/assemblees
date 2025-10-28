@@ -304,23 +304,23 @@ export const SociasList: React.FC = () => {
 
   return (
     <div className="space-y-0 pb-20 md:pb-0">
-      {/* Sticky Header */}
+      {/* Header - Non-sticky on mobile */}
       <div className={cn(
-        "sticky top-0 z-10 bg-[hsl(var(--lavender-bg))]/95 backdrop-blur-sm border-b transition-all duration-300",
-        isScrolled ? "shadow-sm" : ""
+        "md:sticky md:top-0 z-10 bg-[hsl(var(--lavender-bg))]/95 md:backdrop-blur-sm md:border-b transition-all duration-300",
+        isScrolled && "md:shadow-sm"
       )}>
-        <div className="p-4 space-y-3">
+        <div className="p-2 md:p-4 space-y-2 md:space-y-3">
           {/* Title Row */}
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <h2 className={cn(
                 "font-bold transition-all duration-300",
-                isScrolled ? "text-lg md:text-2xl" : "text-2xl",
-                searchExpanded && "md:block hidden"
+                "text-xl md:text-2xl",
+                searchExpanded && "hidden md:block"
               )}>
                 Sòcies
               </h2>
-              <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
+              <span className="text-xs md:text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
                 {filteredSocias.length}
               </span>
             </div>
@@ -387,8 +387,8 @@ export const SociasList: React.FC = () => {
         </div>
       </div>
 
-      <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-280px)] md:h-[calc(100vh-330px)]">
-        <div className="p-4 space-y-4">
+      <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-200px)] md:h-[calc(100vh-330px)]">
+        <div className="px-2 md:px-4 py-3 md:py-4 space-y-3 md:space-y-4">
           {/* Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <Card>

@@ -52,26 +52,25 @@ const AssemblyList = ({ assemblies, onAssemblySelected, onAssemblyEdited, onAsse
 
   return (
     <div className="space-y-0 pb-20 md:pb-0">
-      {/* Sticky Header */}
+      {/* Header - Non-sticky on mobile */}
       <div className={cn(
-        "sticky top-0 z-10 bg-[hsl(var(--lavender-bg))]/95 backdrop-blur-sm border-b transition-all duration-300",
-        isScrolled ? "shadow-sm" : ""
+        "md:sticky md:top-0 z-10 bg-[hsl(var(--lavender-bg))]/95 md:backdrop-blur-sm md:border-b transition-all duration-300",
+        isScrolled && "md:shadow-sm"
       )}>
-        <div className="p-4 space-y-3">
-          {/* Title Row - Collapses on scroll for mobile */}
+        <div className="p-2 md:p-4 space-y-2 md:space-y-3">
+          {/* Title Row */}
           <div className={cn(
-            "flex justify-between items-center transition-all duration-300",
-            isScrolled && "md:mb-0"
+            "flex justify-between items-center transition-all duration-300"
           )}>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <h2 className={cn(
                 "font-bold transition-all duration-300",
-                isScrolled ? "text-lg md:text-2xl" : "text-2xl",
-                searchExpanded && "md:block hidden"
+                "text-xl md:text-2xl",
+                searchExpanded && "hidden md:block"
               )}>
                 Assemblees
               </h2>
-              <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
+              <span className="text-xs md:text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
                 {filteredAssemblies.length}
               </span>
             </div>
@@ -122,8 +121,8 @@ const AssemblyList = ({ assemblies, onAssemblySelected, onAssemblyEdited, onAsse
       </div>
 
       {/* Assembly List */}
-      <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-280px)] md:h-[calc(100vh-330px)]">
-        <div className="space-y-3 md:space-y-4 p-4 pr-6">
+      <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-200px)] md:h-[calc(100vh-330px)]">
+        <div className="space-y-3 md:space-y-4 px-2 md:px-4 py-3 md:py-4 md:pr-6">
           {filteredAssemblies.map((assembly) => (
             <AssemblyCard
               key={assembly.id}
