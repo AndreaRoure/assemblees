@@ -284,40 +284,60 @@ const RegistersList = () => {
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
-      let yPosition = 20;
+      let yPosition = 45;
 
       // Header with color
-      doc.setFillColor(147, 51, 234); // rgb(147, 51, 234)
-      doc.rect(0, 0, pageWidth, 40, 'F');
+      doc.setFillColor(147, 51, 234);
+      doc.rect(0, 0, pageWidth, 45, 'F');
 
-      // Add logo with mask color effect
-      const logoImg = new Image();
-      logoImg.crossOrigin = 'anonymous';
-      logoImg.src = logo;
-      
-      await new Promise<void>((resolve, reject) => {
-        logoImg.onload = () => resolve();
-        logoImg.onerror = () => reject(new Error('Failed to load logo'));
-      });
+      // Add logo with purple color
+      try {
+        const logoImg = new Image();
+        logoImg.crossOrigin = 'anonymous';
+        
+        await new Promise<void>((resolve, reject) => {
+          logoImg.onload = () => resolve();
+          logoImg.onerror = () => reject();
+          logoImg.src = logo;
+        });
 
-      // Create a canvas to apply the purple color to the logo
-      const canvas = document.createElement('canvas');
-      canvas.width = 100;
-      canvas.height = 100;
-      const ctx = canvas.getContext('2d');
-      
-      if (ctx) {
-        // Draw logo
-        ctx.drawImage(logoImg, 0, 0, 100, 100);
+        // Create canvas to apply purple color to logo
+        const canvas = document.createElement('canvas');
+        const targetWidth = 200;
+        const targetHeight = 70;
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        const ctx = canvas.getContext('2d');
         
-        // Apply purple color overlay
-        ctx.globalCompositeOperation = 'source-in';
-        ctx.fillStyle = 'rgb(147, 51, 234)';
-        ctx.fillRect(0, 0, 100, 100);
-        
-        // Add to PDF
-        const coloredLogo = canvas.toDataURL('image/png');
-        doc.addImage(coloredLogo, 'PNG', 15, 10, 25, 25);
+        if (ctx) {
+          // Draw white background
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, targetWidth, targetHeight);
+          
+          // Draw logo
+          ctx.drawImage(logoImg, 0, 0, targetWidth, targetHeight);
+          
+          // Get image data to create mask
+          const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
+          const data = imageData.data;
+          
+          // Apply purple color keeping alpha channel
+          for (let i = 0; i < data.length; i += 4) {
+            if (data[i + 3] > 0) { // If pixel is not transparent
+              data[i] = 147;     // R
+              data[i + 1] = 51;  // G
+              data[i + 2] = 234; // B
+            }
+          }
+          
+          ctx.putImageData(imageData, 0, 0);
+          
+          // Add colored logo to PDF
+          const coloredLogo = canvas.toDataURL('image/png');
+          doc.addImage(coloredLogo, 'PNG', 15, 8, 30, 10);
+        }
+      } catch (error) {
+        console.error('Error loading logo:', error);
       }
       
       // Title
