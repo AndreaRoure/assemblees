@@ -60,7 +60,7 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
         comissions: socia.comissions || [],
         assemblies_attended: attendedCount,
         assemblies_missed: missedCount,
-        total_assemblies: attendance.length,
+        total_assemblies: assemblies.length, // Total de asambleas que existen
         moderations,
         secretary_records: secretaryRecords
       };
