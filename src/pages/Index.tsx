@@ -132,7 +132,7 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--lavender-bg))]">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-purple-50 to-pink-50">
       <div className="container px-0 md:px-4 py-2 md:py-6 mx-auto">
       <div className="space-y-3 md:space-y-6">
         <div className="flex flex-col items-center relative px-4">
