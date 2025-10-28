@@ -48,7 +48,8 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
     const sociasWithStats: SociaWithStats[] = socias.map(socia => {
       const attendance = asistencias.filter(a => a.socia_id === socia.id);
       const attendedCount = attendance.filter(a => a.asistio).length;
-      const missedCount = attendance.filter(a => !a.asistio).length;
+      // Faltas = Total de asambleas - Asambleas asistidas
+      const missedCount = assemblies.length - attendedCount;
       
       const moderations = assemblies.filter(a => a.moderador_id === socia.id).length;
       const secretaryRecords = assemblies.filter(a => a.secretari_id === socia.id).length;
