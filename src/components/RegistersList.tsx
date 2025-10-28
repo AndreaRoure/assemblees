@@ -12,7 +12,9 @@ import YearSelect from './registers/YearSelect';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { useToast } from '@/hooks/use-toast';
+import logo from '@/assets/logo.png';
 
 interface YearlyData {
   year: string;
@@ -272,52 +274,171 @@ const RegistersList = () => {
     };
   }, [assemblies, interventions, asistencias]);
 
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     try {
+      toast({
+        title: "Generant PDF...",
+        description: "Això pot trigar uns segons",
+      });
+
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
       let yPosition = 20;
 
+      // Add logo
+      const logoImg = new Image();
+      logoImg.src = logo;
+      await new Promise((resolve) => {
+        logoImg.onload = resolve;
+      });
+      doc.addImage(logoImg, 'PNG', 15, 10, 25, 25);
+
+      // Header with color
+      doc.setFillColor(147, 51, 234); // rgb(147, 51, 234)
+      doc.rect(0, 0, pageWidth, 40, 'F');
+      
       // Title
-      doc.setFontSize(18);
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(20);
       doc.setFont('helvetica', 'bold');
-      doc.text('Observatori d\'Assemblees - Registres', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 15;
+      doc.text('Observatori d\'Assemblees', pageWidth / 2, 25, { align: 'center' });
+      doc.setFontSize(14);
+      doc.text('Registres d\'Intervencions', pageWidth / 2, 33, { align: 'center' });
+      
+      yPosition = 50;
+      doc.setTextColor(0, 0, 0);
 
-      // Filter info
-      doc.setFontSize(12);
+      // Filter info box
+      doc.setFillColor(240, 240, 255);
+      doc.rect(15, yPosition, pageWidth - 30, 12, 'F');
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
-      const filterText = selectedYear === 'all' ? 'Tots els anys' : `Any: ${selectedYear}`;
-      doc.text(filterText, 20, yPosition);
-      yPosition += 10;
+      const filterText = selectedYear === 'all' ? 'Període: Tots els anys' : `Període: Any ${selectedYear}`;
+      doc.text(filterText, 20, yPosition + 8);
+      yPosition += 20;
 
-      // Total assemblies
+      // Summary section
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
-      doc.text(`Total Assemblees: ${attendanceSummary.assemblyCount}`, 20, yPosition);
-      yPosition += 10;
-
-      // Total interventions
-      doc.text(`Total Intervencions: ${attendanceSummary.totalInterventions}`, 20, yPosition);
-      yPosition += 15;
-
-      // Gender distribution
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Distribució per Gènere:', 20, yPosition);
+      doc.setTextColor(147, 51, 234);
+      doc.text('Resum Global', 15, yPosition);
       yPosition += 8;
       
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(11);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Homes: ${attendanceSummary.interventionsByGender.man} (${attendanceSummary.percentageByGender.man.toFixed(1)}%)`, 30, yPosition);
+      doc.text(`Total Assemblees: ${attendanceSummary.assemblyCount}`, 20, yPosition);
       yPosition += 7;
-      doc.text(`Dones: ${attendanceSummary.interventionsByGender.woman} (${attendanceSummary.percentageByGender.woman.toFixed(1)}%)`, 30, yPosition);
+      doc.text(`Total Intervencions: ${attendanceSummary.totalInterventions}`, 20, yPosition);
+      yPosition += 7;
+      doc.text(`Temps mitjà per assemblea: ${averages.averageTime}`, 20, yPosition);
+      yPosition += 7;
+      doc.text(`Assistència mitjana: ${averages.averageAttendance.toFixed(1)} persones`, 20, yPosition);
+      yPosition += 12;
+
+      // Gender distribution section
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(147, 51, 234);
+      doc.text('Distribució per Gènere', 15, yPosition);
+      yPosition += 8;
+      
+      // Draw bars for gender distribution
+      const barHeight = 20;
+      const maxBarWidth = pageWidth - 110;
+      const totalInterventions = attendanceSummary.totalInterventions;
+      
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Homes:', 20, yPosition);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${attendanceSummary.interventionsByGender.man} (${attendanceSummary.percentageByGender.man.toFixed(1)}%)`, 45, yPosition);
+      
+      // Male bar
+      const maleBarWidth = totalInterventions > 0 ? (attendanceSummary.interventionsByGender.man / totalInterventions) * maxBarWidth : 0;
+      doc.setFillColor(59, 130, 246); // blue
+      doc.rect(85, yPosition - 5, maleBarWidth, 8, 'F');
+      yPosition += 10;
+      
+      doc.setFont('helvetica', 'bold');
+      doc.text('Dones:', 20, yPosition);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${attendanceSummary.interventionsByGender.woman} (${attendanceSummary.percentageByGender.woman.toFixed(1)}%)`, 45, yPosition);
+      
+      // Female bar
+      const femaleBarWidth = totalInterventions > 0 ? (attendanceSummary.interventionsByGender.woman / totalInterventions) * maxBarWidth : 0;
+      doc.setFillColor(236, 72, 153); // pink
+      doc.rect(85, yPosition - 5, femaleBarWidth, 8, 'F');
       yPosition += 15;
 
-      // Intervention types by gender
-      doc.setFontSize(12);
+      // Participation percentages
+      doc.setFontSize(11);
+      doc.text(`Participació masculina mitjana: ${averages.averageMaleParticipation.toFixed(1)}%`, 20, yPosition);
+      yPosition += 7;
+      doc.text(`Participació femenina mitjana: ${averages.averageFemaleParticipation.toFixed(1)}%`, 20, yPosition);
+      yPosition += 15;
+
+      // Add new page for charts
+      doc.addPage();
+      yPosition = 20;
+      
+      doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
-      doc.text('Tipus d\'Intervencions per Gènere:', 20, yPosition);
+      doc.setTextColor(147, 51, 234);
+      doc.text('Gràfics i Estadístiques', 15, yPosition);
       yPosition += 10;
+
+      // Capture gender chart
+      const genderChartElement = document.querySelector('[data-chart="gender"]');
+      if (genderChartElement) {
+        const canvas = await html2canvas(genderChartElement as HTMLElement, {
+          scale: 2,
+          backgroundColor: '#ffffff'
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - 30;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        if (yPosition + imgHeight > pageHeight - 20) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        
+        doc.addImage(imgData, 'PNG', 15, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 10;
+      }
+
+      // Capture yearly evolution chart
+      const yearlyChartElement = document.querySelector('[data-chart="yearly"]');
+      if (yearlyChartElement && yPosition < pageHeight - 40) {
+        if (yPosition + 80 > pageHeight) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        
+        const canvas = await html2canvas(yearlyChartElement as HTMLElement, {
+          scale: 2,
+          backgroundColor: '#ffffff'
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - 30;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        doc.addImage(imgData, 'PNG', 15, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 10;
+      }
+
+      // Add new page for detailed intervention types
+      doc.addPage();
+      yPosition = 20;
+      
+      doc.setTextColor(147, 51, 234);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Tipus d\'Intervencions per Gènere', 15, yPosition);
+      yPosition += 12;
 
       const types = [
         { key: 'intervencio', label: 'Intervenció' },
@@ -328,31 +449,42 @@ const RegistersList = () => {
         { key: 'explica', label: 'Explica' }
       ];
 
-      genderTotals.forEach((genderData, index) => {
-        if (yPosition > 250) {
+      doc.setTextColor(0, 0, 0);
+      genderTotals.forEach((genderData) => {
+        if (yPosition > pageHeight - 60) {
           doc.addPage();
           yPosition = 20;
         }
         
+        doc.setFillColor(240, 240, 255);
+        doc.rect(15, yPosition - 3, pageWidth - 30, 8, 'F');
+        doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        doc.text(`${genderData.gender}:`, 25, yPosition);
-        yPosition += 7;
+        doc.text(`${genderData.gender}:`, 20, yPosition + 3);
+        yPosition += 12;
         
+        doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
         types.forEach(type => {
-          doc.text(`  ${type.label}: ${genderData[type.key as keyof typeof genderData]}`, 30, yPosition);
+          const value = genderData[type.key as keyof typeof genderData];
+          doc.text(`${type.label}: ${value}`, 25, yPosition);
           yPosition += 6;
         });
-        yPosition += 5;
+        yPosition += 8;
       });
+
+      // Footer on last page
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(`Generat el ${new Date().toLocaleDateString('ca-ES', { day: 'numeric', month: 'long', year: 'numeric' })}`, 15, pageHeight - 10);
 
       // Save the PDF
       const fileName = `registres_${selectedYear === 'all' ? 'tots' : selectedYear}_${new Date().toISOString().split('T')[0]}.pdf`;
       doc.save(fileName);
 
       toast({
-        title: "PDF generat",
-        description: "El fitxer s'ha descarregat correctament",
+        title: "PDF generat correctament",
+        description: "El fitxer s'ha descarregat amb èxit",
       });
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -456,11 +588,13 @@ const RegistersList = () => {
       />
 
       <div className="grid gap-8">
-        <div className="transform hover:scale-[1.01] transition-transform duration-200">
+        <div className="transform hover:scale-[1.01] transition-transform duration-200" data-chart="gender">
           <GenderChart data={genderTotals} />
         </div>
 
-        <YearlyEvolutionChart data={yearlyEvolutionData} />
+        <div data-chart="yearly">
+          <YearlyEvolutionChart data={yearlyEvolutionData} />
+        </div>
       </div>
     </div>
     </div>
