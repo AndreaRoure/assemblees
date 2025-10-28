@@ -20,7 +20,7 @@ export const getTotalSociasCount = async (): Promise<number> => {
   return count || 0;
 };
 
-export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
+export const fetchSociasWithStats = async (year?: string): Promise<SociaWithStats[]> => {
   try {
     // Get all socias
     const { data: socias, error: sociasError } = await supabase
@@ -31,16 +31,26 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
     if (sociasError) throw sociasError;
 
     // Get all assemblies
-    const { data: assemblies, error: assembliesError } = await supabase
+    let assembliesQuery = supabase
       .from('assemblies')
       .select('*');
 
+    const { data: allAssemblies, error: assembliesError } = await assembliesQuery;
     if (assembliesError) throw assembliesError;
 
-    // Get all asistencias (attendance records)
+    // Filter assemblies by year if specified
+    const assemblies = year && year !== 'all' 
+      ? allAssemblies.filter(a => new Date(a.date).getFullYear().toString() === year)
+      : allAssemblies;
+
+    // Get assembly IDs for filtered assemblies
+    const assemblyIds = assemblies.map(a => a.id);
+
+    // Get asistencias only for filtered assemblies
     const { data: asistencias, error: asistenciasError } = await supabase
       .from('asistencias')
-      .select('*');
+      .select('*')
+      .in('assembly_id', assemblyIds.length > 0 ? assemblyIds : ['']);
 
     if (asistenciasError) throw asistenciasError;
 
@@ -48,7 +58,7 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
     const sociasWithStats: SociaWithStats[] = socias.map(socia => {
       const attendance = asistencias.filter(a => a.socia_id === socia.id);
       const attendedCount = attendance.filter(a => a.asistio).length;
-      // Faltas = Total de asambleas - Asambleas asistidas
+      // Faltas = Total de asambleas (filtradas) - Asambleas asistidas
       const missedCount = assemblies.length - attendedCount;
       
       const moderations = assemblies.filter(a => a.moderador_id === socia.id).length;
@@ -61,7 +71,7 @@ export const fetchSociasWithStats = async (): Promise<SociaWithStats[]> => {
         comissions: socia.comissions || [],
         assemblies_attended: attendedCount,
         assemblies_missed: missedCount,
-        total_assemblies: assemblies.length, // Total de asambleas que existen
+        total_assemblies: assemblies.length, // Total de asambleas filtradas
         moderations,
         secretary_records: secretaryRecords
       };

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, Search, X } from 'lucide-react';
 import AssemblyCard from '@/components/AssemblyCard';
 import NewAssemblyDialog from '@/components/NewAssemblyDialog';
+import YearSelect from '@/components/registers/YearSelect';
 import { cn } from '@/lib/utils';
 
 interface AssemblyListProps {
@@ -20,18 +21,39 @@ const AssemblyList = ({ assemblies, onAssemblySelected, onAssemblyEdited, onAsse
   const [showNewDialog, setShowNewDialog] = React.useState(false);
   const [searchExpanded, setSearchExpanded] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [selectedYear, setSelectedYear] = React.useState<string>('all');
   const [isScrolled, setIsScrolled] = React.useState(false);
   const scrollAreaRef = React.useRef<HTMLDivElement>(null);
 
+  const years = React.useMemo(() => {
+    const uniqueYears = [...new Set(assemblies.map(a => 
+      new Date(a.date).getFullYear()
+    ))].sort((a, b) => b - a);
+    return uniqueYears;
+  }, [assemblies]);
+
   const filteredAssemblies = React.useMemo(() => {
-    if (!searchQuery.trim()) return assemblies;
+    let filtered = assemblies;
     
-    const query = searchQuery.toLowerCase();
-    return assemblies.filter(assembly => 
-      assembly.name.toLowerCase().includes(query) ||
-      assembly.description?.toLowerCase().includes(query)
-    );
-  }, [assemblies, searchQuery]);
+    // Filter by year
+    if (selectedYear !== 'all') {
+      filtered = filtered.filter(assembly => {
+        const year = new Date(assembly.date).getFullYear();
+        return year.toString() === selectedYear;
+      });
+    }
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(assembly => 
+        assembly.name.toLowerCase().includes(query) ||
+        assembly.description?.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  }, [assemblies, selectedYear, searchQuery]);
 
   React.useEffect(() => {
     const handleScroll = (e: Event) => {
@@ -80,42 +102,49 @@ const AssemblyList = ({ assemblies, onAssemblySelected, onAssemblyEdited, onAsse
             </Button>
           </div>
 
-          {/* Search Bar */}
-          <div className={cn(
-            "flex items-center gap-2 transition-all duration-300",
-            searchExpanded ? "w-full" : "w-auto"
-          )}>
-            {!searchExpanded ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSearchExpanded(true)}
-                className="gap-2"
-              >
-                <Search className="h-4 w-4" />
-                <span className="hidden md:inline">Cercar</span>
-              </Button>
-            ) : (
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Cercar per nom o descripció..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-9"
-                  autoFocus
-                />
+          {/* Year Filter and Search Bar */}
+          <div className="flex flex-col md:flex-row gap-2 md:items-center">
+            <YearSelect 
+              value={selectedYear}
+              years={years}
+              onValueChange={setSelectedYear}
+            />
+            <div className={cn(
+              "flex items-center gap-2 transition-all duration-300 flex-1",
+              searchExpanded ? "w-full" : "w-auto"
+            )}>
+              {!searchExpanded ? (
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  onClick={handleClearSearch}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                  onClick={() => setSearchExpanded(true)}
+                  className="gap-2"
                 >
-                  <X className="h-4 w-4" />
+                  <Search className="h-4 w-4" />
+                  <span className="hidden md:inline">Cercar</span>
                 </Button>
-              </div>
-            )}
+              ) : (
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Cercar per nom o descripció..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 pr-9"
+                    autoFocus
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearSearch}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,8 +11,10 @@ import { fetchSociasWithStats, addSocia } from '@/lib/supabase-socias';
 import { SociaWithStats } from '@/types/socias';
 import { NewSociaDialog } from './NewSociaDialog';
 import { EditSociaDialog } from './EditSociaDialog';
+import YearSelect from '@/components/registers/YearSelect';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 export const SociasList: React.FC = () => {
   const [socias, setSocias] = useState<SociaWithStats[]>([]);
@@ -21,6 +23,7 @@ export const SociasList: React.FC = () => {
   const [editingSocia, setEditingSocia] = useState<SociaWithStats | null>(null);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedYear, setSelectedYear] = useState<string>('all');
   const [isScrolled, setIsScrolled] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29,7 +32,7 @@ export const SociasList: React.FC = () => {
   const loadSocias = async () => {
     try {
       setLoading(true);
-      const data = await fetchSociasWithStats();
+      const data = await fetchSociasWithStats(selectedYear);
       setSocias(data);
     } catch (error) {
       console.error('Error loading socias:', error);
@@ -45,6 +48,24 @@ export const SociasList: React.FC = () => {
 
   useEffect(() => {
     loadSocias();
+  }, [selectedYear]);
+
+  // Get available years from assemblies
+  const [years, setYears] = useState<number[]>([]);
+  useEffect(() => {
+    const fetchYears = async () => {
+      const { data: assemblies } = await supabase
+        .from('assemblies')
+        .select('date');
+      
+      if (assemblies) {
+        const uniqueYears = [...new Set(assemblies.map(a => 
+          new Date(a.date).getFullYear()
+        ))].sort((a, b) => b - a);
+        setYears(uniqueYears);
+      }
+    };
+    fetchYears();
   }, []);
 
   const filteredSocias = React.useMemo(() => {
@@ -347,42 +368,49 @@ export const SociasList: React.FC = () => {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className={cn(
-            "flex items-center gap-2 transition-all duration-300",
-            searchExpanded ? "w-full" : "w-auto"
-          )}>
-            {!searchExpanded ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSearchExpanded(true)}
-                className="gap-2"
-              >
-                <Search className="h-4 w-4" />
-                <span className="hidden md:inline">Cercar</span>
-              </Button>
-            ) : (
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Cercar per nom, cognoms o comissions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-9"
-                  autoFocus
-                />
+          {/* Year Filter and Search Bar */}
+          <div className="flex flex-col md:flex-row gap-2 md:items-center">
+            <YearSelect 
+              value={selectedYear}
+              years={years}
+              onValueChange={setSelectedYear}
+            />
+            <div className={cn(
+              "flex items-center gap-2 transition-all duration-300 flex-1",
+              searchExpanded ? "w-full" : "w-auto"
+            )}>
+              {!searchExpanded ? (
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  onClick={handleClearSearch}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                  onClick={() => setSearchExpanded(true)}
+                  className="gap-2"
                 >
-                  <X className="h-4 w-4" />
+                  <Search className="h-4 w-4" />
+                  <span className="hidden md:inline">Cercar</span>
                 </Button>
-              </div>
-            )}
+              ) : (
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Cercar per nom, cognoms o comissions..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 pr-9"
+                    autoFocus
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearSearch}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
