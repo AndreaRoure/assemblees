@@ -247,23 +247,30 @@ const RegistersList = () => {
     const avgFemaleParticipation = totalInterventions > 0 ? (femaleInterventions / totalInterventions) * 100 : 0;
 
     // Calculate average attendance and absences per assembly
-    const attendanceByAssembly: Record<string, { attended: number; absent: number }> = {};
+    // Faltas = Total socias - Socias que asistieron
+    const totalSocias = socias.length;
+    const attendanceByAssembly: Record<string, number> = {};
+    
+    // Count attended per assembly
     asistencias.forEach(a => {
-      if (!attendanceByAssembly[a.assembly_id]) {
-        attendanceByAssembly[a.assembly_id] = { attended: 0, absent: 0 };
-      }
       if (a.asistio) {
-        attendanceByAssembly[a.assembly_id].attended++;
-      } else {
-        attendanceByAssembly[a.assembly_id].absent++;
+        attendanceByAssembly[a.assembly_id] = (attendanceByAssembly[a.assembly_id] || 0) + 1;
       }
     });
 
-    const assemblyIds = Object.keys(attendanceByAssembly);
-    const totalAttended = assemblyIds.reduce((sum, id) => sum + attendanceByAssembly[id].attended, 0);
-    const totalAbsent = assemblyIds.reduce((sum, id) => sum + attendanceByAssembly[id].absent, 0);
-    const avgAttendance = assemblyIds.length > 0 ? totalAttended / assemblyIds.length : 0;
-    const avgAbsences = assemblyIds.length > 0 ? totalAbsent / assemblyIds.length : 0;
+    // Calculate averages
+    let totalAttended = 0;
+    let totalAbsent = 0;
+    
+    assemblies.forEach(assembly => {
+      const attended = attendanceByAssembly[assembly.id] || 0;
+      const absent = totalSocias - attended;
+      totalAttended += attended;
+      totalAbsent += absent;
+    });
+    
+    const avgAttendance = assemblies.length > 0 ? totalAttended / assemblies.length : 0;
+    const avgAbsences = assemblies.length > 0 ? totalAbsent / assemblies.length : 0;
 
     return {
       averageTime,
