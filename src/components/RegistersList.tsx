@@ -286,17 +286,39 @@ const RegistersList = () => {
       const pageHeight = doc.internal.pageSize.getHeight();
       let yPosition = 20;
 
-      // Add logo
-      const logoImg = new Image();
-      logoImg.src = logo;
-      await new Promise((resolve) => {
-        logoImg.onload = resolve;
-      });
-      doc.addImage(logoImg, 'PNG', 15, 10, 25, 25);
-
       // Header with color
       doc.setFillColor(147, 51, 234); // rgb(147, 51, 234)
       doc.rect(0, 0, pageWidth, 40, 'F');
+
+      // Add logo with mask color effect
+      const logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+      logoImg.src = logo;
+      
+      await new Promise<void>((resolve, reject) => {
+        logoImg.onload = () => resolve();
+        logoImg.onerror = () => reject(new Error('Failed to load logo'));
+      });
+
+      // Create a canvas to apply the purple color to the logo
+      const canvas = document.createElement('canvas');
+      canvas.width = 100;
+      canvas.height = 100;
+      const ctx = canvas.getContext('2d');
+      
+      if (ctx) {
+        // Draw logo
+        ctx.drawImage(logoImg, 0, 0, 100, 100);
+        
+        // Apply purple color overlay
+        ctx.globalCompositeOperation = 'source-in';
+        ctx.fillStyle = 'rgb(147, 51, 234)';
+        ctx.fillRect(0, 0, 100, 100);
+        
+        // Add to PDF
+        const coloredLogo = canvas.toDataURL('image/png');
+        doc.addImage(coloredLogo, 'PNG', 15, 10, 25, 25);
+      }
       
       // Title
       doc.setTextColor(255, 255, 255);
