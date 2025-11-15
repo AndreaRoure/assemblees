@@ -1,6 +1,5 @@
-
 import { Assembly, Intervention, AssemblyStats } from '@/types';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 // Initialize empty stats object
 const createEmptyGenderStats = () => ({

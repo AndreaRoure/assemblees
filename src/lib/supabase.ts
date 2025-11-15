@@ -1,11 +1,7 @@
-
-import { createClient } from '@supabase/supabase-js';
 import { Assembly, Intervention } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
 
-const supabaseUrl = 'https://ivtmizupnvaluhccszqp.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2dG1penVwbnZhbHVoY2NzenFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1NDM4MDQsImV4cCI6MjA1NTExOTgwNH0.KRFIGcyXZOtUiedJdKdA5ddCS0rtZ6WQLyTxl9AZWnI';
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export { supabase };
 
 export const fetchAssemblies = async () => {
   const { data, error } = await supabase
