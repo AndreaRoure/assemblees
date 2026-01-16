@@ -115,12 +115,12 @@ const QuickIntervention = ({ assemblyId, onInterventionAdded }: { assemblyId: st
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
-        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">Dona</h3>
+        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-600">Dona</h3>
         {renderInterventionCounters('woman')}
       </Card>
       
       <Card className="p-4 space-y-3 animate-fade-in bg-gradient-to-br from-white to-gray-50">
-        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">Home</h3>
+        <h3 className="text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-600">Home</h3>
         {renderInterventionCounters('man')}
       </Card>
     </div>

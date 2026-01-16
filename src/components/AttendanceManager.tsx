@@ -150,10 +150,10 @@ const AttendanceManager = ({ assemblyId }: AttendanceManagerProps) => {
                 <Users className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">Assistents:</span>
               </div>
-              <Badge variant="secondary" className="gap-1">
+              <Badge variant="secondary" className="gap-1 bg-green-100 text-green-800">
                 <span className="text-xs">Dones:</span> {genderCounts.dona}
               </Badge>
-              <Badge variant="secondary" className="gap-1">
+              <Badge variant="secondary" className="gap-1 bg-blue-100 text-blue-800">
                 <span className="text-xs">Homes:</span> {genderCounts.home}
               </Badge>
             </div>
