@@ -14,7 +14,7 @@ import { Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from '@/hooks/use-toast';
-import logo from '@/assets/logo.png';
+import observatoriLogo from '@/assets/observatori-logo.png';
 
 interface YearlyData {
   year: string;
@@ -297,7 +297,7 @@ const RegistersList = () => {
       doc.setFillColor(147, 51, 234);
       doc.rect(0, 0, pageWidth, 45, 'F');
 
-      // Add logo with purple color
+      // Add logo in white color for the purple header
       try {
         const logoImg = new Image();
         logoImg.crossOrigin = 'anonymous';
@@ -305,43 +305,35 @@ const RegistersList = () => {
         await new Promise<void>((resolve, reject) => {
           logoImg.onload = () => resolve();
           logoImg.onerror = () => reject();
-          logoImg.src = logo;
+          logoImg.src = observatoriLogo;
         });
 
-        // Create canvas to apply purple color to logo
         const canvas = document.createElement('canvas');
-        const targetWidth = 200;
-        const targetHeight = 70;
+        const targetWidth = 100;
+        const targetHeight = 100;
         canvas.width = targetWidth;
         canvas.height = targetHeight;
         const ctx = canvas.getContext('2d');
         
         if (ctx) {
-          // Draw white background
-          ctx.fillStyle = 'white';
-          ctx.fillRect(0, 0, targetWidth, targetHeight);
-          
-          // Draw logo
+          // Draw the logo
           ctx.drawImage(logoImg, 0, 0, targetWidth, targetHeight);
           
-          // Get image data to create mask
           const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
           const data = imageData.data;
           
-          // Apply purple color keeping alpha channel
+          // Apply white color to non-transparent pixels
           for (let i = 0; i < data.length; i += 4) {
-            if (data[i + 3] > 0) { // If pixel is not transparent
-              data[i] = 147;     // R
-              data[i + 1] = 51;  // G
-              data[i + 2] = 234; // B
+            if (data[i + 3] > 50) { // If pixel is not transparent
+              data[i] = 255;     // R - white
+              data[i + 1] = 255; // G
+              data[i + 2] = 255; // B
             }
           }
           
           ctx.putImageData(imageData, 0, 0);
-          
-          // Add colored logo to PDF
           const coloredLogo = canvas.toDataURL('image/png');
-          doc.addImage(coloredLogo, 'PNG', 15, 8, 30, 10);
+          doc.addImage(coloredLogo, 'PNG', 12, 8, 20, 20);
         }
       } catch (error) {
         console.error('Error loading logo:', error);
