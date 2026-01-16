@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Users, Calendar, UserCheck, FileText, Download, Upload, Search, X } from 'lucide-react';
 import { Pencil } from 'lucide-react';
@@ -24,10 +23,8 @@ export const SociasList: React.FC = () => {
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedYear, setSelectedYear] = useState<string>('all');
-  const [isScrolled, setIsScrolled] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const loadSocias = async () => {
     try {
@@ -91,18 +88,6 @@ export const SociasList: React.FC = () => {
       socia.comissions?.some(c => getCommissionLabel(c).toLowerCase().includes(query))
     );
   }, [socias, searchQuery]);
-
-  useEffect(() => {
-    const handleScroll = (e: Event) => {
-      const target = e.target as HTMLElement;
-      setIsScrolled(target.scrollTop > 20);
-    };
-
-    const scrollElement = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
-    scrollElement?.addEventListener('scroll', handleScroll);
-
-    return () => scrollElement?.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleClearSearch = () => {
     setSearchQuery('');
@@ -326,11 +311,8 @@ export const SociasList: React.FC = () => {
 
   return (
     <div className="space-y-0 pb-20 md:pb-0">
-      {/* Header - Non-sticky on mobile */}
-      <div className={cn(
-        "md:sticky md:top-0 z-10 bg-[hsl(var(--lavender-bg))]/95 md:backdrop-blur-sm md:border-b transition-all duration-300",
-        isScrolled && "md:shadow-sm"
-      )}>
+      {/* Header */}
+      <div className="bg-[hsl(var(--lavender-bg))]">
         <div className="p-2 md:p-4 space-y-2 md:space-y-3">
           {/* Title Row */}
           <div className="flex justify-between items-center">
@@ -416,8 +398,8 @@ export const SociasList: React.FC = () => {
         </div>
       </div>
 
-      <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-200px)] md:h-[calc(100vh-330px)]">
-        <div className="px-2 md:px-4 py-3 md:py-4 space-y-3 md:space-y-4">
+      {/* Content - Native scroll */}
+      <div className="px-2 md:px-4 py-3 md:py-4 space-y-3 md:space-y-4">
           {/* Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <Card>
@@ -651,8 +633,6 @@ export const SociasList: React.FC = () => {
         </CardContent>
       </Card>
     </div>
-  </ScrollArea>
-
       {/* FAB for mobile */}
       <div className="md:hidden fixed bottom-6 right-6 flex gap-2 z-50">
         <button
