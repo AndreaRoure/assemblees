@@ -32,7 +32,7 @@ const GenderDistributionChart = ({ data, interventionsByGender, percentageByGend
       interventions: interventionsByGender.man,
       interventionPercentage: percentageByGender.man,
       attendancePercentage: attendanceByGender.man,
-      color: 'bg-sky-500',
+      color: 'bg-blue-500',
       emoji: '👨'
     },
     {
@@ -41,7 +41,7 @@ const GenderDistributionChart = ({ data, interventionsByGender, percentageByGend
       interventions: interventionsByGender.woman,
       interventionPercentage: percentageByGender.woman,
       attendancePercentage: attendanceByGender.woman,
-      color: 'bg-purple-500',
+      color: 'bg-green-500',
       emoji: '👩'
     }
   ];

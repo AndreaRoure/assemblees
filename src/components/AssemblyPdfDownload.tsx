@@ -178,7 +178,7 @@ const AssemblyPdfDownload = ({ assemblyId, stats }: AssemblyPdfDownloadProps) =>
     doc.text(`${attendanceCounts.dona} (${femalePercent}%)`, 45, yPosition);
     
     const femaleBarWidth = totalAttendees > 0 ? (attendanceCounts.dona / totalAttendees) * maxBarWidth : 0;
-    doc.setFillColor(236, 72, 153); // pink
+    doc.setFillColor(34, 197, 94); // green for women
     doc.rect(85, yPosition - 5, femaleBarWidth, barHeight, 'F');
     yPosition += 12;
 
@@ -189,7 +189,7 @@ const AssemblyPdfDownload = ({ assemblyId, stats }: AssemblyPdfDownloadProps) =>
     doc.text(`${attendanceCounts.home} (${malePercent}%)`, 45, yPosition);
     
     const maleBarWidth = totalAttendees > 0 ? (attendanceCounts.home / totalAttendees) * maxBarWidth : 0;
-    doc.setFillColor(59, 130, 246); // blue
+    doc.setFillColor(59, 130, 246); // blue for men
     doc.rect(85, yPosition - 5, maleBarWidth, barHeight, 'F');
     yPosition += 15;
 
@@ -223,7 +223,7 @@ const AssemblyPdfDownload = ({ assemblyId, stats }: AssemblyPdfDownloadProps) =>
       doc.text(`${womenInterventions} (${womenPercent}%)`, 45, yPosition);
       
       const womenIntBarWidth = totalInterventions > 0 ? (womenInterventions / totalInterventions) * maxBarWidth : 0;
-      doc.setFillColor(236, 72, 153);
+      doc.setFillColor(34, 197, 94); // green for women
       doc.rect(85, yPosition - 5, womenIntBarWidth, barHeight, 'F');
       yPosition += 12;
 
@@ -234,7 +234,7 @@ const AssemblyPdfDownload = ({ assemblyId, stats }: AssemblyPdfDownloadProps) =>
       doc.text(`${menInterventions} (${menPercent}%)`, 45, yPosition);
       
       const menIntBarWidth = totalInterventions > 0 ? (menInterventions / totalInterventions) * maxBarWidth : 0;
-      doc.setFillColor(59, 130, 246);
+      doc.setFillColor(59, 130, 246); // blue for men
       doc.rect(85, yPosition - 5, menIntBarWidth, barHeight, 'F');
       yPosition += 15;
 
