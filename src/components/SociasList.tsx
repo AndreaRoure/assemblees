@@ -68,6 +68,19 @@ export const SociasList: React.FC = () => {
     fetchYears();
   }, []);
 
+  const getCommissionLabel = (commission: string) => {
+    switch (commission) {
+      case 'economiques': return 'Econòmiques';
+      case 'intercooperacio': return 'Intercooperació';
+      case 'secretaria': return 'Secretaria';
+      case 'convivencia': return 'Convivència';
+      case 'subvencions': return 'Subvencions';
+      case 'arquitectura': return 'Arquitectura';
+      case 'comunicacio': return 'Comunicació';
+      default: return commission;
+    }
+  };
+
   const filteredSocias = React.useMemo(() => {
     if (!searchQuery.trim()) return socias;
     
@@ -299,18 +312,6 @@ export const SociasList: React.FC = () => {
     }
   };
 
-  const getCommissionLabel = (commission: string) => {
-    switch (commission) {
-      case 'economiques': return 'Econòmiques';
-      case 'intercooperacio': return 'Intercooperació';
-      case 'secretaria': return 'Secretaria';
-      case 'convivencia': return 'Convivència';
-      case 'subvencions': return 'Subvencions';
-      case 'arquitectura': return 'Arquitectura';
-      case 'comunicacio': return 'Comunicació';
-      default: return commission;
-    }
-  };
 
   if (loading) {
     return (
