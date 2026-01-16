@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import jsPDF from 'jspdf';
 import { useToast } from '@/hooks/use-toast';
-import logo from '@/assets/logo.png';
+import observatoriLogo from '@/assets/observatori-logo.png';
 import { fetchAssemblies } from '@/lib/supabase';
 import { fetchAssemblyAsistencias, AsistenciaWithSocia } from '@/lib/supabase-asistencias';
 import { AssemblyStats } from '@/types';
@@ -60,45 +60,46 @@ const AssemblyPdfDownload = ({ assemblyId, stats }: AssemblyPdfDownloadProps) =>
       await new Promise<void>((resolve, reject) => {
         logoImg.onload = () => resolve();
         logoImg.onerror = () => reject();
-        logoImg.src = logo;
+        logoImg.src = observatoriLogo;
       });
 
       const canvas = document.createElement('canvas');
       const targetWidth = 200;
-      const targetHeight = 70;
+      const targetHeight = 200;
       canvas.width = targetWidth;
       canvas.height = targetHeight;
       const ctx = canvas.getContext('2d');
       
       if (ctx) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, targetWidth, targetHeight);
+        // Transparent background
+        ctx.clearRect(0, 0, targetWidth, targetHeight);
         ctx.drawImage(logoImg, 0, 0, targetWidth, targetHeight);
         
         const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
         const data = imageData.data;
         
+        // Apply purple color to non-transparent pixels
         for (let i = 0; i < data.length; i += 4) {
-          if (data[i + 3] > 0) {
-            data[i] = 255;     // R - white for header
-            data[i + 1] = 255; // G
-            data[i + 2] = 255; // B
+          if (data[i + 3] > 50) { // If pixel is not transparent
+            data[i] = 147;     // R - purple
+            data[i + 1] = 51;  // G
+            data[i + 2] = 234; // B
           }
         }
         
         ctx.putImageData(imageData, 0, 0);
         const coloredLogo = canvas.toDataURL('image/png');
-        doc.addImage(coloredLogo, 'PNG', 15, 5, 30, 10);
+        doc.addImage(coloredLogo, 'PNG', 10, 3, 18, 18);
       }
     } catch (error) {
       console.error('Error loading logo:', error);
     }
 
-    // Title
+    // Title - Observatori d'Assemblees
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Informe d'Assemblea`, pageWidth / 2, 15, { align: 'center' });
+    doc.text("Observatori d'Assemblees", pageWidth / 2, 15, { align: 'center' });
 
     // Assembly info
     doc.setTextColor(0, 0, 0);
