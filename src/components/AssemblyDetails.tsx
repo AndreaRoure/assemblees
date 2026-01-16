@@ -4,6 +4,7 @@ import QuickIntervention from '@/components/QuickIntervention';
 import InterventionStats from '@/components/InterventionStats';
 import AttendanceManager from '@/components/AttendanceManager';
 import AssemblyPdfDownload from '@/components/AssemblyPdfDownload';
+import AssemblyTimeEditor from '@/components/AssemblyTimeEditor';
 
 interface AssemblyDetailsProps {
   assemblyId: string;
@@ -30,6 +31,8 @@ const AssemblyDetails = ({
         
         <AssemblyPdfDownload assemblyId={assemblyId} stats={stats} />
       </div>
+      
+      <AssemblyTimeEditor assemblyId={assemblyId} />
       
       <AttendanceManager assemblyId={assemblyId} />
 
