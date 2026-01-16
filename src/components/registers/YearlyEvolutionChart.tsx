@@ -63,7 +63,7 @@ const YearlyEvolutionChart = ({ data }: YearlyEvolutionChartProps) => {
               type="monotone" 
               dataKey="woman" 
               name="Dones" 
-              stroke="#22C55E" 
+              stroke="#A78BFA" 
               strokeWidth={2}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
