@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Clock } from 'lucide-react';
@@ -52,7 +51,6 @@ const AssemblyTimeEditor: React.FC<AssemblyTimeEditorProps> = ({ assemblyId }) =
     if (!timeValue || !assemblyDate) return;
 
     try {
-      // Combine assembly date with the time
       const dateTimeString = `${assemblyDate}T${timeValue}:00`;
       const dateTime = new Date(dateTimeString).toISOString();
 
@@ -122,59 +120,49 @@ const AssemblyTimeEditor: React.FC<AssemblyTimeEditorProps> = ({ assemblyId }) =
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="p-4">
-          <div className="animate-pulse h-16 bg-muted rounded" />
-        </CardContent>
-      </Card>
+      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border shadow-sm">
+        <div className="animate-pulse h-8 w-full bg-muted rounded" />
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium flex items-center gap-2">
-          <Clock className="h-4 w-4" />
-          Horari de l'assemblea
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="start-time" className="text-sm text-muted-foreground">
-              Hora de començament
-            </Label>
-            <Input
-              id="start-time"
-              type="time"
-              value={startTime}
-              onChange={handleStartTimeChange}
-              onBlur={handleStartTimeBlur}
-              className="w-full"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="end-time" className="text-sm text-muted-foreground">
-              Hora de finalització
-            </Label>
-            <Input
-              id="end-time"
-              type="time"
-              value={endTime}
-              onChange={handleEndTimeChange}
-              onBlur={handleEndTimeBlur}
-              className="w-full"
-            />
-          </div>
+    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border shadow-sm">
+      <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+      <div className="flex items-center gap-2 flex-1 flex-wrap">
+        <div className="flex items-center gap-1.5">
+          <Label htmlFor="start-time" className="text-xs text-muted-foreground whitespace-nowrap">
+            Inici:
+          </Label>
+          <Input
+            id="start-time"
+            type="time"
+            value={startTime}
+            onChange={handleStartTimeChange}
+            onBlur={handleStartTimeBlur}
+            className="h-8 w-24 text-sm"
+          />
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Label htmlFor="end-time" className="text-xs text-muted-foreground whitespace-nowrap">
+            Fi:
+          </Label>
+          <Input
+            id="end-time"
+            type="time"
+            value={endTime}
+            onChange={handleEndTimeChange}
+            onBlur={handleEndTimeBlur}
+            className="h-8 w-24 text-sm"
+          />
         </div>
         {duration && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
-            <Clock className="h-4 w-4" />
-            <span>Duració total: <span className="font-medium text-foreground">{duration}</span></span>
-          </div>
+          <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+            {duration}
+          </span>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
