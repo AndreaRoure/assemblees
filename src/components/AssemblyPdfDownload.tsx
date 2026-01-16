@@ -52,7 +52,7 @@ const AssemblyPdfDownload = ({ assemblyId, stats }: AssemblyPdfDownloadProps) =>
     doc.setFillColor(147, 51, 234);
     doc.rect(0, 0, pageWidth, 25, 'F');
 
-    // Add logo with purple color
+    // Add logo in white color for the purple header
     try {
       const logoImg = new Image();
       logoImg.crossOrigin = 'anonymous';
@@ -64,32 +64,31 @@ const AssemblyPdfDownload = ({ assemblyId, stats }: AssemblyPdfDownloadProps) =>
       });
 
       const canvas = document.createElement('canvas');
-      const targetWidth = 200;
-      const targetHeight = 200;
+      const targetWidth = 100;
+      const targetHeight = 100;
       canvas.width = targetWidth;
       canvas.height = targetHeight;
       const ctx = canvas.getContext('2d');
       
       if (ctx) {
-        // Transparent background
-        ctx.clearRect(0, 0, targetWidth, targetHeight);
+        // Draw the logo
         ctx.drawImage(logoImg, 0, 0, targetWidth, targetHeight);
         
         const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
         const data = imageData.data;
         
-        // Apply purple color to non-transparent pixels
+        // Apply white color to non-transparent pixels
         for (let i = 0; i < data.length; i += 4) {
           if (data[i + 3] > 50) { // If pixel is not transparent
-            data[i] = 147;     // R - purple
-            data[i + 1] = 51;  // G
-            data[i + 2] = 234; // B
+            data[i] = 255;     // R - white
+            data[i + 1] = 255; // G
+            data[i + 2] = 255; // B
           }
         }
         
         ctx.putImageData(imageData, 0, 0);
         const coloredLogo = canvas.toDataURL('image/png');
-        doc.addImage(coloredLogo, 'PNG', 10, 3, 18, 18);
+        doc.addImage(coloredLogo, 'PNG', 12, 4, 16, 16);
       }
     } catch (error) {
       console.error('Error loading logo:', error);
