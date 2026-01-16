@@ -410,7 +410,7 @@ const RegistersList = () => {
       
       // Female bar
       const femaleBarWidth = totalInterventions > 0 ? (attendanceSummary.interventionsByGender.woman / totalInterventions) * maxBarWidth : 0;
-      doc.setFillColor(34, 197, 94); // green for women
+      doc.setFillColor(167, 139, 250); // lilac for women
       doc.rect(85, yPosition - 5, femaleBarWidth, 8, 'F');
       yPosition += 15;
 
